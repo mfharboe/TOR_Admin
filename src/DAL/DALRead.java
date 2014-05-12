@@ -1,6 +1,8 @@
 package DAL;
 
+import BE.BEAlarm;
 import BE.BEIncident;
+import BE.BEIncidentDetails;
 import BE.BEIncidentType;
 import java.sql.Connection;
 import java.sql.Date;
@@ -16,9 +18,10 @@ public class DALRead {
     Connection m_connection;
 
     ArrayList<BEIncidentType> resIncidentType;
+    ArrayList<BEAlarm> resAlarms;
 
     private DALRead() {
-
+        m_connection = DB_Connection.getInstance().getConnection();
     }
 
     public static DALRead getInstance() {
@@ -96,12 +99,102 @@ public class DALRead {
             ResultSet result = stm.getResultSet();
             while (result.next()) {
                 int id = result.getInt("id");
-                String description = result.getString("description");
+                String description = result.getString("incidentTypeDescription");
                 BEIncidentType be = new BEIncidentType(id, description);
                 resIncidentType.add(be);
             }
         }
         return resIncidentType;
+    }
+
+    /**
+     * Creates an ArrayList of Alarms
+     *
+     * @return ArrayList of Alarms
+     * @throws SQLException
+     */
+    public ArrayList<BEAlarm> readAlarms() throws SQLException {
+        if (resAlarms == null) {
+            resAlarms = new ArrayList<>();
+            Statement stm = m_connection.createStatement();
+            stm.execute("select * from Alarm");
+            ResultSet result = stm.getResultSet();
+            while (result.next()) {
+                int id = result.getInt("id");
+                String description = result.getString("alarmDescription");
+                BEAlarm be = new BEAlarm(id, description);
+                resAlarms.add(be);
+            }
+        }
+        return resAlarms;
+    }
+
+    /**
+     * Creates an ArrayList of IncidentDetails
+     *
+     * @return ArrayList of IncidentDetails
+     * @throws SQLException
+     */
+    public ArrayList<BEIncidentDetails> readIncidentDetails() throws SQLException {
+        ArrayList<BEIncidentDetails> res = new ArrayList<>();
+        Statement stm = m_connection.createStatement();
+        stm.execute("Select IncidentDetails.incidentLeader, "
+                + "IncidentDetails.evaNumber, "
+                + "IncidentDetails.fireReport, "
+                + "IncidentDetails.[message], "
+                + "IncidentDetails.incidentid, "
+                + "IncidentDetails.involvedName, "
+                + "IncidentDetails.involvedAddress, "
+                + "IncidentDetails.remark, "
+                + "IncidentDetails.alarmId,"
+                + "IncidentDetails.detectorNumber,"
+                + "IncidentDetails.groupNumber "
+                + "from IncidentDetails inner join Incident "
+                + "on IncidentDetails.incidentId = incident.id "
+                + "where incident.isDone = 0");
+        ResultSet result = stm.getResultSet();
+        while (result.next()) {
+            String incidentLeader = result.getString("incidentLeader");
+            String evaNumber = result.getString("evaNumber");
+            String fireReport = result.getString("fireReport");
+            String message = result.getString("message");
+            int incidentId = result.getInt("incidentId");
+            BEIncident refIncident = null;
+            for (BEIncident be : readRecentIncidents()) {
+                if (be.getM_id() == incidentId) {
+                    refIncident = be;
+                    break;
+                }
+            }
+            String involvedName = result.getString("involvedName");
+            String involvedAddress = result.getString("involvedAddress");
+            String remark = result.getString("remark");
+            int alarmId = result.getInt("alarmId");
+            BEAlarm refAlarm = null;
+            for (BEAlarm be : readAlarms()) {
+                if (be.getM_id() == alarmId) {
+                    refAlarm = be;
+                    break;
+                }
+            }
+            String detectorNumber = result.getString("detectorNumber");
+            String groupNumber = result.getString("groupNumber");
+
+            BEIncidentDetails be = new BEIncidentDetails(incidentLeader,
+                    evaNumber,
+                    fireReport,
+                    message,
+                    refIncident,
+                    involvedName,
+                    involvedAddress,
+                    remark,
+                    refAlarm,
+                    detectorNumber,
+                    groupNumber);
+            res.add(be);
+        }
+        return res;
+
     }
 
 }

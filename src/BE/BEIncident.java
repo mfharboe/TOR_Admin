@@ -8,9 +8,7 @@ public class BEIncident {
     private int m_id;
     private String m_incidentName;
     private Date m_date;
-    private String m_stringDate;
     private Time m_time;
-    private String m_stringTime;
     private BEIncidentType m_incidentType;
     private boolean m_isDone;
 
@@ -76,20 +74,6 @@ public class BEIncident {
     }
 
     /**
-     * @return the m_stringDate
-     */
-    public String getM_stringDate() {
-        return m_stringDate;
-    }
-
-    /**
-     * @param m_stringDate the m_stringDate to set
-     */
-    public void setM_stringDate(String m_stringDate) {
-        this.m_stringDate = m_stringDate;
-    }
-
-    /**
      * @return the m_time
      */
     public Time getM_time() {
@@ -101,20 +85,6 @@ public class BEIncident {
      */
     public void setM_time(Time m_time) {
         this.m_time = m_time;
-    }
-
-    /**
-     * @return the m_stringTime
-     */
-    public String getM_stringTime() {
-        return m_stringTime;
-    }
-
-    /**
-     * @param m_stringTime the m_stringTime to set
-     */
-    public void setM_stringTime(String m_stringTime) {
-        this.m_stringTime = m_stringTime;
     }
 
     /**
@@ -147,6 +117,6 @@ public class BEIncident {
 
     @Override
     public String toString() {
-        return m_incidentName;
+        return m_time + " - " + m_incidentName;
     }
 }

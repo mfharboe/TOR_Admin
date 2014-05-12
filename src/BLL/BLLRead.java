@@ -1,7 +1,9 @@
 package BLL;
 
 import BE.BEIncident;
+import BE.BEIncidentDetails;
 import DAL.DALRead;
+import GUI.MessageDialog;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ public class BLLRead {
     private static BLLRead m_instance;
     ArrayList<BEIncident> recentIncidents;
     ArrayList<BEIncident> incidentsByDate;
+    ArrayList<BEIncidentDetails> incidentDetails;
 
     private BLLRead() {
 
@@ -28,6 +31,11 @@ public class BLLRead {
     public ArrayList<BEIncident> readAllRecentIncidents() {
         try {
             recentIncidents = DALRead.getInstance().readRecentIncidents();
+            if (recentIncidents.isEmpty()) {
+                MessageDialog.getInstance().dialogNoRecentIncidents(); //MÅ IKKE VÆRE HER
+            } else {
+                readIncidentDetails();
+            }
         } catch (SQLException ex) {
             Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -41,5 +49,20 @@ public class BLLRead {
             Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
         }
         return incidentsByDate;
+    }
+
+    public ArrayList<BEIncidentDetails> readIncidentDetails() {
+        try {
+            if (incidentDetails == null) {
+                incidentDetails = DALRead.getInstance().readIncidentDetails();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return incidentDetails;
+    }
+
+    public void clearAllDetails() {
+        incidentDetails = null;
     }
 }

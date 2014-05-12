@@ -1,11 +1,13 @@
 package GUI;
 
 import BE.BEIncident;
+import BE.BEIncidentDetails;
 import BLL.BLLRead;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
-import java.text.DateFormat;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -19,7 +21,7 @@ public class GUIAdmin extends javax.swing.JFrame {
      * Creates new form GUIAdmin
      */
     private GUIAdmin() {
-        this.setTitle("TOR - Admin");
+        this.setTitle(MessageDialog.getInstance().adminTitle());
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
         initialSettings();
@@ -37,38 +39,71 @@ public class GUIAdmin extends javax.swing.JFrame {
         addColors();
         addListeners();
         incidentListModel = new DefaultListModel<>();
+        lstIncidents.setModel(incidentListModel);
     }
 
     private void addColors() {
+        this.getContentPane().setBackground(Color.WHITE);
+        pnlAdministrate.setBackground(Color.WHITE);
+        pnlDetail.setBackground(Color.WHITE);
+        pnlIncident.setBackground(Color.WHITE);
+        pnlSearch.setBackground(Color.WHITE);
+        pnlSearchFor.setBackground(Color.WHITE);
+        rdoBlind.setBackground(Color.WHITE);
+        rdoExercise.setBackground(Color.WHITE);
+        rdoFalse.setBackground(Color.WHITE);
+        rdoIncident.setBackground(Color.WHITE);
+        tbpIncident.setBackground(Color.WHITE);
+        tblForces.setBackground(Color.WHITE);
+        tblTeamLeader.setBackground(Color.WHITE);
+        tblUsage.setBackground(Color.WHITE);
+        cbxApproved.setBackground(Color.WHITE);
 
     }
 
     private void addListeners() {
         btnAction btn = new btnAction();
         lstAction lst = new lstAction();
-        btnSearchDate.addActionListener(btn);
+        buttonGroup1.add(rdoBlind);
+        buttonGroup1.add(rdoExercise);
+        buttonGroup1.add(rdoFalse);
+        buttonGroup1.add(rdoIncident);
+        btnSearch.addActionListener(btn);
         btnFiremen.addActionListener(btn);
         btnVehicles.addActionListener(btn);
-        btnUpdate.addActionListener(btn);
+        btnShow.addActionListener(btn);
         btnPDF.addActionListener(btn);
         btnSave.addActionListener(btn);
         lstIncidents.addListSelectionListener(lst);
     }
 
     private void onClickUpdate() {
+        BLLRead.getInstance().clearAllDetails();
         for (BEIncident recentIncidents : BLLRead.getInstance().readAllRecentIncidents()) {
             incidentListModel.addElement(recentIncidents);
         }
     }
 
     private void onClickSearchDate() {
-        for (BEIncident incidentsByDate : BLLRead.getInstance().readAllIncidentsByDate(getDate())) {
-            incidentListModel.addElement(incidentsByDate);
+
+    }
+
+    private void onListChange() {
+        for (BEIncidentDetails incidentDetails : BLLRead.getInstance().readIncidentDetails()) {
+            if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentDetails.getM_incident().getM_id()) {
+                System.out.println("DOO SOMETHING GODDAMIT");
+            }
         }
     }
 
-    private Date getDate() {
-        java.util.Date utilDate = dateChooser.getDate();
+    private Date getDateFrom() {
+        java.util.Date utilDate = dateChooserFrom.getDate();
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        return sqlDate;
+    }
+
+    private Date getDateTo() {
+        java.util.Date utilDate = dateChooserTo.getDate();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
         return sqlDate;
     }
@@ -77,9 +112,9 @@ public class GUIAdmin extends javax.swing.JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource().equals(btnUpdate)) {
+            if (e.getSource().equals(btnShow)) {
                 onClickUpdate();
-            } else if (e.getSource().equals(btnSearchDate)) {
+            } else if (e.getSource().equals(btnSearch)) {
                 onClickSearchDate();
             }
         }
@@ -89,7 +124,7 @@ public class GUIAdmin extends javax.swing.JFrame {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-
+            onListChange();
         }
     }
 
@@ -102,68 +137,105 @@ public class GUIAdmin extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel2 = new javax.swing.JPanel();
-        dateChooser = new com.toedter.calendar.JDateChooser();
-        btnUpdate = new javax.swing.JButton();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        pnlIncident = new javax.swing.JPanel();
+        btnShow = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstIncidents = new javax.swing.JList();
-        btnSearchDate = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
+        pnlDetail = new javax.swing.JPanel();
         tbpIncident = new javax.swing.JTabbedPane();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        tblUsage = new javax.swing.JTable();
         jScrollPane4 = new javax.swing.JScrollPane();
         tblForces = new javax.swing.JTable();
         jScrollPane5 = new javax.swing.JScrollPane();
         tblTeamLeader = new javax.swing.JTable();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        tblUsage = new javax.swing.JTable();
         cbxApproved = new javax.swing.JCheckBox();
         btnSave = new javax.swing.JButton();
         btnPDF = new javax.swing.JButton();
-        jPanel5 = new javax.swing.JPanel();
+        pnlAdministrate = new javax.swing.JPanel();
         btnVehicles = new javax.swing.JButton();
         btnFiremen = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnMaterial = new javax.swing.JButton();
+        pnlSearch = new javax.swing.JPanel();
+        dateChooserFrom = new com.toedter.calendar.JDateChooser();
+        dateChooserTo = new com.toedter.calendar.JDateChooser();
+        pnlSearchFor = new javax.swing.JPanel();
+        rdoFalse = new javax.swing.JRadioButton();
+        rdoBlind = new javax.swing.JRadioButton();
+        rdoExercise = new javax.swing.JRadioButton();
+        rdoIncident = new javax.swing.JRadioButton();
+        btnSearch = new javax.swing.JButton();
+        lblFrom = new javax.swing.JLabel();
+        lblTo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Meldinger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        pnlIncident.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Meldinger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
 
-        btnUpdate.setText("Opdater Nyeste");
+        btnShow.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnShow.setText("Vis nyeste");
 
+        lstIncidents.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resultat", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
         jScrollPane1.setViewportView(lstIncidents);
 
-        btnSearchDate.setText("Søg på dato");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlIncidentLayout = new javax.swing.GroupLayout(pnlIncident);
+        pnlIncident.setLayout(pnlIncidentLayout);
+        pnlIncidentLayout.setHorizontalGroup(
+            pnlIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlIncidentLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
-                    .addComponent(btnUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(dateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSearchDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(20, 20, 20))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(dateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnSearchDate, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                .addGroup(pnlIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnShow, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE))
                 .addContainerGap())
         );
+        pnlIncidentLayout.setVerticalGroup(
+            pnlIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlIncidentLayout.createSequentialGroup()
+                .addComponent(btnShow, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Indsats navn...", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        pnlDetail.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Indsats navn...", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
 
+        tbpIncident.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+
+        tblForces.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        tblForces.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane4.setViewportView(tblForces);
+
+        tbpIncident.addTab("Fremmødte", jScrollPane4);
+
+        tblTeamLeader.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        tblTeamLeader.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane5.setViewportView(tblTeamLeader);
+
+        tbpIncident.addTab("Holdleder", jScrollPane5);
+
+        tblUsage.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         tblUsage.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -179,75 +251,47 @@ public class GUIAdmin extends javax.swing.JFrame {
 
         tbpIncident.addTab("Forbrug", jScrollPane6);
 
-        tblForces.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane4.setViewportView(tblForces);
-
-        tbpIncident.addTab("Indsatte Styrker", jScrollPane4);
-
-        tblTeamLeader.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane5.setViewportView(tblTeamLeader);
-
-        tbpIncident.addTab("Holdleders Detaljer", jScrollPane5);
-
         cbxApproved.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         cbxApproved.setText("Godkendt");
 
+        btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
 
+        btnPDF.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnPDF.setText("Print til PDF");
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlDetailLayout = new javax.swing.GroupLayout(pnlDetail);
+        pnlDetail.setLayout(pnlDetailLayout);
+        pnlDetailLayout.setHorizontalGroup(
+            pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetailLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tbpIncident, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 684, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(tbpIncident, javax.swing.GroupLayout.DEFAULT_SIZE, 684, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlDetailLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(cbxApproved)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbxApproved, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlDetailLayout.createSequentialGroup()
                                 .addComponent(btnPDF)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(18, 18, 18)
                                 .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        pnlDetailLayout.setVerticalGroup(
+            pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetailLayout.createSequentialGroup()
                 .addComponent(tbpIncident, javax.swing.GroupLayout.PREFERRED_SIZE, 404, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cbxApproved)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnPDF, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Administrer", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        pnlAdministrate.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Administrer", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
 
         btnVehicles.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnVehicles.setText("Køretøjer");
@@ -255,29 +299,116 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnFiremen.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnFiremen.setText("Frivillige Brandmænd");
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        jButton1.setText("Materiel");
+        btnMaterial.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnMaterial.setText("Materiel");
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnlAdministrateLayout = new javax.swing.GroupLayout(pnlAdministrate);
+        pnlAdministrate.setLayout(pnlAdministrateLayout);
+        pnlAdministrateLayout.setHorizontalGroup(
+            pnlAdministrateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlAdministrateLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnFiremen, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-                    .addComponent(btnVehicles, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(pnlAdministrateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnMaterial, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                    .addComponent(btnVehicles, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnFiremen, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+        pnlAdministrateLayout.setVerticalGroup(
+            pnlAdministrateLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAdministrateLayout.createSequentialGroup()
                 .addComponent(btnFiremen, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnVehicles, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pnlSearch.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Søg", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+
+        pnlSearchFor.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+
+        rdoFalse.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        rdoFalse.setText("Falske alarmer");
+
+        rdoBlind.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        rdoBlind.setText("Blinde alarmer");
+
+        rdoExercise.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        rdoExercise.setText("Øvelser");
+
+        rdoIncident.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        rdoIncident.setText("Indsater");
+
+        javax.swing.GroupLayout pnlSearchForLayout = new javax.swing.GroupLayout(pnlSearchFor);
+        pnlSearchFor.setLayout(pnlSearchForLayout);
+        pnlSearchForLayout.setHorizontalGroup(
+            pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlSearchForLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(rdoIncident)
+                .addGap(18, 18, 18)
+                .addComponent(rdoExercise)
+                .addGap(18, 18, 18)
+                .addComponent(rdoFalse)
+                .addGap(18, 18, 18)
+                .addComponent(rdoBlind)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlSearchForLayout.setVerticalGroup(
+            pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlSearchForLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rdoIncident)
+                    .addComponent(rdoExercise)
+                    .addComponent(rdoFalse)
+                    .addComponent(rdoBlind))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        btnSearch.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnSearch.setText("Søg");
+
+        lblFrom.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        lblFrom.setText("Fra");
+
+        lblTo.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        lblTo.setText("Til");
+
+        javax.swing.GroupLayout pnlSearchLayout = new javax.swing.GroupLayout(pnlSearch);
+        pnlSearch.setLayout(pnlSearchLayout);
+        pnlSearchLayout.setHorizontalGroup(
+            pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlSearchLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pnlSearchFor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lblFrom)
+                .addGap(18, 18, 18)
+                .addComponent(dateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lblTo)
+                .addGap(18, 18, 18)
+                .addComponent(dateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        pnlSearchLayout.setVerticalGroup(
+            pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlSearchLayout.createSequentialGroup()
+                .addGroup(pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlSearchFor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(pnlSearchLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblFrom)
+                            .addComponent(lblTo))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -285,24 +416,28 @@ public class GUIAdmin extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(10, 10, 10)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pnlSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pnlIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(pnlAdministrate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
+                        .addComponent(pnlDetail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(10, 10, 10)
+                .addComponent(pnlSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(pnlIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(pnlAdministrate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pnlDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -311,22 +446,32 @@ public class GUIAdmin extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFiremen;
+    private javax.swing.JButton btnMaterial;
     private javax.swing.JButton btnPDF;
     private javax.swing.JButton btnSave;
-    private javax.swing.JButton btnSearchDate;
-    private javax.swing.JButton btnUpdate;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton btnShow;
     private javax.swing.JButton btnVehicles;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox cbxApproved;
-    private com.toedter.calendar.JDateChooser dateChooser;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel5;
+    private com.toedter.calendar.JDateChooser dateChooserFrom;
+    private com.toedter.calendar.JDateChooser dateChooserTo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JLabel lblFrom;
+    private javax.swing.JLabel lblTo;
     private javax.swing.JList lstIncidents;
+    private javax.swing.JPanel pnlAdministrate;
+    private javax.swing.JPanel pnlDetail;
+    private javax.swing.JPanel pnlIncident;
+    private javax.swing.JPanel pnlSearch;
+    private javax.swing.JPanel pnlSearchFor;
+    private javax.swing.JRadioButton rdoBlind;
+    private javax.swing.JRadioButton rdoExercise;
+    private javax.swing.JRadioButton rdoFalse;
+    private javax.swing.JRadioButton rdoIncident;
     private javax.swing.JTable tblForces;
     private javax.swing.JTable tblTeamLeader;
     private javax.swing.JTable tblUsage;
