@@ -4,6 +4,8 @@ import BE.BEAlarm;
 import BE.BEIncident;
 import BE.BEIncidentDetails;
 import BE.BEIncidentType;
+import BE.BEMaterial;
+import BE.BEUsage;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -17,8 +19,9 @@ public class DALRead {
     private static DALRead m_instance;
     Connection m_connection;
 
-    ArrayList<BEIncidentType> resIncidentType;
+    ArrayList<BEIncidentType> resIncidentTypes;
     ArrayList<BEAlarm> resAlarms;
+    ArrayList<BEMaterial> resMaterials;
 
     private DALRead() {
         m_connection = DB_Connection.getInstance().getConnection();
@@ -61,10 +64,12 @@ public class DALRead {
         return res;
     }
 
-    public ArrayList<BEIncident> readIncidentsByDate(Date searchDate) throws SQLException {
+    public ArrayList<BEIncident> readIncidentsByDate(Date searchDateFrom, Date searchDateTo) throws SQLException {
         ArrayList<BEIncident> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
-        stm.execute("select * from Incident where Incident.date = " + searchDate);
+        stm.execute("select * from Incident "
+                + "where Incident.date between " + searchDateFrom + " "
+                + "and " + searchDateTo);
         ResultSet result = stm.getResultSet();
         while (result.next()) {
             int id = result.getInt("id");
@@ -92,8 +97,8 @@ public class DALRead {
      * @throws SQLException
      */
     public ArrayList<BEIncidentType> readIncidentTypes() throws SQLException {
-        if (resIncidentType == null) {
-            resIncidentType = new ArrayList<>();
+        if (resIncidentTypes == null) {
+            resIncidentTypes = new ArrayList<>();
             Statement stm = m_connection.createStatement();
             stm.execute("select * from IncidentType");
             ResultSet result = stm.getResultSet();
@@ -101,10 +106,10 @@ public class DALRead {
                 int id = result.getInt("id");
                 String description = result.getString("incidentTypeDescription");
                 BEIncidentType be = new BEIncidentType(id, description);
-                resIncidentType.add(be);
+                resIncidentTypes.add(be);
             }
         }
-        return resIncidentType;
+        return resIncidentTypes;
     }
 
     /**
@@ -127,6 +132,67 @@ public class DALRead {
             }
         }
         return resAlarms;
+    }
+
+    /**
+     * Creates an ArrayList of Material
+     *
+     * @return ArrayList of Material
+     * @throws SQLException
+     */
+    public ArrayList<BEMaterial> readMaterial() throws SQLException {
+        if (resMaterials == null) {
+            resMaterials = new ArrayList<>();
+            Statement stm = m_connection.createStatement();
+            stm.execute("select * from Material order by materialDescription");
+            ResultSet result = stm.getResultSet();
+            while (result.next()) {
+                int id = result.getInt("id");
+                String description = result.getString("materialDescription");
+                BEMaterial be = new BEMaterial(id, description);
+                resMaterials.add(be);
+            }
+        }
+            return resMaterials;
+
+        }
+        /**
+         * Creates an ArrayList of Usage
+         *
+         * @return ArrayList of Usage
+         * @throws SQLException
+         */
+    public ArrayList<BEUsage> readUsage() throws SQLException {
+        ArrayList<BEUsage> res = new ArrayList<>();
+        Statement stm = m_connection.createStatement();
+        stm.execute("select * from Usage "
+                + "inner join Incident "
+                + "on Usage.incidentId = Incident.id "
+                + "where Incident.isDone = 0");
+        ResultSet result = stm.getResultSet();
+        while (result.next()) {
+            int id = result.getInt("id");
+            int materialId = result.getInt("materialId");
+            BEMaterial refMaterial = null;
+            for (BEMaterial be : readMaterial()) {
+                if (be.getM_id() == materialId) {
+                    refMaterial = be;
+                }
+            }
+            int amount = result.getInt("amount");
+            int incidentId = result.getInt("incidentId");
+            BEIncident refIncident = null;
+            for (BEIncident be : readRecentIncidents()) {
+                if (be.getM_id() == incidentId) {
+                    refIncident = be;
+                }
+            }
+            BEUsage be = new BEUsage(id, refMaterial, amount, refIncident);
+            res.add(be);
+        }
+
+        return res;
+
     }
 
     /**

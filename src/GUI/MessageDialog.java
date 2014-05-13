@@ -21,6 +21,10 @@ public class MessageDialog {
         return "TOR - Admin";
     }
     
+    public String emptyString(){
+        return "";
+    }
+    
     public void dialogNoRecentIncidents(){
         JOptionPane.showMessageDialog(null, "Der er ingen nye meldinger");
     }
