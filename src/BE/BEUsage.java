@@ -78,5 +78,10 @@ public class BEUsage {
     public void setM_incident(BEIncident m_incident) {
         this.m_incident = m_incident;
     }
+    
+    @Override
+    public String toString(){
+        return m_amount + " - " + m_material.getM_description();
+    }
 
 }
