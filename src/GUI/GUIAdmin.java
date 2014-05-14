@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
-import java.util.Iterator;
 import javax.swing.DefaultListModel;
 
 public class GUIAdmin extends javax.swing.JFrame {
@@ -156,8 +155,9 @@ public class GUIAdmin extends javax.swing.JFrame {
         enableLblDetails(false);
         enableTxtDetails(false);
         enableBtnDetails(false);
+        usageModel.clear();
         if (!incidentModel.isEmpty() && lstIncidents.getSelectedIndex() != -1) {
-            findDetails();
+            getDetails();
             enableLblDetails(true);
             btnEdit.setEnabled(true);
         } else {
@@ -168,7 +168,7 @@ public class GUIAdmin extends javax.swing.JFrame {
             enableBtnDetails(false);
             return;
         }
-        findUsage();
+        getUsage();
     }
 
     private void onClickEdit() {
@@ -177,7 +177,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         enableBtnDetails(true);
     }
 
-    private void findDetails() {
+    private void getDetails() {
         for (BEIncidentDetails incidentDetails : BLLRead.getInstance().readIncidentDetails()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentDetails.getM_incident().getM_id()) {
                 fillDetails(incidentDetails);
@@ -186,16 +186,16 @@ public class GUIAdmin extends javax.swing.JFrame {
         }
     }
 
-    private void findUsage() {
+    private void getUsage() {
         for (BEUsage incidentUsage : BLLRead.getInstance().readIncidentUsage()) {
-            if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentUsage.getM_id()) {
-
-                
-                // WHAT TO DO ANDREAS!! :-)
-                
-                
+            if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentUsage.getM_incident().getM_id()) {
+                usageModel.addElement(incidentUsage);
             }
         }
+    }
+    
+    private void getForces(){
+
     }
 
     private void fillDetails(BEIncidentDetails incidentDetails) {
