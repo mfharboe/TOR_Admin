@@ -12,13 +12,12 @@ import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.util.Iterator;
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 
 public class GUIAdmin extends javax.swing.JFrame {
 
     private static GUIAdmin m_instance;
-    DefaultListModel<BEIncident> incidentModel;
-    DefaultListModel<BEUsage> usageModel;
+    private DefaultListModel<BEIncident> incidentModel;
+    private DefaultListModel<BEUsage> usageModel;
 
     /**
      * Creates new form GUIAdmin
@@ -41,25 +40,34 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void initialSettings() {
         addColors();
         addListeners();
+        notEditable();
         incidentModel = new DefaultListModel<>();
         usageModel = new DefaultListModel<>();
         lstIncidents.setModel(incidentModel);
         lstUsage.setModel(usageModel);
-        txtAlarmType.setEnabled(false);
+        btnEdit.setEnabled(false);
         enableTxtDetails(false);
         enableLblDetails(false);
         enableBtnDetails(false);
     }
 
+    private void notEditable() {
+        txtAlarmType.setEnabled(false);
+        lstForces.setEnabled(false);
+        lstUsage.setEnabled(false);
+        lblAlarmType.setEnabled(false);
+    }
+
     private void addColors() {
         this.getContentPane().setBackground(Color.WHITE);
         pnlAdministrate.setBackground(Color.WHITE);
-        pnlDetail.setBackground(Color.WHITE);
+        pnlAllDetails.setBackground(Color.WHITE);
         pnlSearch.setBackground(Color.WHITE);
         pnlSearchFor.setBackground(Color.WHITE);
         pnlInvolved.setBackground(Color.WHITE);
         pnlRemarks.setBackground(Color.WHITE);
-        pnlTeamLeader.setBackground(Color.WHITE);
+        pnlDetail1.setBackground(Color.WHITE);
+        pnlDetails2.setBackground(Color.WHITE);
         rdoBlind.setBackground(Color.WHITE);
         rdoExercise.setBackground(Color.WHITE);
         rdoFalse.setBackground(Color.WHITE);
@@ -82,6 +90,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnShow.addActionListener(btn);
         btnPDF.addActionListener(btn);
         btnSave.addActionListener(btn);
+        btnEdit.addActionListener(btn);
         lstIncidents.addMouseListener(mse);
     }
 
@@ -105,32 +114,31 @@ public class GUIAdmin extends javax.swing.JFrame {
         lblLeader.setEnabled(enabled);
         pnlInvolved.setEnabled(enabled);
         pnlRemarks.setEnabled(enabled);
-        lstForces.setEnabled(enabled);
-        lstUsage.setEnabled(enabled);
     }
 
     private void enableBtnDetails(boolean enabled) {
         btnPDF.setEnabled(enabled);
         btnSave.setEnabled(enabled);
+        btnEdit.setEnabled(enabled);
         cbxApproved.setEnabled(enabled);
     }
 
     private void clearDetails() {
-        incidentModel.clear();
         usageModel.clear();
         txtLeader.setText(MessageDialog.getInstance().emptyString());
         txtEvaNumber.setText(MessageDialog.getInstance().emptyString());
         txtFireReportNumber.setText(MessageDialog.getInstance().emptyString());
         txtInvolvedName.setText(MessageDialog.getInstance().emptyString());
         txtInvolvedAddress.setText(MessageDialog.getInstance().emptyString());
-        txtAlarmType.setText(MessageDialog.getInstance().emptyString());
         txtDetectorNumber.setText(MessageDialog.getInstance().emptyString());
+        txtAlarmType.setText(MessageDialog.getInstance().emptyString());
         txtGroupNumber.setText(MessageDialog.getInstance().emptyString());
         txtRemarks.setText(MessageDialog.getInstance().emptyString());
     }
 
     private void onClickUpdate() {
         BLLRead.getInstance().clearDetailsArray();
+        incidentModel.clear();
         clearDetails();
         enableLblDetails(false);
         enableTxtDetails(false);
@@ -145,21 +153,34 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     private void onListClick() {
+        enableLblDetails(false);
+        enableTxtDetails(false);
+        enableBtnDetails(false);
         if (!incidentModel.isEmpty() && lstIncidents.getSelectedIndex() != -1) {
             findDetails();
+            enableLblDetails(true);
+            btnEdit.setEnabled(true);
         } else {
+            clearDetails();
+            btnEdit.setEnabled(false);
+            enableLblDetails(false);
+            enableTxtDetails(false);
+            enableBtnDetails(false);
             return;
         }
         findUsage();
+    }
+
+    private void onClickEdit() {
+        enableTxtDetails(true);
+        enableLblDetails(true);
+        enableBtnDetails(true);
     }
 
     private void findDetails() {
         for (BEIncidentDetails incidentDetails : BLLRead.getInstance().readIncidentDetails()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentDetails.getM_incident().getM_id()) {
                 fillDetails(incidentDetails);
-                enableTxtDetails(true);
-                enableLblDetails(true);
-                enableBtnDetails(true);
                 return;
             }
         }
@@ -169,7 +190,10 @@ public class GUIAdmin extends javax.swing.JFrame {
         for (BEUsage incidentUsage : BLLRead.getInstance().readIncidentUsage()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentUsage.getM_id()) {
 
-                //WHAT TO DOO????
+                
+                // WHAT TO DO ANDREAS!! :-)
+                
+                
             }
         }
     }
@@ -180,15 +204,13 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtFireReportNumber.setText(incidentDetails.getM_fireReport());
         txtInvolvedName.setText(incidentDetails.getM_involvedName());
         txtInvolvedAddress.setText(incidentDetails.getM_involvedAddress());
-        txtAlarmType.setText(incidentDetails.getM_alarm().getM_description());
         txtDetectorNumber.setText(incidentDetails.getM_detectorNumber());
+        txtAlarmType.setText(incidentDetails.getM_alarm().getM_description());
         txtGroupNumber.setText(incidentDetails.getM_groupNumber());
         txtRemarks.setText(incidentDetails.getM_remark());
     }
 
-    private void fillUsage(BEUsage incidentUsage) {
 
-    }
 
     private Date getDateFrom() {
         java.util.Date utilDate = dateChooserFrom.getDate();
@@ -211,6 +233,8 @@ public class GUIAdmin extends javax.swing.JFrame {
                 onClickUpdate();
             } else if (e.getSource().equals(btnSearch)) {
                 onClickSearchDate();
+            } else if (e.getSource().equals(btnEdit)) {
+                onClickEdit();
             }
         }
     }
@@ -235,23 +259,17 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        pnlDetail = new javax.swing.JPanel();
+        pnlAllDetails = new javax.swing.JPanel();
         cbxApproved = new javax.swing.JCheckBox();
         btnSave = new javax.swing.JButton();
         btnPDF = new javax.swing.JButton();
-        pnlTeamLeader = new javax.swing.JPanel();
-        lblAlarmType = new javax.swing.JLabel();
+        pnlDetails2 = new javax.swing.JPanel();
         txtFireReportNumber = new javax.swing.JTextField();
-        txtAlarmType = new javax.swing.JTextField();
         txtEvaNumber = new javax.swing.JTextField();
-        lblDetectorNumber = new javax.swing.JLabel();
-        lblGroupNumber = new javax.swing.JLabel();
         lblEvaNumber = new javax.swing.JLabel();
         txtLeader = new javax.swing.JTextField();
         lblLeader = new javax.swing.JLabel();
         lblReportNumber = new javax.swing.JLabel();
-        txtGroupNumber = new javax.swing.JTextField();
-        txtDetectorNumber = new javax.swing.JTextField();
         pnlInvolved = new javax.swing.JPanel();
         txtInvolvedName = new javax.swing.JTextField();
         txtInvolvedAddress = new javax.swing.JTextField();
@@ -262,6 +280,14 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlRemarks = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtRemarks = new javax.swing.JTextArea();
+        btnEdit = new javax.swing.JButton();
+        pnlDetail1 = new javax.swing.JPanel();
+        lblAlarmType = new javax.swing.JLabel();
+        lblDetectorNumber = new javax.swing.JLabel();
+        lblGroupNumber = new javax.swing.JLabel();
+        txtDetectorNumber = new javax.swing.JTextField();
+        txtAlarmType = new javax.swing.JTextField();
+        txtGroupNumber = new javax.swing.JTextField();
         pnlAdministrate = new javax.swing.JPanel();
         btnVehicles = new javax.swing.JButton();
         btnFiremen = new javax.swing.JButton();
@@ -284,38 +310,32 @@ public class GUIAdmin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        pnlDetail.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        pnlAllDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         cbxApproved.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         cbxApproved.setText("Godkendt");
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
+        btnSave.setPreferredSize(new java.awt.Dimension(105, 38));
 
         btnPDF.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnPDF.setText("Print til PDF");
+        btnPDF.setPreferredSize(new java.awt.Dimension(105, 38));
 
-        pnlTeamLeader.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-
-        lblAlarmType.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblAlarmType.setText("Beretning:");
+        pnlDetails2.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         txtFireReportNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-
-        txtAlarmType.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtFireReportNumber.setPreferredSize(new java.awt.Dimension(250, 38));
 
         txtEvaNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-
-        lblDetectorNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblDetectorNumber.setText("Detektor nr:");
-
-        lblGroupNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblGroupNumber.setText("Gruppe nr:");
+        txtEvaNumber.setPreferredSize(new java.awt.Dimension(250, 38));
 
         lblEvaNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblEvaNumber.setText("EVA nr:");
 
         txtLeader.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtLeader.setPreferredSize(new java.awt.Dimension(250, 38));
 
         lblLeader.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblLeader.setText("Indsatsleder:");
@@ -323,99 +343,71 @@ public class GUIAdmin extends javax.swing.JFrame {
         lblReportNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblReportNumber.setText("Rapport nr:");
 
-        txtGroupNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-
-        txtDetectorNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-
-        javax.swing.GroupLayout pnlTeamLeaderLayout = new javax.swing.GroupLayout(pnlTeamLeader);
-        pnlTeamLeader.setLayout(pnlTeamLeaderLayout);
-        pnlTeamLeaderLayout.setHorizontalGroup(
-            pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
+        javax.swing.GroupLayout pnlDetails2Layout = new javax.swing.GroupLayout(pnlDetails2);
+        pnlDetails2.setLayout(pnlDetails2Layout);
+        pnlDetails2Layout.setHorizontalGroup(
+            pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetails2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                        .addComponent(lblReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(txtFireReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
+                .addGroup(pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlDetails2Layout.createSequentialGroup()
                         .addComponent(lblLeader, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(txtLeader, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                        .addComponent(lblEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(txtEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                        .addComponent(lblAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(txtAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                        .addComponent(lblDetectorNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(txtDetectorNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                        .addComponent(lblGroupNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, 0)
-                        .addComponent(txtGroupNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(104, Short.MAX_VALUE))
-        );
-        pnlTeamLeaderLayout.setVerticalGroup(
-            pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtLeader, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblAlarmType))
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(lblLeader)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblEvaNumber)
-                        .addComponent(txtEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlTeamLeaderLayout.createSequentialGroup()
-                        .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtDetectorNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblDetectorNumber))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlTeamLeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtGroupNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblGroupNumber)
-                            .addComponent(txtFireReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblReportNumber))))
+                        .addComponent(txtLeader, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlDetails2Layout.createSequentialGroup()
+                        .addComponent(lblReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtFireReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlDetails2Layout.createSequentialGroup()
+                        .addComponent(lblEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(16, Short.MAX_VALUE))
+        );
+        pnlDetails2Layout.setVerticalGroup(
+            pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetails2Layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblLeader)
+                    .addComponent(txtLeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblEvaNumber))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFireReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblReportNumber))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pnlInvolved.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Skadeslidte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
 
         txtInvolvedName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtInvolvedName.setPreferredSize(new java.awt.Dimension(250, 38));
 
         txtInvolvedAddress.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtInvolvedAddress.setPreferredSize(new java.awt.Dimension(250, 38));
 
         javax.swing.GroupLayout pnlInvolvedLayout = new javax.swing.GroupLayout(pnlInvolved);
         pnlInvolved.setLayout(pnlInvolvedLayout);
         pnlInvolvedLayout.setHorizontalGroup(
             pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlInvolvedLayout.createSequentialGroup()
+            .addGroup(pnlInvolvedLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                    .addComponent(txtInvolvedName))
+                .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtInvolvedName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         pnlInvolvedLayout.setVerticalGroup(
             pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlInvolvedLayout.createSequentialGroup()
                 .addComponent(txtInvolvedName, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 7, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         lstForces.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
@@ -436,64 +428,130 @@ public class GUIAdmin extends javax.swing.JFrame {
             pnlRemarksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRemarksLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 406, Short.MAX_VALUE)
                 .addContainerGap())
         );
         pnlRemarksLayout.setVerticalGroup(
             pnlRemarksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRemarksLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 195, Short.MAX_VALUE)
+                .addComponent(jScrollPane2)
                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout pnlDetailLayout = new javax.swing.GroupLayout(pnlDetail);
-        pnlDetail.setLayout(pnlDetailLayout);
-        pnlDetailLayout.setHorizontalGroup(
-            pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlDetailLayout.createSequentialGroup()
+        btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnEdit.setText("Rediger");
+        btnEdit.setPreferredSize(new java.awt.Dimension(105, 38));
+
+        pnlDetail1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+
+        lblAlarmType.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        lblAlarmType.setText("Beretning:");
+
+        lblDetectorNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        lblDetectorNumber.setText("Detektor nr:");
+
+        lblGroupNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        lblGroupNumber.setText("Gruppe nr:");
+
+        txtDetectorNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtDetectorNumber.setPreferredSize(new java.awt.Dimension(250, 38));
+
+        txtAlarmType.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtAlarmType.setPreferredSize(new java.awt.Dimension(250, 38));
+
+        txtGroupNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtGroupNumber.setPreferredSize(new java.awt.Dimension(250, 38));
+
+        javax.swing.GroupLayout pnlDetail1Layout = new javax.swing.GroupLayout(pnlDetail1);
+        pnlDetail1.setLayout(pnlDetail1Layout);
+        pnlDetail1Layout.setHorizontalGroup(
+            pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetail1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(pnlDetailLayout.createSequentialGroup()
-                        .addComponent(cbxApproved)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnPDF)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(pnlTeamLeader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlDetailLayout.createSequentialGroup()
-                        .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(pnlInvolved, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(pnlRemarks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblAlarmType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblGroupNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblDetectorNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtGroupNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtDetectorNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtAlarmType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        pnlDetailLayout.setVerticalGroup(
-            pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlDetailLayout.createSequentialGroup()
+        pnlDetail1Layout.setVerticalGroup(
+            pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlDetail1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnlTeamLeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(pnlDetailLayout.createSequentialGroup()
-                        .addComponent(pnlInvolved, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(pnlRemarks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane7)
-                    .addComponent(jScrollPane6))
-                .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlDetailLayout.createSequentialGroup()
+                .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblAlarmType))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDetectorNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblDetectorNumber))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtGroupNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblGroupNumber))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout pnlAllDetailsLayout = new javax.swing.GroupLayout(pnlAllDetails);
+        pnlAllDetails.setLayout(pnlAllDetailsLayout);
+        pnlAllDetailsLayout.setHorizontalGroup(
+            pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlAllDetailsLayout.createSequentialGroup()
                         .addGap(18, 18, Short.MAX_VALUE)
-                        .addGroup(pnlDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())
-                    .addGroup(pnlDetailLayout.createSequentialGroup()
+                        .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(pnlDetail1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlDetails2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlInvolved, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(30, 30, 30))
+                    .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlRemarks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                        .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbxApproved))
                         .addGap(18, 18, 18)
+                        .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                                .addComponent(btnPDF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlAllDetailsLayout.setVerticalGroup(
+            pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pnlDetail1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlRemarks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                        .addComponent(pnlDetails2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(pnlInvolved, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane6)
+                    .addComponent(jScrollPane7))
+                .addGap(18, 18, 18)
+                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSave, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(cbxApproved)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
 
         pnlAdministrate.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Administrer", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
@@ -557,6 +615,7 @@ public class GUIAdmin extends javax.swing.JFrame {
 
         btnSearch.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSearch.setText("Find");
+        btnSearch.setPreferredSize(new java.awt.Dimension(105, 38));
 
         javax.swing.GroupLayout pnlSearchForLayout = new javax.swing.GroupLayout(pnlSearchFor);
         pnlSearchFor.setLayout(pnlSearchForLayout);
@@ -657,7 +716,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                             .addComponent(pnlAdministrate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jScrollPane1))
                         .addGap(18, 18, 18)
-                        .addComponent(pnlDetail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(pnlAllDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -671,7 +730,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                         .addComponent(jScrollPane1)
                         .addGap(18, 18, 18)
                         .addComponent(pnlAdministrate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(pnlDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -679,6 +738,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnFiremen;
     private javax.swing.JButton btnMaterial;
     private javax.swing.JButton btnPDF;
@@ -706,12 +766,13 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JList lstIncidents;
     private javax.swing.JList lstUsage;
     private javax.swing.JPanel pnlAdministrate;
-    private javax.swing.JPanel pnlDetail;
+    private javax.swing.JPanel pnlAllDetails;
+    private javax.swing.JPanel pnlDetail1;
+    private javax.swing.JPanel pnlDetails2;
     private javax.swing.JPanel pnlInvolved;
     private javax.swing.JPanel pnlRemarks;
     private javax.swing.JPanel pnlSearch;
     private javax.swing.JPanel pnlSearchFor;
-    private javax.swing.JPanel pnlTeamLeader;
     private javax.swing.JRadioButton rdoAll;
     private javax.swing.JRadioButton rdoBlind;
     private javax.swing.JRadioButton rdoExercise;
