@@ -114,7 +114,7 @@ public class BERoleTime {
     
     @Override
     public String toString() {
-        return "(" + m_role.getM_roleDescription() + ")" + " " + m_fireman.getM_firstName() + " " + m_fireman.getM_lastName();   
+        return m_fireman.getM_firstName() + " " + m_fireman.getM_lastName() + " : " + m_role.getM_roleDescription() + " på " + m_vehicle.getM_odinNumber() + " - " + m_hours + " timer";   
         
     }
 

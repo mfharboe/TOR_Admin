@@ -73,32 +73,6 @@ public class DALRead {
         return res;
     }
 
-    public ArrayList<BEIncident> readIncidentsByDate(Date searchDateFrom, Date searchDateTo) throws SQLException {
-        ArrayList<BEIncident> res = new ArrayList<>();
-        Statement stm = m_connection.createStatement();
-        stm.execute("select * from Incident "
-                + "where Incident.date between " + searchDateFrom + " "
-                + "and " + searchDateTo);
-        ResultSet result = stm.getResultSet();
-        while (result.next()) {
-            int id = result.getInt("id");
-            String incidentName = result.getString("incidentName");
-            Date date = result.getDate("date");
-            Time time = result.getTime("startTime");
-            int incidentTypeId = result.getInt("incidentTypeId");
-            BEIncidentType refIncidentType = null;
-            for (BEIncidentType beincidenttype : readIncidentTypes()) {
-                if (beincidenttype.getM_id() == incidentTypeId) {
-                    refIncidentType = beincidenttype;
-                }
-            }
-            boolean isDone = result.getBoolean("isDone");
-            BEIncident be = new BEIncident(id, incidentName, date, time, refIncidentType, isDone);
-            res.add(be);
-        }
-        return res;
-    }
-
     /**
      * Creates an ArrayList of IncidentTypes
      *
@@ -323,7 +297,6 @@ public class DALRead {
         stm.execute("Select IncidentDetails.incidentLeader, "
                 + "IncidentDetails.evaNumber, "
                 + "IncidentDetails.fireReport, "
-                + "IncidentDetails.[message], "
                 + "IncidentDetails.incidentid, "
                 + "IncidentDetails.involvedName, "
                 + "IncidentDetails.involvedAddress, "
@@ -339,7 +312,6 @@ public class DALRead {
             String incidentLeader = result.getString("incidentLeader");
             String evaNumber = result.getString("evaNumber");
             String fireReport = result.getString("fireReport");
-            String message = result.getString("message");
             int incidentId = result.getInt("incidentId");
             BEIncident refIncident = null;
             for (BEIncident be : readRecentIncidents()) {
@@ -365,7 +337,6 @@ public class DALRead {
             BEIncidentDetails be = new BEIncidentDetails(incidentLeader,
                     evaNumber,
                     fireReport,
-                    message,
                     refIncident,
                     involvedName,
                     involvedAddress,

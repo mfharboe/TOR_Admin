@@ -48,14 +48,6 @@ public class BLLRead {
         return recentIncidents;
     }
 
-//    public ArrayList<BEIncident> readAllIncidentsByDate(Date searchDate) {
-//        try {
-//            incidentsByDate = DALRead.getInstance().readIncidentsByDate(searchDate);
-//        } catch (SQLException ex) {
-//            Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return incidentsByDate;
-//    }
     public ArrayList<BEIncidentDetails> readIncidentDetails() {
         if (incidentDetails == null) {
             try {
