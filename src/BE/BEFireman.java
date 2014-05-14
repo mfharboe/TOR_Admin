@@ -1,11 +1,10 @@
-
 package BE;
 
 import java.sql.Date;
 
 public class BEFireman {
-  
-   private int m_id;
+
+    private int m_id;
     private Date m_recruited;
     private String m_firstName;
     private String m_lastName;
@@ -43,7 +42,7 @@ public class BEFireman {
         m_paymentNumber = paymentnumber;
         m_isTeamLeader = isteamleader;
         m_photoPath = photopath;
-    } 
+    }
 
     /**
      * @return the m_id
@@ -184,5 +183,5 @@ public class BEFireman {
     public void setM_photoPath(String m_photoPath) {
         this.m_photoPath = m_photoPath;
     }
-    
+
 }

@@ -2,6 +2,7 @@ package BLL;
 
 import BE.BEIncident;
 import BE.BEIncidentDetails;
+import BE.BERoleTime;
 import BE.BEUsage;
 import DAL.DALRead;
 import GUI.MessageDialog;
@@ -18,6 +19,7 @@ public class BLLRead {
     ArrayList<BEIncident> allIncidents;
     ArrayList<BEIncidentDetails> incidentDetails;
     ArrayList<BEUsage> incidentUsage;
+    ArrayList<BERoleTime> incidentRoleTime;
 
     private BLLRead() {
 
@@ -38,6 +40,7 @@ public class BLLRead {
             } else {
                 readIncidentDetails();
                 readIncidentUsage();
+                readIncidentRoleTime();
             }
         } catch (SQLException ex) {
             Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
@@ -76,8 +79,21 @@ public class BLLRead {
         return incidentUsage;
     }
 
+    public ArrayList<BERoleTime> readIncidentRoleTime() {
+        if (incidentRoleTime == null) {
+            try {
+                incidentRoleTime = DALRead.getInstance().readRoleTime();
+            } catch (SQLException ex) {
+                Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return incidentRoleTime;
+
+    }
+
     public void clearDetailsArray() {
         incidentDetails = null;
         incidentUsage = null;
+        incidentRoleTime = null;
     }
 }

@@ -81,7 +81,7 @@ public class BEUsage {
     
     @Override
     public String toString(){
-        return m_amount + " - " + m_material.getM_description();
+        return m_amount + "x " + m_material.getM_description();
     }
 
 }

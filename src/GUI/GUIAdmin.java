@@ -2,6 +2,7 @@ package GUI;
 
 import BE.BEIncident;
 import BE.BEIncidentDetails;
+import BE.BERoleTime;
 import BE.BEUsage;
 import BLL.BLLRead;
 import java.awt.Color;
@@ -17,6 +18,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     private static GUIAdmin m_instance;
     private DefaultListModel<BEIncident> incidentModel;
     private DefaultListModel<BEUsage> usageModel;
+    private DefaultListModel<BERoleTime> roleTimeModel;
 
     /**
      * Creates new form GUIAdmin
@@ -42,8 +44,10 @@ public class GUIAdmin extends javax.swing.JFrame {
         notEditable();
         incidentModel = new DefaultListModel<>();
         usageModel = new DefaultListModel<>();
+        roleTimeModel = new DefaultListModel<>();
         lstIncidents.setModel(incidentModel);
         lstUsage.setModel(usageModel);
+        lstRoleTime.setModel(roleTimeModel);
         btnEdit.setEnabled(false);
         enableTxtDetails(false);
         enableLblDetails(false);
@@ -52,7 +56,7 @@ public class GUIAdmin extends javax.swing.JFrame {
 
     private void notEditable() {
         txtAlarmType.setEnabled(false);
-        lstForces.setEnabled(false);
+        lstRoleTime.setEnabled(false);
         lstUsage.setEnabled(false);
         lblAlarmType.setEnabled(false);
     }
@@ -124,6 +128,7 @@ public class GUIAdmin extends javax.swing.JFrame {
 
     private void clearDetails() {
         usageModel.clear();
+        roleTimeModel.clear();
         txtLeader.setText(MessageDialog.getInstance().emptyString());
         txtEvaNumber.setText(MessageDialog.getInstance().emptyString());
         txtFireReportNumber.setText(MessageDialog.getInstance().emptyString());
@@ -156,6 +161,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         enableTxtDetails(false);
         enableBtnDetails(false);
         usageModel.clear();
+        roleTimeModel.clear();
         if (!incidentModel.isEmpty() && lstIncidents.getSelectedIndex() != -1) {
             getDetails();
             enableLblDetails(true);
@@ -169,6 +175,7 @@ public class GUIAdmin extends javax.swing.JFrame {
             return;
         }
         getUsage();
+        getRoleTime();
     }
 
     private void onClickEdit() {
@@ -193,9 +200,13 @@ public class GUIAdmin extends javax.swing.JFrame {
             }
         }
     }
-    
-    private void getForces(){
 
+    private void getRoleTime() {
+        for (BERoleTime incidentRoleTime : BLLRead.getInstance().readIncidentRoleTime()) {
+            if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentRoleTime.getM_incident().getM_id()) {
+                roleTimeModel.addElement(incidentRoleTime);
+            }
+        }
     }
 
     private void fillDetails(BEIncidentDetails incidentDetails) {
@@ -209,8 +220,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtGroupNumber.setText(incidentDetails.getM_groupNumber());
         txtRemarks.setText(incidentDetails.getM_remark());
     }
-
-
 
     private Date getDateFrom() {
         java.util.Date utilDate = dateChooserFrom.getDate();
@@ -274,7 +283,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtInvolvedName = new javax.swing.JTextField();
         txtInvolvedAddress = new javax.swing.JTextField();
         jScrollPane6 = new javax.swing.JScrollPane();
-        lstForces = new javax.swing.JList();
+        lstRoleTime = new javax.swing.JList();
         jScrollPane7 = new javax.swing.JScrollPane();
         lstUsage = new javax.swing.JList();
         pnlRemarks = new javax.swing.JPanel();
@@ -410,8 +419,8 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addContainerGap(12, Short.MAX_VALUE))
         );
 
-        lstForces.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
-        jScrollPane6.setViewportView(lstForces);
+        lstRoleTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        jScrollPane6.setViewportView(lstRoleTime);
 
         lstUsage.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Forbrug", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
         jScrollPane7.setViewportView(lstUsage);
@@ -762,8 +771,8 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel lblLeader;
     private javax.swing.JLabel lblReportNumber;
     private javax.swing.JLabel lblTo;
-    private javax.swing.JList lstForces;
     private javax.swing.JList lstIncidents;
+    private javax.swing.JList lstRoleTime;
     private javax.swing.JList lstUsage;
     private javax.swing.JPanel pnlAdministrate;
     private javax.swing.JPanel pnlAllDetails;

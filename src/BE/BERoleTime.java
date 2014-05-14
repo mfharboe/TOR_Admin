@@ -20,8 +20,8 @@ public class BERoleTime {
      * @param hours
      */
     public BERoleTime(BEIncident incident, BEFireman fireman, boolean isOnStation, BERole role, BEVehicle vehicle, int hours) {
-        m_fireman = fireman;
         m_incident = incident;
+        m_fireman = fireman;
         m_isOnStation = isOnStation;
         m_role = role;
         m_vehicle = vehicle;
@@ -110,6 +110,12 @@ public class BERoleTime {
      */
     public void setM_hours(int m_hours) {
         this.m_hours = m_hours;
+    }
+    
+    @Override
+    public String toString() {
+        return "(" + m_role.getM_roleDescription() + ")" + " " + m_fireman.getM_firstName() + " " + m_fireman.getM_lastName();   
+        
     }
 
 }
