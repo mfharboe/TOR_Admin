@@ -180,8 +180,7 @@ public class DALRead {
                 String brand = result.getString("brand");
                 String model = result.getString("model");
                 String description = result.getString("vehicleDescription");
-                boolean isReady = result.getBoolean("isReady");
-                BEVehicle be = new BEVehicle(odinNumber, registrationNumber, brand, model, description, isReady);
+                BEVehicle be = new BEVehicle(odinNumber, registrationNumber, brand, model, description);
                 resVehicles.add(be);
             }
         }

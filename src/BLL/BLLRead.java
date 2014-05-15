@@ -1,5 +1,6 @@
 package BLL;
 
+import BE.BEAlarm;
 import BE.BEIncident;
 import BE.BEIncidentDetails;
 import BE.BERoleTime;
@@ -17,6 +18,7 @@ public class BLLRead {
     ArrayList<BEIncident> recentIncidents;
     ArrayList<BEIncident> incidentsByDate;
     ArrayList<BEIncident> allIncidents;
+    ArrayList<BEAlarm> allAlarms;
     ArrayList<BEIncidentDetails> incidentDetails;
     ArrayList<BEUsage> incidentUsage;
     ArrayList<BERoleTime> incidentRoleTime;
@@ -81,6 +83,17 @@ public class BLLRead {
         }
         return incidentRoleTime;
 
+    }
+
+    public ArrayList<BEAlarm> readAllAlarms() {
+        if (allAlarms == null) {
+            try {
+                allAlarms = DALRead.getInstance().readAlarms();
+            } catch (SQLException ex) {
+                Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return allAlarms;
     }
 
     public void clearDetailsArray() {

@@ -7,7 +7,6 @@ public class BEVehicle {
     private String m_brand;
     private String m_model;
     private String m_description;
-    private boolean m_isReady;
 
     /**
      * Read Vehicle
@@ -17,17 +16,15 @@ public class BEVehicle {
      * @param brand
      * @param model
      * @param description
-     * @param isReady
      */
     public BEVehicle(int odinNumber, String registrationNumber, String brand, String model,
-            String description, boolean isReady) {
+            String description) {
 
         m_odinNumber = odinNumber;
         m_registrationNumber = registrationNumber;
         m_brand = brand;
         m_model = model;
         m_description = description;
-        m_isReady = isReady;
 
     }
 
@@ -99,20 +96,6 @@ public class BEVehicle {
      */
     public void setM_description(String m_description) {
         this.m_description = m_description;
-    }
-
-    /**
-     * @return the m_isReady
-     */
-    public boolean isM_isReady() {
-        return m_isReady;
-    }
-
-    /**
-     * @param m_isReady the m_isReady to set
-     */
-    public void setM_isReady(boolean m_isReady) {
-        this.m_isReady = m_isReady;
     }
 
 }

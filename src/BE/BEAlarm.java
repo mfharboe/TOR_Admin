@@ -44,4 +44,9 @@ public class BEAlarm {
         this.m_description = m_description;
     }
 
+    @Override
+    public String toString(){
+        return m_description;
+    }
+    
 }

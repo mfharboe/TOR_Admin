@@ -25,6 +25,10 @@ public class MessageDialog {
         return "";
     }
     
+    public String alarmType(){
+        return "Ingen valgt";
+    }
+    
     public void dialogNoRecentIncidents(){
         JOptionPane.showMessageDialog(null, "Der er ingen nye meldinger");
     }

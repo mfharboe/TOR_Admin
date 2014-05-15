@@ -37,6 +37,11 @@ public class BLLUpdate {
         } catch (SQLException ex) {
             Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
         }
+        try {
+            DALUpdate.getInstance().updateIncidentDone(updatedDetails.getM_incident());
+        } catch (SQLException ex) {
+            Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

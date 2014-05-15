@@ -45,6 +45,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         addColors();
         addListeners();
         notEditable();
+        fillAlarmCombo();
         incidentModel = new DefaultListModel<>();
         usageModel = new DefaultListModel<>();
         roleTimeModel = new DefaultListModel<>();
@@ -52,16 +53,16 @@ public class GUIAdmin extends javax.swing.JFrame {
         lstUsage.setModel(usageModel);
         lstRoleTime.setModel(roleTimeModel);
         btnEdit.setEnabled(false);
-        enableTxtDetails(false);
-        enableLblDetails(false);
+        enableTextFields(false);
+        enableLabels(false);
+        enableCombobox(false);
         enableBtnDetails(false);
+        
     }
 
     private void notEditable() {
-        txtAlarmType.setEnabled(false);
         lstRoleTime.setEnabled(false);
         lstUsage.setEnabled(false);
-        lblAlarmType.setEnabled(false);
     }
 
     private void addColors() {
@@ -100,7 +101,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         lstIncidents.addMouseListener(mse);
     }
 
-    private void enableTxtDetails(boolean enabled) {
+    private void enableTextFields(boolean enabled) {
         txtLeader.setEnabled(enabled);
         txtEvaNumber.setEnabled(enabled);
         txtFireReportNumber.setEnabled(enabled);
@@ -111,15 +112,20 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtRemarks.setEnabled(enabled);
     }
 
-    private void enableLblDetails(boolean enabled) {
+    private void enableLabels(boolean enabled) {
         lblAlarmType.setEnabled(enabled);
         lblDetectorNumber.setEnabled(enabled);
         lblEvaNumber.setEnabled(enabled);
         lblReportNumber.setEnabled(enabled);
         lblGroupNumber.setEnabled(enabled);
         lblLeader.setEnabled(enabled);
+        lblAlarmType.setEnabled(enabled);
         pnlInvolved.setEnabled(enabled);
         pnlRemarks.setEnabled(enabled);
+    }
+    
+    private void enableCombobox(boolean enabled){
+        cmbAlarmType.setEnabled(enabled);
     }
 
     private void enableBtnDetails(boolean enabled) {
@@ -138,52 +144,59 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtInvolvedName.setText(MessageDialog.getInstance().emptyString());
         txtInvolvedAddress.setText(MessageDialog.getInstance().emptyString());
         txtDetectorNumber.setText(MessageDialog.getInstance().emptyString());
-        txtAlarmType.setText(MessageDialog.getInstance().emptyString());
+        cmbAlarmType.setSelectedIndex(0);
         txtGroupNumber.setText(MessageDialog.getInstance().emptyString());
         txtRemarks.setText(MessageDialog.getInstance().emptyString());
+        cbxApproved.setSelected(false);
     }
 
     private void onClickUpdate() {
         BLLRead.getInstance().clearDetailsArray();
         incidentModel.clear();
         clearDetails();
-        enableLblDetails(false);
-        enableTxtDetails(false);
+        enableLabels(false);
+        enableTextFields(false);
         enableBtnDetails(false);
+        enableCombobox(false);
         for (BEIncident recentIncidents : BLLRead.getInstance().readAllRecentIncidents()) {
             incidentModel.addElement(recentIncidents);
         }
     }
 
     private void onListClick() {
-        enableLblDetails(false);
-        enableTxtDetails(false);
+        enableLabels(false);
+        enableTextFields(false);
         enableBtnDetails(false);
+        enableCombobox(false);
         usageModel.clear();
         roleTimeModel.clear();
         if (!incidentModel.isEmpty() && lstIncidents.getSelectedIndex() != -1) {
             getDetails();
-            enableLblDetails(true);
+            enableLabels(true);
             btnEdit.setEnabled(true);
             getUsage();
             getRoleTime();
         } else {
             clearDetails();
             btnEdit.setEnabled(false);
-            enableLblDetails(false);
-            enableTxtDetails(false);
+            enableLabels(false);
+            enableTextFields(false);
+            enableCombobox(false);
             enableBtnDetails(false);
         }
     }
 
     private void onClickEdit() {
-        enableTxtDetails(true);
-        enableLblDetails(true);
+        enableTextFields(true);
+        enableLabels(true);
+        enableCombobox(true);
         enableBtnDetails(true);
     }
 
     private void onClickSave() {
-        BLLUpdate.getInstance().updateDetails(updatedDetails(m_incidentDetails));
+        updatedDetails();
+        BLLUpdate.getInstance().updateDetails(m_incidentDetails);
+        onClickUpdate();
     }
 
     private void getDetails() {
@@ -219,12 +232,23 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtInvolvedName.setText(incidentDetails.getM_involvedName());
         txtInvolvedAddress.setText(incidentDetails.getM_involvedAddress());
         txtDetectorNumber.setText(incidentDetails.getM_detectorNumber());
-        txtAlarmType.setText(incidentDetails.getM_alarm().getM_description());
+        if (incidentDetails.getM_alarm() == null) {
+            cmbAlarmType.setSelectedIndex(0);
+        } else {
+            cmbAlarmType.setSelectedIndex(incidentDetails.getM_alarm().getM_id());
+        }
         txtGroupNumber.setText(incidentDetails.getM_groupNumber());
         txtRemarks.setText(incidentDetails.getM_remark());
     }
 
-    private BEIncidentDetails updatedDetails(BEIncidentDetails currentDetails) {
+    private void fillAlarmCombo() {
+        cmbAlarmType.addItem(MessageDialog.getInstance().alarmType());
+        for (BEAlarm alarm : BLLRead.getInstance().readAllAlarms()) {
+            cmbAlarmType.addItem(alarm);
+        }
+    }
+
+    private BEIncidentDetails updatedDetails() {
         m_incidentDetails.setM_incidentLeader(txtLeader.getText());
         m_incidentDetails.setM_evaNumber(txtEvaNumber.getText());
         m_incidentDetails.setM_fireReport(txtFireReportNumber.getText());
@@ -233,8 +257,12 @@ public class GUIAdmin extends javax.swing.JFrame {
         m_incidentDetails.setM_detectorNumber(txtDetectorNumber.getText());
         m_incidentDetails.setM_groupNumber(txtGroupNumber.getText());
         m_incidentDetails.setM_remark(txtRemarks.getText());
-        m_incidentDetails.setM_alarm(currentDetails.getM_alarm());
-        m_incidentDetails.setM_incident((BEIncident)lstIncidents.getSelectedValue());
+        m_incidentDetails.setM_alarm(null);
+        if(cmbAlarmType.getSelectedIndex() != 0){
+        m_incidentDetails.setM_alarm((BEAlarm)cmbAlarmType.getSelectedItem());
+        }
+        m_incidentDetails.getM_incident().getM_id();
+        m_incidentDetails.getM_incident().setM_isDone(cbxApproved.isSelected());
         return m_incidentDetails;
     }
 
@@ -312,8 +340,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         lblDetectorNumber = new javax.swing.JLabel();
         lblGroupNumber = new javax.swing.JLabel();
         txtDetectorNumber = new javax.swing.JTextField();
-        txtAlarmType = new javax.swing.JTextField();
         txtGroupNumber = new javax.swing.JTextField();
+        cmbAlarmType = new javax.swing.JComboBox();
         pnlAdministrate = new javax.swing.JPanel();
         btnVehicles = new javax.swing.JButton();
         btnFiremen = new javax.swing.JButton();
@@ -482,11 +510,10 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtDetectorNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtDetectorNumber.setPreferredSize(new java.awt.Dimension(250, 38));
 
-        txtAlarmType.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        txtAlarmType.setPreferredSize(new java.awt.Dimension(250, 38));
-
         txtGroupNumber.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtGroupNumber.setPreferredSize(new java.awt.Dimension(250, 38));
+
+        cmbAlarmType.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
 
         javax.swing.GroupLayout pnlDetail1Layout = new javax.swing.GroupLayout(pnlDetail1);
         pnlDetail1.setLayout(pnlDetail1Layout);
@@ -502,17 +529,21 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtGroupNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtDetectorNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtAlarmType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(23, Short.MAX_VALUE))
+                    .addComponent(cmbAlarmType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlDetail1Layout.setVerticalGroup(
             pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlDetail1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblAlarmType)
-                    .addComponent(txtAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
+                .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlDetail1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblAlarmType)
+                        .addGap(16, 16, 16))
+                    .addGroup(pnlDetail1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(cmbAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblDetectorNumber)
                     .addComponent(txtDetectorNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -564,7 +595,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                         .addComponent(pnlDetails2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pnlInvolved, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 10, Short.MAX_VALUE))
+                        .addGap(0, 9, Short.MAX_VALUE))
                     .addComponent(jScrollPane7))
                 .addGap(18, 18, 18)
                 .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -740,7 +771,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(pnlAdministrate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 282, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -774,6 +805,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JButton btnVehicles;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox cbxApproved;
+    private javax.swing.JComboBox cmbAlarmType;
     private com.toedter.calendar.JDateChooser dateChooserFrom;
     private com.toedter.calendar.JDateChooser dateChooserTo;
     private javax.swing.JScrollPane jScrollPane1;
@@ -804,7 +836,6 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JRadioButton rdoExercise;
     private javax.swing.JRadioButton rdoFalse;
     private javax.swing.JRadioButton rdoIncident;
-    private javax.swing.JTextField txtAlarmType;
     private javax.swing.JTextField txtDetectorNumber;
     private javax.swing.JTextField txtEvaNumber;
     private javax.swing.JTextField txtFireReportNumber;
