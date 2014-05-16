@@ -21,6 +21,18 @@ public class MessageDialog {
         return "TOR - Admin";
     }
     
+    public String firemenAdminTitle(){
+        return "TOR - Mandskab";
+    }
+    
+    public String vehicleAdminTitle(){
+        return "TOR - Køretøjer";
+    }
+    
+    public String materialAdminTitle(){
+        return "TOR - Materiel";
+    }
+    
     public String emptyString(){
         return "";
     }
