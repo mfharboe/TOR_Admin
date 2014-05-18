@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
 
 public class GUIAdmin extends javax.swing.JFrame {
 
@@ -57,7 +58,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         enableLabels(false);
         enableCombobox(false);
         enableBtnDetails(false);
-        
+
     }
 
     private void notEditable() {
@@ -123,8 +124,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlInvolved.setEnabled(enabled);
         pnlRemarks.setEnabled(enabled);
     }
-    
-    private void enableCombobox(boolean enabled){
+
+    private void enableCombobox(boolean enabled) {
         cmbAlarmType.setEnabled(enabled);
     }
 
@@ -258,8 +259,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         m_incidentDetails.setM_groupNumber(txtGroupNumber.getText());
         m_incidentDetails.setM_remark(txtRemarks.getText());
         m_incidentDetails.setM_alarm(null);
-        if(cmbAlarmType.getSelectedIndex() != 0){
-        m_incidentDetails.setM_alarm((BEAlarm)cmbAlarmType.getSelectedItem());
+        if (cmbAlarmType.getSelectedIndex() != 0) {
+            m_incidentDetails.setM_alarm((BEAlarm) cmbAlarmType.getSelectedItem());
         }
         m_incidentDetails.getM_incident().getM_id();
         m_incidentDetails.getM_incident().setM_isDone(cbxApproved.isSelected());
@@ -279,6 +280,21 @@ public class GUIAdmin extends javax.swing.JFrame {
 
     }
 
+    private void onClickFiremen() {
+        JFrame firemenAdmin = GUIFiremenAdmin.getInstance();
+        firemenAdmin.setVisible(true);
+    }
+
+    private void onClickVehicles() {
+        JFrame vehicleAdmin = GUIVehicleAdmin.getInstance();
+        vehicleAdmin.setVisible(true);
+    }
+
+    private void onClickMaterial() {
+        JFrame materialAdmin = GUIMaterialAdmin.getInstance();
+        materialAdmin.setVisible(true);
+    }
+
     private class btnAction implements ActionListener {
 
         @Override
@@ -289,6 +305,12 @@ public class GUIAdmin extends javax.swing.JFrame {
                 onClickEdit();
             } else if (e.getSource().equals(btnSave)) {
                 onClickSave();
+            } else if (e.getSource().equals(btnFiremen)) {
+                onClickFiremen();
+            } else if (e.getSource().equals(btnVehicles)) {
+                onClickVehicles();
+            } else if (e.getSource().equals(btnMaterial)) {
+                onClickMaterial();
             }
         }
     }
