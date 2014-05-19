@@ -158,6 +158,14 @@ public class BLLRead {
         allFiremen = null;
     }
     
+    public void clearVehicleArray(){
+        allVehicles = null;
+    }
+    
+    public void clearMaterialArray(){
+        allMaterials = null;
+    }
+    
     public void removeFromFiremen(BEFireman fireman){
         allFiremen.remove(fireman);
     }

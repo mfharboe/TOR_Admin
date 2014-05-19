@@ -9,7 +9,7 @@ public class BEVehicle {
     private String m_description;
 
     /**
-     * Read Vehicle
+     * Create/Read/Update/Delete Vehicle
      *
      * @param odinNumber
      * @param registrationNumber

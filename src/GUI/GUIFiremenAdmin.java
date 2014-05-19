@@ -222,6 +222,10 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         return m_fireman;
     }
 
+    /**
+     * 
+     * @return new BEFireman 
+     */
     private BEFireman getNewDetails() {
         java.util.Date utilDate = dateChooser.getDate();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
@@ -278,7 +282,6 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         } else {
             BLLCreate.getInstance().createFireman(getNewDetails());
             firemenModel.clear();
-            BLLRead.getInstance().clearFiremenArray();
             fillFiremenList();
             clearSelection();
         }

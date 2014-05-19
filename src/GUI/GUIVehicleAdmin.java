@@ -1,6 +1,7 @@
 package GUI;
 
 import BE.BEVehicle;
+import BLL.BLLCreate;
 import BLL.BLLDelete;
 import BLL.BLLRead;
 import BLL.BLLUpdate;
@@ -16,6 +17,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     private static GUIVehicleAdmin m_instance;
     private DefaultListModel<BEVehicle> vehicleModel;
     private BEVehicle m_vehicle;
+    private boolean isUpdate;
 
     /**
      * Creates new form GUIVehicleAdmin.
@@ -60,6 +62,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         btnDelete.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnSave.addActionListener(btn);
+        btnNew.addActionListener(btn);
         lstVehicles.addMouseListener(mouse);
     }
 
@@ -124,7 +127,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Envoke this method when a vehicle is clicked upon in the list.
+     * Invoke this method when a vehicle is clicked upon in the list.
      */
     private void onListClick() {
         enableBtn(false);
@@ -181,7 +184,21 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Envoke this method when the deletebutton is clicked.
+     * 
+     * @return new BEVehicle. 
+     */
+    private BEVehicle getNewDetails() {
+        int odinNumber = Integer.parseInt(txtOdinNr.getText());
+        String regNr = txtRegNr.getText();
+        String brand = txtBrand.getText();
+        String model = txtModel.getText();
+        String description = txtDescription.getText();
+        BEVehicle newVehicle = new BEVehicle(odinNumber, regNr, brand, model, description);
+        return newVehicle;
+    }
+    
+    /**
+     * Invoke this method when the deletebutton is clicked.
      */
     private void onClickDelete() {
         BLLDelete.getInstance().deleteVehicle(m_vehicle);
@@ -191,23 +208,45 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Envoke this method when the edit button is clicked.
+     * Invoke this method when the edit button is clicked.
      */
     private void onClickEdit() {
         enableTxtFields(true);
         btnSave.setEnabled(true);
         btnDelete.setEnabled(false);
+        isUpdate = true;
     }
 
     /**
-     * Envoke this method when the save button is clicked.
+     * Invoke this method when the save button is clicked.
      */
     private void onClickSave() {
-        getDetails();
-        BLLUpdate.getInstance().updateVehicle(m_vehicle);
-        vehicleModel.clear();
-        fillVehicleList();
-        clearSelection();
+        if (isUpdate == true) {
+            getDetails();
+            BLLUpdate.getInstance().updateVehicle(m_vehicle);
+            vehicleModel.clear();
+            fillVehicleList();
+            clearSelection();
+        } else {
+            BLLCreate.getInstance().createVehicle(getNewDetails());
+            vehicleModel.clear();
+            fillVehicleList();
+            clearSelection();
+            txtOdinNr.setEnabled(false);
+        }
+    }
+
+    /**
+     * Invoke this method when the newbutton is clicked.
+     */
+    private void onClickNew() {
+        clearDetails();
+        enableTxtFields(true);
+        btnDelete.setEnabled(false);
+        btnEdit.setEnabled(false);
+        btnSave.setEnabled(true);
+        txtOdinNr.setEnabled(true);
+        isUpdate = false;
     }
 
     /**
@@ -223,6 +262,8 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
                 onClickEdit();
             } else if (e.getSource().equals(btnSave)) {
                 onClickSave();
+            } else if (e.getSource().equals(btnNew)) {
+                onClickNew();
             }
         }
 

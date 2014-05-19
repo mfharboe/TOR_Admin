@@ -1,6 +1,7 @@
 package GUI;
 
 import BE.BEMaterial;
+import BLL.BLLCreate;
 import BLL.BLLDelete;
 import BLL.BLLRead;
 import BLL.BLLUpdate;
@@ -16,6 +17,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     private static GUIMaterialAdmin m_instance;
     private DefaultListModel<BEMaterial> materialModel;
     private BEMaterial m_material;
+    private boolean isUpdate;
 
     /**
      * Creates new form GUIMaterialAdmin.
@@ -59,6 +61,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         btnDelete.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnSave.addActionListener(btn);
+        btnNew.addActionListener(btn);
         lstMaterial.addMouseListener(mouse);
     }
 
@@ -116,7 +119,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Envoke this method when some material is clicked upon in the list.
+     * Invoke this method when some material is clicked upon in the list.
      */
     private void onListClick() {
         enableBtn(false);
@@ -154,8 +157,8 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Sets all the new values from the textbox to the material marked in
-     * the list.
+     * Sets all the new values from the textbox to the material marked in the
+     * list.
      *
      * @return m_material
      */
@@ -165,7 +168,17 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Envoke this method when the deletebutton is clicked.
+     *
+     * @return new BEMaterial
+     */
+    private BEMaterial getNewDetails() {
+        String description = txtMaterial.getText();
+        BEMaterial newMaterial = new BEMaterial(description);
+        return newMaterial;
+    }
+
+    /**
+     * Invoke this method when the deletebutton is clicked.
      */
     private void onClickDelete() {
         BLLDelete.getInstance().deleteMaterial(m_material);
@@ -175,23 +188,43 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Envoke this method when the editbutton is clicked.
+     * Invoke this method when the editbutton is clicked.
      */
     private void onClickEdit() {
         enableTxtFields(true);
         btnSave.setEnabled(true);
         btnDelete.setEnabled(false);
+        isUpdate = true;
     }
 
     /**
-     * Envoke this method when the savebutton is clicked.
+     * Invoke this method when the savebutton is clicked.
      */
     private void onClickSave() {
-        getDetails();
-        BLLUpdate.getInstance().updateMaterial(m_material);
-        materialModel.clear();
-        fillMaterialList();
-        clearSelection();
+        if (isUpdate == true) {
+            getDetails();
+            BLLUpdate.getInstance().updateMaterial(m_material);
+            materialModel.clear();
+            fillMaterialList();
+            clearSelection();
+        } else {
+            BLLCreate.getInstance().createMaterial(getNewDetails());
+            materialModel.clear();
+            fillMaterialList();
+            clearSelection();
+        }
+    }
+
+    /**
+     * Invoke this method when the newbutton is clicked.
+     */
+    private void onClickNew() {
+        clearDetails();
+        enableTxtFields(true);
+        btnDelete.setEnabled(false);
+        btnEdit.setEnabled(false);
+        btnSave.setEnabled(true);
+        isUpdate = false;
     }
 
     /**
@@ -207,9 +240,11 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
                 onClickEdit();
             } else if (e.getSource().equals(btnSave)) {
                 onClickSave();
+            } else if (e.getSource().equals(btnNew)) {
+                onClickNew();
             }
-        }
 
+        }
     }
 
     /**

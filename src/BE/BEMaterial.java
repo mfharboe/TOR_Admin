@@ -1,4 +1,3 @@
-
 package BE;
 
 public class BEMaterial {
@@ -15,6 +14,15 @@ public class BEMaterial {
     public BEMaterial(int id, String description) {
 
         m_id = id;
+        m_description = description;
+    }
+
+    /**
+     * Create Material
+     *
+     * @param description
+     */
+    public BEMaterial(String description) {
         m_description = description;
     }
 
@@ -45,10 +53,10 @@ public class BEMaterial {
     public void setM_description(String m_description) {
         this.m_description = m_description;
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return m_description;
     }
-    
+
 }
