@@ -2,6 +2,7 @@ package GUI;
 
 import BE.BEFireman;
 import BE.BEZipcode;
+import BLL.BLLCreate;
 import BLL.BLLDelete;
 import BLL.BLLRead;
 import BLL.BLLUpdate;
@@ -10,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import javax.swing.DefaultListModel;
 
 public class GUIFiremenAdmin extends javax.swing.JFrame {
@@ -17,9 +20,10 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     private static GUIFiremenAdmin m_instance;
     private DefaultListModel<BEFireman> firemenModel;
     private BEFireman m_fireman;
+    private boolean isUpdate;
 
     /**
-     * Creates new form GUIFiremenAdmin
+     * Creates new form GUIFiremenAdmin.
      */
     private GUIFiremenAdmin() {
         initComponents();
@@ -62,6 +66,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         btnDelete.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnSave.addActionListener(btn);
+        btnNew.addActionListener(btn);
         lstFiremen.addMouseListener(mouse);
     }
 
@@ -94,6 +99,42 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     }
 
     /**
+     * Sets everything to a default view
+     */
+    private void clearSelection() {
+        clearDetails();
+        enableBtn(false);
+        enableTxtFields(false);
+    }
+
+    /**
+     * Clears the textbokses etc.
+     */
+    private void clearDetails() {
+        dateChooser.setDate(null);
+        txtFirstName.setText(MessageDialog.getInstance().emptyString());
+        txtLastName.setText(MessageDialog.getInstance().emptyString());
+        txtAddress.setText(MessageDialog.getInstance().emptyString());
+        cmbZipcode.setSelectedIndex(0);
+        txtPhone.setText(MessageDialog.getInstance().emptyString());
+        txtPaymentNo.setText(MessageDialog.getInstance().emptyString());
+        cbxIsTeamLeader.setSelected(false);
+        txtPhotoPath.setText(MessageDialog.getInstance().emptyString());
+    }
+
+    /**
+     * Enables or disables the buttons.
+     *
+     * @param enable
+     */
+    private void enableBtn(boolean enable) {
+        btnBrowse.setEnabled(enable);
+        btnDelete.setEnabled(enable);
+        btnEdit.setEnabled(enable);
+        btnSave.setEnabled(enable);
+    }
+
+    /**
      * Enables or disables the Textfields.
      *
      * @param enable
@@ -111,19 +152,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Enables or disables the buttons.
-     *
-     * @param enable
-     */
-    private void enableBtn(boolean enable) {
-        btnBrowse.setEnabled(enable);
-        btnDelete.setEnabled(enable);
-        btnEdit.setEnabled(enable);
-        btnSave.setEnabled(enable);
-    }
-
-    /**
-     * Envoke this method when a fireman is clicked upon in the list.
+     * Invoke this method when a fireman is clicked upon in the list.
      */
     private void onListClick() {
         enableBtn(false);
@@ -170,30 +199,6 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Clears all the textbokses etc.
-     */
-    private void clearDetails() {
-        dateChooser.setDate(null);
-        txtFirstName.setText(MessageDialog.getInstance().emptyString());
-        txtLastName.setText(MessageDialog.getInstance().emptyString());
-        txtAddress.setText(MessageDialog.getInstance().emptyString());
-        cmbZipcode.setSelectedIndex(0);
-        txtPhone.setText(MessageDialog.getInstance().emptyString());
-        txtPaymentNo.setText(MessageDialog.getInstance().emptyString());
-        cbxIsTeamLeader.setSelected(false);
-        txtPhotoPath.setText(MessageDialog.getInstance().emptyString());
-    }
-
-    /**
-     * Sets everything to a default view
-     */
-    private void clearSelection() {
-        clearDetails();
-        enableBtn(false);
-        enableTxtFields(false);
-    }
-
-    /**
      * Sets all the new values from the textboxes etc. to the fireman marked in
      * the list.
      *
@@ -217,8 +222,23 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         return m_fireman;
     }
 
+    private BEFireman getNewDetails() {
+        java.util.Date utilDate = dateChooser.getDate();
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        String firstName = txtFirstName.getText();
+        String lastName = txtLastName.getText();
+        String address = txtAddress.getText();
+        BEZipcode zip = ((BEZipcode) cmbZipcode.getSelectedItem());
+        int phone = Integer.parseInt(txtPhone.getText());
+        int payment = Integer.parseInt(txtPaymentNo.getText());
+        boolean isteamleader = cbxIsTeamLeader.isSelected();
+        String photo = txtPhotoPath.getText();
+        BEFireman newFireman = new BEFireman(sqlDate, firstName, lastName, address, zip, phone, payment, isteamleader, photo);
+        return newFireman;
+    }
+
     /**
-     * Envoke this method when the deletebutton os clicked.
+     * Invoke this method when the deletebutton os clicked.
      */
     private void onClickDelete() {
         BLLDelete.getInstance().deleteFireman(m_fireman);
@@ -228,31 +248,52 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Envoke this method when the editbutton is clicked.
+     * Invoke this method when the editbutton is clicked.
      */
     private void onClickEdit() {
         enableTxtFields(true);
         btnSave.setEnabled(true);
         btnDelete.setEnabled(false);
         btnBrowse.setEnabled(true);
+        isUpdate = true;
     }
 
     /**
-     * Envoke this method when the browsebutton is clicked.
+     * Invoke this method when the browsebutton is clicked.
      */
     private void onClickBrowse() {
 
     }
 
     /**
-     * Envoke this method when the savebutton is clicked.
+     * Invoke this method when the savebutton is clicked.
      */
     private void onClickSave() {
-        getDetails();
-        BLLUpdate.getInstance().updateFireman(m_fireman);
-        firemenModel.clear();
-        fillFiremenList();
-        clearSelection();
+        if (isUpdate == true) {
+            getDetails();
+            BLLUpdate.getInstance().updateFireman(m_fireman);
+            firemenModel.clear();
+            fillFiremenList();
+            clearSelection();
+        } else {
+            BLLCreate.getInstance().createFireman(getNewDetails());
+            firemenModel.clear();
+            BLLRead.getInstance().clearFiremenArray();
+            fillFiremenList();
+            clearSelection();
+        }
+    }
+
+    /**
+     * Invoke this method when the newbutton is clicked.
+     */
+    private void onClickNew() {
+        clearDetails();
+        enableTxtFields(true);
+        btnDelete.setEnabled(false);
+        btnEdit.setEnabled(false);
+        btnSave.setEnabled(true);
+        isUpdate = false;
     }
 
     /**
@@ -270,6 +311,8 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
                 onClickBrowse();
             } else if (e.getSource().equals(btnSave)) {
                 onClickSave();
+            } else if (e.getSource().equals(btnNew)) {
+                onClickNew();
             }
 
         }
@@ -323,6 +366,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         cbxIsTeamLeader = new javax.swing.JCheckBox();
         btnBrowse = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
+        btnNew = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -352,11 +396,11 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
-        btnSave.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnSave.setPreferredSize(new java.awt.Dimension(81, 38));
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnDelete.setText("Slet");
-        btnDelete.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnDelete.setPreferredSize(new java.awt.Dimension(81, 38));
 
         lblDate.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblDate.setText("Ansat d.");
@@ -387,11 +431,14 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
 
         btnBrowse.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnBrowse.setText("Browse..");
-        btnBrowse.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnBrowse.setPreferredSize(new java.awt.Dimension(81, 38));
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");
-        btnEdit.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
+
+        btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnNew.setText("Ny..");
 
         javax.swing.GroupLayout pnlFiremenLayout = new javax.swing.GroupLayout(pnlFiremen);
         pnlFiremen.setLayout(pnlFiremenLayout);
@@ -403,14 +450,14 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlFiremenLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(pnlFiremenLayout.createSequentialGroup()
                             .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(lblLastName)
@@ -432,43 +479,46 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
                                     .addComponent(dateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(cmbZipcode, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(cbxIsTeamLeader)
-                                .addComponent(txtPhotoPath, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(txtPhotoPath, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFiremenLayout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlFiremenLayout.setVerticalGroup(
             pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFiremenLayout.createSequentialGroup()
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(dateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFiremenLayout.createSequentialGroup()
+                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnlFiremenLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblDate)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblFirstName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblLastName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblAddress))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbZipcode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblZipcode))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblPhone))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPaymentNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblPayment))
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlFiremenLayout.createSequentialGroup()
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(dateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(pnlFiremenLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(lblDate)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblFirstName))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblLastName))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblAddress))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cmbZipcode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblZipcode))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPhone))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtPaymentNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblPayment))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cbxIsTeamLeader)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -477,16 +527,14 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
                             .addComponent(lblPicture))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 90, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFiremenLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap())))
-            .addGroup(pnlFiremenLayout.createSequentialGroup()
-                .addComponent(jScrollPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnNew, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
 
@@ -514,6 +562,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     private javax.swing.JButton btnBrowse;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;
     private javax.swing.JCheckBox cbxIsTeamLeader;
     private javax.swing.JComboBox cmbZipcode;

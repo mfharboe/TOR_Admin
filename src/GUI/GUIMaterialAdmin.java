@@ -18,7 +18,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     private BEMaterial m_material;
 
     /**
-     * Creates new form GUIMaterialAdmin
+     * Creates new form GUIMaterialAdmin.
      */
     private GUIMaterialAdmin() {
         initComponents();
@@ -27,6 +27,10 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         initialSettings();
     }
 
+    /**
+     *
+     * @return m_instance of GUIMaterialAdmin.
+     */
     public static GUIMaterialAdmin getInstance() {
         if (m_instance == null) {
             m_instance = new GUIMaterialAdmin();
@@ -34,6 +38,9 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         return m_instance;
     }
 
+    /**
+     * Sets the initial settings for this class.
+     */
     private void initialSettings() {
         materialModel = new DefaultListModel<>();
         lstMaterial.setModel(materialModel);
@@ -43,6 +50,9 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         clearSelection();
     }
 
+    /**
+     * Adds listeners.
+     */
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mouse = new mouseAction();
@@ -52,37 +62,62 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         lstMaterial.addMouseListener(mouse);
     }
 
+    /**
+     * Adds colors.
+     */
     private void addColors() {
         this.getContentPane().setBackground(Color.WHITE);
         pnlMaterial.setBackground(Color.WHITE);
     }
 
+    /**
+     * Fills the Material List.
+     */
     private void fillMaterialList() {
         for (BEMaterial material : BLLRead.getInstance().readAllMaterials()) {
             materialModel.addElement(material);
         }
     }
 
+    /**
+     * Sets everything to a default view.
+     */
     private void clearSelection() {
         clearDetails();
         enableBtn(false);
         enableTxtFields(false);
     }
 
+    /**
+     * Clears the textboks.
+     */
     private void clearDetails() {
         txtMaterial.setText(MessageDialog.getInstance().emptyString());
     }
 
+    /**
+     * Enables or disables the buttons.
+     *
+     * @param enable
+     */
     private void enableBtn(boolean enable) {
         btnDelete.setEnabled(enable);
         btnEdit.setEnabled(enable);
         btnSave.setEnabled(enable);
     }
 
+    /**
+     * Enables or disables the textbox.
+     *
+     * @param enable
+     */
     private void enableTxtFields(boolean enable) {
         txtMaterial.setEnabled(enable);
     }
 
+    /**
+     * Envoke this method when some material is clicked upon in the list.
+     */
     private void onListClick() {
         enableBtn(false);
         enableTxtFields(false);
@@ -96,6 +131,9 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Finds the details for the material marked in the list.
+     */
     private void setDetails() {
         for (BEMaterial material : BLLRead.getInstance().readAllMaterials()) {
             if (((BEMaterial) lstMaterial.getSelectedValue()).getM_id() == material.getM_id()) {
@@ -106,15 +144,29 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Fills the textboks with information from the material marked in the list.
+     *
+     * @param material
+     */
     private void fillDetails(BEMaterial material) {
         txtMaterial.setText(material.getM_description());
     }
 
+    /**
+     * Sets all the new values from the textbox to the material marked in
+     * the list.
+     *
+     * @return m_material
+     */
     private BEMaterial getDetails() {
         m_material.setM_description(txtMaterial.getText());
         return m_material;
     }
 
+    /**
+     * Envoke this method when the deletebutton is clicked.
+     */
     private void onClickDelete() {
         BLLDelete.getInstance().deleteMaterial(m_material);
         materialModel.clear();
@@ -122,12 +174,18 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         clearSelection();
     }
 
+    /**
+     * Envoke this method when the editbutton is clicked.
+     */
     private void onClickEdit() {
         enableTxtFields(true);
         btnSave.setEnabled(true);
         btnDelete.setEnabled(false);
     }
 
+    /**
+     * Envoke this method when the savebutton is clicked.
+     */
     private void onClickSave() {
         getDetails();
         BLLUpdate.getInstance().updateMaterial(m_material);
@@ -136,6 +194,9 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         clearSelection();
     }
 
+    /**
+     * Listeners for the buttons.
+     */
     private class btnAction implements ActionListener {
 
         @Override
@@ -151,6 +212,9 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Listeners for the mouse.
+     */
     private class mouseAction extends MouseAdapter {
 
         @Override
@@ -179,6 +243,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         btnDelete = new javax.swing.JButton();
         lblMaterial = new javax.swing.JLabel();
         btnEdit = new javax.swing.JButton();
+        btnNew = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(679, 577));
@@ -193,18 +258,22 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
-        btnSave.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnSave.setPreferredSize(new java.awt.Dimension(81, 38));
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnDelete.setText("Slet");
-        btnDelete.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnDelete.setPreferredSize(new java.awt.Dimension(81, 38));
 
         lblMaterial.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblMaterial.setText("Materiel:");
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");
-        btnEdit.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
+
+        btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnNew.setText("Ny..");
+        btnNew.setPreferredSize(new java.awt.Dimension(81, 38));
 
         javax.swing.GroupLayout pnlMaterialLayout = new javax.swing.GroupLayout(pnlMaterial);
         pnlMaterial.setLayout(pnlMaterialLayout);
@@ -213,39 +282,40 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
             .addGroup(pnlMaterialLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlMaterialLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addComponent(lblMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(txtMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 14, Short.MAX_VALUE))
+                        .addComponent(txtMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlMaterialLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlMaterialLayout.setVerticalGroup(
             pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlMaterialLayout.createSequentialGroup()
-                .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(pnlMaterialLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblMaterial))
-                    .addComponent(txtMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-            .addGroup(pnlMaterialLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 11, Short.MAX_VALUE))
+                        .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnlMaterialLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(lblMaterial))
+                            .addComponent(txtMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(428, 428, 428)
+                        .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -254,8 +324,8 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnlMaterial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(pnlMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -271,6 +341,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblMaterial;

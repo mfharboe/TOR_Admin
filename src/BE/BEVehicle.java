@@ -97,5 +97,10 @@ public class BEVehicle {
     public void setM_description(String m_description) {
         this.m_description = m_description;
     }
+    
+    @Override
+    public String toString(){
+        return m_odinNumber + " - " + m_description;
+    }
 
 }

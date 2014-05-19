@@ -95,6 +95,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnSearch.addActionListener(btn);
         btnFiremen.addActionListener(btn);
         btnVehicles.addActionListener(btn);
+        btnMaterial.addActionListener(btn);
         btnUpdate.addActionListener(btn);
         btnPDF.addActionListener(btn);
         btnSave.addActionListener(btn);
@@ -265,19 +266,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         m_incidentDetails.getM_incident().getM_id();
         m_incidentDetails.getM_incident().setM_isDone(cbxApproved.isSelected());
         return m_incidentDetails;
-    }
-
-    private Date getDateFrom() {
-        java.util.Date utilDate = dateChooserFrom.getDate();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        return sqlDate;
-    }
-
-    private Date getDateTo() {
-        java.util.Date utilDate = dateChooserTo.getDate();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        return sqlDate;
-
     }
 
     private void onClickFiremen() {

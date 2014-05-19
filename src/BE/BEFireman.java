@@ -45,6 +45,33 @@ public class BEFireman {
     }
 
     /**
+     * Create Fireman
+     *
+     * @param recruited
+     * @param firstname
+     * @param lastname
+     * @param address
+     * @param zipcode
+     * @param phone
+     * @param paymentnumber
+     * @param isteamleader
+     * @param photopath
+     */
+    public BEFireman(Date recruited, String firstname, String lastname, String address, BEZipcode zipcode,
+            int phone, int paymentnumber, boolean isteamleader, String photopath) {
+
+        m_recruited = recruited;
+        m_firstName = firstname;
+        m_lastName = lastname;
+        m_address = address;
+        m_zipCode = zipcode;
+        m_phone = phone;
+        m_paymentNumber = paymentnumber;
+        m_isTeamLeader = isteamleader;
+        m_photoPath = photopath;
+    }
+
+    /**
      * @return the m_id
      */
     public int getM_id() {
@@ -183,9 +210,9 @@ public class BEFireman {
     public void setM_photoPath(String m_photoPath) {
         this.m_photoPath = m_photoPath;
     }
-    
-    public String toString(){
-        return m_lastName + ", " + m_firstName; 
+
+    public String toString() {
+        return m_lastName + ", " + m_firstName;
     }
 
 }

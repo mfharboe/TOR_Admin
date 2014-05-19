@@ -26,11 +26,8 @@ public class DALRead {
 
     ArrayList<BEIncidentType> resIncidentTypes;
     ArrayList<BEAlarm> resAlarms;
-    ArrayList<BEMaterial> resMaterials;
     ArrayList<BERole> resRoles;
-    ArrayList<BEFireman> resFiremen;
     ArrayList<BEZipcode> resZipcodes;
-    ArrayList<BEVehicle> resVehicles;
 
     private DALRead() {
         m_connection = DB_Connection.getInstance().getConnection();
@@ -124,8 +121,7 @@ public class DALRead {
      * @throws SQLException
      */
     public ArrayList<BEMaterial> readMaterial() throws SQLException {
-        if (resMaterials == null) {
-            resMaterials = new ArrayList<>();
+            ArrayList<BEMaterial> resMaterials = new ArrayList<>();
             Statement stm = m_connection.createStatement();
             stm.execute("select * from Material order by materialDescription");
             ResultSet result = stm.getResultSet();
@@ -135,10 +131,10 @@ public class DALRead {
                 BEMaterial be = new BEMaterial(id, description);
                 resMaterials.add(be);
             }
-        }
         return resMaterials;
+        }
 
-    }
+    
 
     /**
      * Creates an ArrayList of Roles
@@ -169,8 +165,7 @@ public class DALRead {
      * @throws SQLException
      */
     public ArrayList<BEVehicle> readVehicles() throws SQLException {
-        if (resVehicles == null) {
-            resVehicles = new ArrayList<>();
+            ArrayList<BEVehicle> resVehicles = new ArrayList<>();
             Statement stm = m_connection.createStatement();
             stm.execute("select * from Vehicle");
             ResultSet result = stm.getResultSet();
@@ -183,7 +178,6 @@ public class DALRead {
                 BEVehicle be = new BEVehicle(odinNumber, registrationNumber, brand, model, description);
                 resVehicles.add(be);
             }
-        }
         return resVehicles;
     }
 
@@ -194,8 +188,7 @@ public class DALRead {
      * @throws SQLException
      */
     public ArrayList<BEFireman> readFiremen() throws SQLException {
-        if (resFiremen == null) {
-            resFiremen = new ArrayList<>();
+            ArrayList<BEFireman> resFiremen = new ArrayList<>();
             Statement stm = m_connection.createStatement();
             stm.execute("select * from Fireman order by lastName, firstname");
             ResultSet result = stm.getResultSet();
@@ -219,7 +212,6 @@ public class DALRead {
                 BEFireman be = new BEFireman(id, recruitDate, firstName, lastName, address, refZipCode, phone, paymentNumber, isTeamLeader, photoPath);
                 resFiremen.add(be);
             }
-        }
         return resFiremen;
     }
 

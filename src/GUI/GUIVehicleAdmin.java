@@ -1,7 +1,9 @@
-
 package GUI;
 
 import BE.BEVehicle;
+import BLL.BLLDelete;
+import BLL.BLLRead;
+import BLL.BLLUpdate;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,9 +15,10 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
 
     private static GUIVehicleAdmin m_instance;
     private DefaultListModel<BEVehicle> vehicleModel;
+    private BEVehicle m_vehicle;
 
     /**
-     * Creates new form GUIVehicleAdmin
+     * Creates new form GUIVehicleAdmin.
      */
     private GUIVehicleAdmin() {
         initComponents();
@@ -23,24 +26,35 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initialSettings();
     }
-    
-    public static GUIVehicleAdmin getInstance(){
-        if(m_instance == null){
+
+    /**
+     *
+     * @return m_instance of GUIVehicleAdmin.
+     */
+    public static GUIVehicleAdmin getInstance() {
+        if (m_instance == null) {
             m_instance = new GUIVehicleAdmin();
         }
         return m_instance;
     }
-    
-    private void initialSettings(){
-        addListeners();
-        addColors();
+
+    /**
+     * Sets the initial settings for this class.
+     */
+    private void initialSettings() {
         vehicleModel = new DefaultListModel<>();
         lstVehicles.setModel(vehicleModel);
-        
-        
+        txtOdinNr.setEnabled(false);
+        addListeners();
+        addColors();
+        fillVehicleList();
+        clearSelection();
     }
-    
-    private void addListeners(){
+
+    /**
+     * Adds listeners.
+     */
+    private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mouse = new mouseAction();
         btnDelete.addActionListener(btn);
@@ -49,28 +63,185 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         lstVehicles.addMouseListener(mouse);
     }
 
-    private void addColors(){
+    /**
+     * Adds colors.
+     */
+    private void addColors() {
         this.getContentPane().setBackground(Color.WHITE);
         pnlVehicles.setBackground(Color.WHITE);
     }
-    
+
+    /**
+     * Fills the Vehicle List.
+     */
+    private void fillVehicleList() {
+        for (BEVehicle vehicle : BLLRead.getInstance().readAllVehicles()) {
+            vehicleModel.addElement(vehicle);
+        }
+    }
+
+    /**
+     * Sets everything to a default view.
+     */
+    private void clearSelection() {
+        clearDetails();
+        enableBtn(false);
+        enableTxtFields(false);
+    }
+
+    /**
+     * Clears the textboxes.
+     */
+    private void clearDetails() {
+        txtOdinNr.setText(MessageDialog.getInstance().emptyString());
+        txtRegNr.setText(MessageDialog.getInstance().emptyString());
+        txtBrand.setText(MessageDialog.getInstance().emptyString());
+        txtModel.setText(MessageDialog.getInstance().emptyString());
+        txtDescription.setText(MessageDialog.getInstance().emptyString());
+    }
+
+    /**
+     * Enables or disables the buttons.
+     *
+     * @param enable
+     */
+    private void enableBtn(boolean enable) {
+        btnDelete.setEnabled(enable);
+        btnEdit.setEnabled(enable);
+        btnSave.setEnabled(enable);
+    }
+
+    /**
+     * Enables or disables the textfields.
+     *
+     * @param enable
+     */
+    private void enableTxtFields(boolean enable) {
+        txtRegNr.setEnabled(enable);
+        txtBrand.setEnabled(enable);
+        txtModel.setEnabled(enable);
+        txtDescription.setEnabled(enable);
+    }
+
+    /**
+     * Envoke this method when a vehicle is clicked upon in the list.
+     */
+    private void onListClick() {
+        enableBtn(false);
+        enableTxtFields(false);
+        if (!vehicleModel.isEmpty() && lstVehicles.getSelectedIndex() != -1) {
+            setDetails();
+            btnEdit.setEnabled(true);
+            btnDelete.setEnabled(true);
+        } else {
+            enableBtn(false);
+            clearDetails();
+        }
+    }
+
+    /**
+     * Finds the details for a vehicle marked in the list.
+     */
+    private void setDetails() {
+        for (BEVehicle vehicle : BLLRead.getInstance().readAllVehicles()) {
+            if (((BEVehicle) lstVehicles.getSelectedValue()).getM_odinNumber() == vehicle.getM_odinNumber()) {
+                m_vehicle = vehicle;
+                fillDetails(m_vehicle);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Fills the textboxes with information from a vehicle marked in the list.
+     *
+     * @param vehicle
+     */
+    private void fillDetails(BEVehicle vehicle) {
+        txtOdinNr.setText(String.valueOf(vehicle.getM_odinNumber()));
+        txtRegNr.setText(vehicle.getM_registrationNumber());
+        txtBrand.setText(vehicle.getM_brand());
+        txtModel.setText(vehicle.getM_model());
+        txtDescription.setText(vehicle.getM_description());
+    }
+
+    /**
+     * Sets all the new values from the textboxes to the vehicle marked in the
+     * list.
+     *
+     * @return m_vehicle
+     */
+    private BEVehicle getDetails() {
+        m_vehicle.setM_odinNumber(Integer.parseInt(txtOdinNr.getText()));
+        m_vehicle.setM_registrationNumber(txtRegNr.getText());
+        m_vehicle.setM_brand(txtBrand.getText());
+        m_vehicle.setM_model(txtModel.getText());
+        m_vehicle.setM_description(txtDescription.getText());
+        return m_vehicle;
+    }
+
+    /**
+     * Envoke this method when the deletebutton is clicked.
+     */
+    private void onClickDelete() {
+        BLLDelete.getInstance().deleteVehicle(m_vehicle);
+        vehicleModel.clear();
+        fillVehicleList();
+        clearSelection();
+    }
+
+    /**
+     * Envoke this method when the edit button is clicked.
+     */
+    private void onClickEdit() {
+        enableTxtFields(true);
+        btnSave.setEnabled(true);
+        btnDelete.setEnabled(false);
+    }
+
+    /**
+     * Envoke this method when the save button is clicked.
+     */
+    private void onClickSave() {
+        getDetails();
+        BLLUpdate.getInstance().updateVehicle(m_vehicle);
+        vehicleModel.clear();
+        fillVehicleList();
+        clearSelection();
+    }
+
+    /**
+     * Listeners for the buttons.
+     */
     private class btnAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-        
+            if (e.getSource().equals(btnDelete)) {
+                onClickDelete();
+            } else if (e.getSource().equals(btnEdit)) {
+                onClickEdit();
+            } else if (e.getSource().equals(btnSave)) {
+                onClickSave();
+            }
         }
-        
+
     }
-    
-    private class mouseAction extends MouseAdapter{
-        
+
+    /**
+     * Listeners for the mouse.
+     */
+    private class mouseAction extends MouseAdapter {
+
         @Override
-        public void mouseClicked(MouseEvent e){
-            
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 1) {
+                onListClick();
+            }
         }
-        
+
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -96,6 +267,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         lblModel = new javax.swing.JLabel();
         lblDescription = new javax.swing.JLabel();
         btnEdit = new javax.swing.JButton();
+        btnNew = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(679, 577));
@@ -122,11 +294,11 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
-        btnSave.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnSave.setPreferredSize(new java.awt.Dimension(81, 38));
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnDelete.setText("Slet");
-        btnDelete.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnDelete.setPreferredSize(new java.awt.Dimension(81, 38));
 
         lblOdinNr.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblOdinNr.setText("Odin nr.");
@@ -145,7 +317,11 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");
-        btnEdit.setPreferredSize(new java.awt.Dimension(67, 38));
+        btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
+
+        btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnNew.setText("Ny..");
+        btnNew.setPreferredSize(new java.awt.Dimension(81, 38));
 
         javax.swing.GroupLayout pnlVehiclesLayout = new javax.swing.GroupLayout(pnlVehicles);
         pnlVehicles.setLayout(pnlVehiclesLayout);
@@ -154,9 +330,17 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
             .addGroup(pnlVehiclesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlVehiclesLayout.createSequentialGroup()
+                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlVehiclesLayout.createSequentialGroup()
                         .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(lblOdinNr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(lblRegNr, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
@@ -169,50 +353,43 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
                             .addComponent(txtRegNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtBrand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtModel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 14, Short.MAX_VALUE))
-                    .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                            .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlVehiclesLayout.setVerticalGroup(
             pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlVehiclesLayout.createSequentialGroup()
                 .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblOdinNr))
-                    .addComponent(txtOdinNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtRegNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblRegNr))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtBrand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBrand))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtModel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblModel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblDescription))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnlVehiclesLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(lblOdinNr))
+                            .addComponent(txtOdinNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtRegNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblRegNr))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtBrand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblBrand))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtModel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblModel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblDescription))
+                        .addGap(252, 252, 252)
+                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 11, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -238,6 +415,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblBrand;

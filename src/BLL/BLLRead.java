@@ -154,6 +154,10 @@ public class BLLRead {
         incidentRoleTime = null;
     }
     
+    public void clearFiremenArray(){
+        allFiremen = null;
+    }
+    
     public void removeFromFiremen(BEFireman fireman){
         allFiremen.remove(fireman);
     }

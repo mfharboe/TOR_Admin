@@ -72,9 +72,18 @@ public class BLLUpdate {
 
     public void updateVehicle(BEVehicle vehicle) {
         try {
-            DALUpdate.getInstance().updateVehicle(null);
+            DALUpdate.getInstance().updateVehicle(vehicle);
         } catch (SQLException ex) {
             Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for(BEVehicle allVehicles : BLLRead.getInstance().readAllVehicles()){
+            if(allVehicles.getM_odinNumber() == vehicle.getM_odinNumber()){
+                allVehicles.setM_registrationNumber(vehicle.getM_registrationNumber());
+                allVehicles.setM_brand(vehicle.getM_brand());
+                allVehicles.setM_model(vehicle.getM_model());
+                allVehicles.setM_description(vehicle.getM_description());
+                break;
+            }
         }
     }
     
@@ -83,6 +92,12 @@ public class BLLUpdate {
             DALUpdate.getInstance().updateMaterial(material);
         } catch (SQLException ex) {
             Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for(BEMaterial allMaterials : BLLRead.getInstance().readAllMaterials()){
+            if(allMaterials.getM_id() == material.getM_id()){
+                allMaterials.setM_description(material.getM_description());
+                break;
+            }
         }
     }
 }
