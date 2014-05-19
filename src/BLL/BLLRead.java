@@ -1,10 +1,14 @@
 package BLL;
 
 import BE.BEAlarm;
+import BE.BEFireman;
 import BE.BEIncident;
 import BE.BEIncidentDetails;
+import BE.BEMaterial;
 import BE.BERoleTime;
 import BE.BEUsage;
+import BE.BEVehicle;
+import BE.BEZipcode;
 import DAL.DALRead;
 import GUI.MessageDialog;
 import java.sql.SQLException;
@@ -22,6 +26,10 @@ public class BLLRead {
     ArrayList<BEIncidentDetails> incidentDetails;
     ArrayList<BEUsage> incidentUsage;
     ArrayList<BERoleTime> incidentRoleTime;
+    ArrayList<BEFireman> allFiremen;
+    ArrayList<BEZipcode> allZipcodes;
+    ArrayList<BEVehicle> allVehicles;
+    ArrayList<BEMaterial> allMaterials;
 
     private BLLRead() {
 
@@ -48,6 +56,28 @@ public class BLLRead {
             Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
         }
         return recentIncidents;
+    }
+    
+    public ArrayList<BEZipcode> readAllZipcodes() {
+        if(allZipcodes == null) {
+            try {
+                allZipcodes = DALRead.getInstance().readZipcodes();
+            } catch (SQLException ex) {
+                Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return allZipcodes;
+    }
+    
+    public ArrayList<BEFireman> readAllFiremen(){
+        if(allFiremen == null){
+            try {
+                allFiremen = DALRead.getInstance().readFiremen();
+            } catch (SQLException ex) {
+                Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return allFiremen;
     }
 
     public ArrayList<BEIncidentDetails> readIncidentDetails() {
@@ -95,10 +125,46 @@ public class BLLRead {
         }
         return allAlarms;
     }
+    
+    public ArrayList<BEMaterial> readAllMaterials(){
+        if(allMaterials == null){
+            try {
+                allMaterials = DALRead.getInstance().readMaterial();
+            } catch (SQLException ex) {
+                Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return allMaterials;
+    }
+    
+    public ArrayList<BEVehicle> readAllVehicles(){
+        if(allVehicles == null){
+            try {
+                allVehicles = DALRead.getInstance().readVehicles();
+            } catch (SQLException ex) {
+                Logger.getLogger(BLLRead.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return allVehicles;
+    }
 
     public void clearDetailsArray() {
         incidentDetails = null;
         incidentUsage = null;
         incidentRoleTime = null;
     }
+    
+    public void removeFromFiremen(BEFireman fireman){
+        allFiremen.remove(fireman);
+    }
+    
+    public void removeFromVehicles(BEVehicle vehicle){
+        allVehicles.remove(vehicle);
+    }
+
+    public void removeFromMaterial(BEMaterial material) {
+        allMaterials.remove(material);
+    }
+    
+
 }

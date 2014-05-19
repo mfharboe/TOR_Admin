@@ -44,5 +44,10 @@ public class BEZipcode {
     public void setM_city(String m_city) {
         this.m_city = m_city;
     }
+    
+    @Override
+    public String toString(){
+        return String.valueOf(m_zipCode) + " - " + m_city;
+    }
 
 }

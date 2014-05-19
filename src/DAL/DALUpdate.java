@@ -1,10 +1,14 @@
 package DAL;
 
+import BE.BEFireman;
 import BE.BEIncident;
 import BE.BEIncidentDetails;
+import BE.BEMaterial;
+import BE.BEVehicle;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import sun.font.TrueTypeFont;
 
 public class DALUpdate {
 
@@ -57,6 +61,55 @@ public class DALUpdate {
         PreparedStatement ps = m_connection.prepareStatement(sql);
         ps.setBoolean(1, incident.isM_isDone());
         ps.setInt(2, incident.getM_id());
+        ps.executeUpdate();
+    }
+    
+    public void updateFireman(BEFireman fireman) throws SQLException{
+        String sql = "Update Fireman set recruited = ?, "
+                + "firstName = ?, "
+                + "lastName = ?, "
+                + "address = ?, "
+                + "zipcode = ?, "
+                + "phone = ?, "
+                + "paymentNumber = ?, "
+                + "isTeamLeader = ?, "
+                + "photoPath = ? "
+                + "where id = ?";
+        PreparedStatement ps = m_connection.prepareStatement(sql);
+        ps.setDate(1, fireman.getM_recruited());
+        ps.setString(2, fireman.getM_firstName());
+        ps.setString(3, fireman.getM_lastName());
+        ps.setString(4, fireman.getM_address());
+        ps.setInt(5, fireman.getM_zipCode().getM_zipCode());
+        ps.setInt(6, fireman.getM_phone());
+        ps.setInt(7, fireman.getM_paymentNumber());
+        ps.setBoolean(8, fireman.isM_isTeamLeader());
+        ps.setString(9, fireman.getM_photoPath());
+        ps.setInt(10, fireman.getM_id());
+        ps.executeUpdate();
+    }
+    
+    public void updateVehicle(BEVehicle vehicle) throws SQLException{
+        String sql = "Update Vehicle set registrationNumber = ?, "
+                + "brand = ?, "
+                + "model = ?, "
+                + "vehicleDescription = ? "
+                + "where odinNumber = ?";
+        PreparedStatement ps = m_connection.prepareStatement(sql);
+        ps.setString(1, vehicle.getM_registrationNumber());
+        ps.setString(2, vehicle.getM_brand());
+        ps.setString(3, vehicle.getM_model());
+        ps.setString(4, vehicle.getM_description());
+        ps.setInt(5, vehicle.getM_odinNumber());
+        ps.executeUpdate();
+    }
+    
+    public void updateMaterial(BEMaterial material) throws SQLException{
+        String sql = "Update Material set materialDescription = ? "
+                + "where id = ?";
+        PreparedStatement ps = m_connection.prepareStatement(sql);
+        ps.setString(1, material.getM_description());
+        ps.setInt(2, material.getM_id());
         ps.executeUpdate();
     }
 

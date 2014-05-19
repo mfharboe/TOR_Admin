@@ -183,5 +183,9 @@ public class BEFireman {
     public void setM_photoPath(String m_photoPath) {
         this.m_photoPath = m_photoPath;
     }
+    
+    public String toString(){
+        return m_lastName + ", " + m_firstName; 
+    }
 
 }

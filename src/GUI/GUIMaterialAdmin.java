@@ -1,7 +1,9 @@
-
 package GUI;
 
 import BE.BEMaterial;
+import BLL.BLLDelete;
+import BLL.BLLRead;
+import BLL.BLLUpdate;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +15,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
 
     private static GUIMaterialAdmin m_instance;
     private DefaultListModel<BEMaterial> materialModel;
+    private BEMaterial m_material;
 
     /**
      * Creates new form GUIMaterialAdmin
@@ -23,24 +26,24 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initialSettings();
     }
-    
-    public static GUIMaterialAdmin getInstance(){
-        if(m_instance == null){
+
+    public static GUIMaterialAdmin getInstance() {
+        if (m_instance == null) {
             m_instance = new GUIMaterialAdmin();
         }
         return m_instance;
     }
-    
-    private void initialSettings(){
-        addListeners();
-        addColors();
+
+    private void initialSettings() {
         materialModel = new DefaultListModel<>();
         lstMaterial.setModel(materialModel);
-        
-        
+        addListeners();
+        addColors();
+        fillMaterialList();
+        clearSelection();
     }
-    
-    private void addListeners(){
+
+    private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mouse = new mouseAction();
         btnDelete.addActionListener(btn);
@@ -49,27 +52,114 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         lstMaterial.addMouseListener(mouse);
     }
 
-    private void addColors(){
+    private void addColors() {
         this.getContentPane().setBackground(Color.WHITE);
         pnlMaterial.setBackground(Color.WHITE);
     }
-    
+
+    private void fillMaterialList() {
+        for (BEMaterial material : BLLRead.getInstance().readAllMaterials()) {
+            materialModel.addElement(material);
+        }
+    }
+
+    private void clearSelection() {
+        clearDetails();
+        enableBtn(false);
+        enableTxtFields(false);
+    }
+
+    private void clearDetails() {
+        txtMaterial.setText(MessageDialog.getInstance().emptyString());
+    }
+
+    private void enableBtn(boolean enable) {
+        btnDelete.setEnabled(enable);
+        btnEdit.setEnabled(enable);
+        btnSave.setEnabled(enable);
+    }
+
+    private void enableTxtFields(boolean enable) {
+        txtMaterial.setEnabled(enable);
+    }
+
+    private void onListClick() {
+        enableBtn(false);
+        enableTxtFields(false);
+        if (!materialModel.isEmpty() && lstMaterial.getSelectedIndex() != -1) {
+            setDetails();
+            btnEdit.setEnabled(true);
+            btnDelete.setEnabled(true);
+        } else {
+            enableBtn(false);
+            clearDetails();
+        }
+    }
+
+    private void setDetails() {
+        for (BEMaterial material : BLLRead.getInstance().readAllMaterials()) {
+            if (((BEMaterial) lstMaterial.getSelectedValue()).getM_id() == material.getM_id()) {
+                m_material = material;
+                fillDetails(m_material);
+                return;
+            }
+        }
+    }
+
+    private void fillDetails(BEMaterial material) {
+        txtMaterial.setText(material.getM_description());
+    }
+
+    private BEMaterial getDetails() {
+        m_material.setM_description(txtMaterial.getText());
+        return m_material;
+    }
+
+    private void onClickDelete() {
+        BLLDelete.getInstance().deleteMaterial(m_material);
+        materialModel.clear();
+        fillMaterialList();
+        clearSelection();
+    }
+
+    private void onClickEdit() {
+        enableTxtFields(true);
+        btnSave.setEnabled(true);
+        btnDelete.setEnabled(false);
+    }
+
+    private void onClickSave() {
+        getDetails();
+        BLLUpdate.getInstance().updateMaterial(m_material);
+        materialModel.clear();
+        fillMaterialList();
+        clearSelection();
+    }
+
     private class btnAction implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-        
+            if (e.getSource().equals(btnDelete)) {
+                onClickDelete();
+            } else if (e.getSource().equals(btnEdit)) {
+                onClickEdit();
+            } else if (e.getSource().equals(btnSave)) {
+                onClickSave();
+            }
         }
-        
+
     }
-    
-    private class mouseAction extends MouseAdapter{
-        
+
+    private class mouseAction extends MouseAdapter {
+
         @Override
-        public void mouseClicked(MouseEvent e){
-            
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 1) {
+                onListClick();
+            }
         }
-        
+
     }
 
     /**

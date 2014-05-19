@@ -41,6 +41,10 @@ public class MessageDialog {
         return "Ingen valgt";
     }
     
+    public String zipType(){
+        return "Post Nummer..";
+    }
+    
     public void dialogNoRecentIncidents(){
         JOptionPane.showMessageDialog(null, "Der er ingen nye meldinger");
     }
