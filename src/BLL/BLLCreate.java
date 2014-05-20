@@ -5,8 +5,6 @@ import BE.BEMaterial;
 import BE.BEVehicle;
 import DAL.DALCreate;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BLLCreate {
 
@@ -16,6 +14,10 @@ public class BLLCreate {
 
     }
 
+    /**
+     *
+     * @return m_instance of BLLCreate.
+     */
     public static BLLCreate getInstance() {
         if (m_instance == null) {
             m_instance = new BLLCreate();
@@ -23,31 +25,49 @@ public class BLLCreate {
         return m_instance;
     }
 
+    /**
+     * Creates a new fireman, and adds him to the array.
+     *
+     * @param fireman
+     */
     public void createFireman(BEFireman fireman) {
         try {
             DALCreate.getInstance().createFireman(fireman);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLCreate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().createFiremanError();
+            return;
         }
-        BLLRead.getInstance().clearFiremenArray();
+        BLLRead.getInstance().addFiremanToArray(fireman);
     }
 
+    /**
+     * Creates a new vehicle, and adds it to the array.
+     *
+     * @param vehicle
+     */
     public void createVehicle(BEVehicle vehicle) {
         try {
             DALCreate.getInstance().createVehicle(vehicle);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLCreate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().createVehicleError();
+            return;
         }
-        BLLRead.getInstance().clearVehicleArray();
+        BLLRead.getInstance().addVehicleToArray(vehicle);
     }
 
+    /**
+     * Creates a new material, and adds it to the array.
+     *
+     * @param material
+     */
     public void createMaterial(BEMaterial material) {
         try {
             DALCreate.getInstance().createMaterial(material);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLCreate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().createMaterialError();
+            return;
         }
-        BLLRead.getInstance().clearMaterialArray();
+        BLLRead.getInstance().addMaterialToArray(material);
     }
 
 }

@@ -202,8 +202,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
      */
     private void onClickSave() {
         if (isUpdate == true) {
-            getDetails();
-            BLLUpdate.getInstance().updateMaterial(m_material);
+            BLLUpdate.getInstance().updateMaterial(getDetails());
             materialModel.clear();
             fillMaterialList();
             clearSelection();

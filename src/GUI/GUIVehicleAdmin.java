@@ -222,8 +222,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
      */
     private void onClickSave() {
         if (isUpdate == true) {
-            getDetails();
-            BLLUpdate.getInstance().updateVehicle(m_vehicle);
+            BLLUpdate.getInstance().updateVehicle(getDetails());
             vehicleModel.clear();
             fillVehicleList();
             clearSelection();

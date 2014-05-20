@@ -18,9 +18,8 @@ public class BLLUpdate {
     }
 
     /**
-     * Creates or returns the current instance of BLLUpdate
      *
-     * @return
+     * @return m_instance of BLLUpdate.
      */
     public static BLLUpdate getInstance() {
         if (m_instance == null) {
@@ -47,11 +46,17 @@ public class BLLUpdate {
         }
     }
 
+    /**
+     * Updates DB and array with a given fireman.
+     *
+     * @param fireman
+     */
     public void updateFireman(BEFireman fireman) {
         try {
             DALUpdate.getInstance().updateFireman(fireman);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().updateFiremanError();
+            return;
         }
         for (BEFireman allFiremen : BLLRead.getInstance().readAllFiremen()) {
             if (allFiremen.getM_id() == fireman.getM_id()) {
@@ -70,14 +75,20 @@ public class BLLUpdate {
 
     }
 
+    /**
+     * Updates DB and array with a given vehicle.
+     *
+     * @param vehicle
+     */
     public void updateVehicle(BEVehicle vehicle) {
         try {
             DALUpdate.getInstance().updateVehicle(vehicle);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().updateVehicleError();
+            return;
         }
-        for(BEVehicle allVehicles : BLLRead.getInstance().readAllVehicles()){
-            if(allVehicles.getM_odinNumber() == vehicle.getM_odinNumber()){
+        for (BEVehicle allVehicles : BLLRead.getInstance().readAllVehicles()) {
+            if (allVehicles.getM_odinNumber() == vehicle.getM_odinNumber()) {
                 allVehicles.setM_registrationNumber(vehicle.getM_registrationNumber());
                 allVehicles.setM_brand(vehicle.getM_brand());
                 allVehicles.setM_model(vehicle.getM_model());
@@ -86,15 +97,21 @@ public class BLLUpdate {
             }
         }
     }
-    
-    public void updateMaterial(BEMaterial material){
+
+    /**
+     * Updates DB and array with a given material.
+     *
+     * @param material
+     */
+    public void updateMaterial(BEMaterial material) {
         try {
             DALUpdate.getInstance().updateMaterial(material);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().updateMaterialError();
+            return;
         }
-        for(BEMaterial allMaterials : BLLRead.getInstance().readAllMaterials()){
-            if(allMaterials.getM_id() == material.getM_id()){
+        for (BEMaterial allMaterials : BLLRead.getInstance().readAllMaterials()) {
+            if (allMaterials.getM_id() == material.getM_id()) {
                 allMaterials.setM_description(material.getM_description());
                 break;
             }

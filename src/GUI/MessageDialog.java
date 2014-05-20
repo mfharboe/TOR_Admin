@@ -1,8 +1,10 @@
 package GUI;
 
+import BLL.BLLError;
+import Observer.IObserver;
 import javax.swing.JOptionPane;
 
-public class MessageDialog {
+public class MessageDialog implements IObserver {
 
     private static MessageDialog m_instance;
 
@@ -16,37 +18,42 @@ public class MessageDialog {
         }
         return m_instance;
     }
-    
-    public String adminTitle(){
+
+    public String adminTitle() {
         return "TOR - Admin";
     }
-    
-    public String firemenAdminTitle(){
+
+    public String firemenAdminTitle() {
         return "TOR - Mandskab";
     }
-    
-    public String vehicleAdminTitle(){
+
+    public String vehicleAdminTitle() {
         return "TOR - Køretøjer";
     }
-    
-    public String materialAdminTitle(){
+
+    public String materialAdminTitle() {
         return "TOR - Materiel";
     }
-    
-    public String emptyString(){
+
+    public String emptyString() {
         return "";
     }
-    
-    public String alarmType(){
+
+    public String alarmType() {
         return "Ingen valgt";
     }
-    
-    public String zipType(){
+
+    public String zipType() {
         return "Post Nummer..";
     }
-    
-    public void dialogNoRecentIncidents(){
+
+    public void dialogNoRecentIncidents() {
         JOptionPane.showMessageDialog(null, "Der er ingen nye meldinger");
+    }
+
+    @Override
+    public void update(String error) {
+        JOptionPane.showMessageDialog(null, error);
     }
 
 }

@@ -11,8 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import javax.swing.DefaultListModel;
 
 public class GUIFiremenAdmin extends javax.swing.JFrame {
@@ -99,7 +97,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Sets everything to a default view
+     * Sets everything to a default view.
      */
     private void clearSelection() {
         clearDetails();
@@ -274,8 +272,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
      */
     private void onClickSave() {
         if (isUpdate == true) {
-            getDetails();
-            BLLUpdate.getInstance().updateFireman(m_fireman);
+            BLLUpdate.getInstance().updateFireman(getDetails());
             firemenModel.clear();
             fillFiremenList();
             clearSelection();

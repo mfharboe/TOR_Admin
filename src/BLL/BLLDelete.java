@@ -1,4 +1,3 @@
-
 package BLL;
 
 import BE.BEFireman;
@@ -6,50 +5,70 @@ import BE.BEMaterial;
 import BE.BEVehicle;
 import DAL.DALDelete;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BLLDelete {
-    
+
     private static BLLDelete m_instance;
-    
-    private BLLDelete(){
-        
+
+    private BLLDelete() {
+
     }
-    
-    public static BLLDelete getInstance(){
-        if(m_instance == null){
+
+    /**
+     *
+     * @return m_instance of BLLDelete.
+     */
+    public static BLLDelete getInstance() {
+        if (m_instance == null) {
             m_instance = new BLLDelete();
         }
         return m_instance;
     }
-    
-    public void deleteFireman(BEFireman fireman){
+
+    /**
+     * Deletes a given fireman, and removes him from the array.
+     *
+     * @param fireman
+     */
+    public void deleteFireman(BEFireman fireman) {
         try {
             DALDelete.getInstance().deleteFireman(fireman);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLDelete.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().deleteFiremanError();
+            return;
         }
-        BLLRead.getInstance().removeFromFiremen(fireman);
+        BLLRead.getInstance().removeFiremenFromArray(fireman);
     }
-    
-    public void deleteVehicle(BEVehicle vehicle){
+
+    /**
+     * Deletes a given vehicle, and removes it from the array.
+     *
+     * @param vehicle
+     */
+    public void deleteVehicle(BEVehicle vehicle) {
         try {
             DALDelete.getInstance().deleteVehicle(vehicle);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLDelete.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().deleteVehicleError();
+            return;
         }
-        BLLRead.getInstance().removeFromVehicles(vehicle);
+        BLLRead.getInstance().removeVehicleFromArray(vehicle);
     }
-    
-    public void deleteMaterial(BEMaterial material){
+
+    /**
+     * Deletes a given material, and removes it from the array.
+     *
+     * @param material
+     */
+    public void deleteMaterial(BEMaterial material) {
         try {
             DALDelete.getInstance().deleteMaterial(material);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLDelete.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().deleteMaterialError();
+            return;
         }
-        BLLRead.getInstance().removeFromMaterial(material);
-        
+        BLLRead.getInstance().removeMaterialFromArray(material);
+
     }
-    
+
 }

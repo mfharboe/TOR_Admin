@@ -35,6 +35,10 @@ public class BLLRead {
 
     }
 
+    /**
+     * 
+     * @return m_instance of BLLRead. 
+     */
     public static BLLRead getInstance() {
         if (m_instance == null) {
             m_instance = new BLLRead();
@@ -148,33 +152,60 @@ public class BLLRead {
         return allVehicles;
     }
 
+    /**
+     * Clears all arrays of details for an incident.
+     */
     public void clearDetailsArray() {
         incidentDetails = null;
         incidentUsage = null;
         incidentRoleTime = null;
     }
     
-    public void clearFiremenArray(){
-        allFiremen = null;
+    /**
+     * Adds a given fireman to the array.
+     * @param newFireman 
+     */
+    public void addFiremanToArray(BEFireman newFireman){
+        allFiremen.add(newFireman);
     }
     
-    public void clearVehicleArray(){
-        allVehicles = null;
+    /**
+     * Adds a given vehicle to the array.
+     * @param newVehicle 
+     */
+    public void addVehicleToArray(BEVehicle newVehicle){
+        allVehicles.add(newVehicle);
     }
     
-    public void clearMaterialArray(){
-        allMaterials = null;
+    /**
+     * Adds a given material to the array.
+     * @param newMaterial 
+     */
+    public void addMaterialToArray(BEMaterial newMaterial){
+        allMaterials.add(newMaterial);
     }
     
-    public void removeFromFiremen(BEFireman fireman){
+    /**
+     * Removes a given fireman from the array.
+     * @param fireman 
+     */
+    public void removeFiremenFromArray(BEFireman fireman){
         allFiremen.remove(fireman);
     }
     
-    public void removeFromVehicles(BEVehicle vehicle){
+    /**
+     * Removes a given vehicle from the array.
+     * @param vehicle 
+     */
+    public void removeVehicleFromArray(BEVehicle vehicle){
         allVehicles.remove(vehicle);
     }
 
-    public void removeFromMaterial(BEMaterial material) {
+    /**
+     * Removes a given material from the array.
+     * @param material 
+     */
+    public void removeMaterialFromArray(BEMaterial material) {
         allMaterials.remove(material);
     }
     

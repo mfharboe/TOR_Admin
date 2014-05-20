@@ -5,6 +5,7 @@ import BE.BEIncident;
 import BE.BEIncidentDetails;
 import BE.BERoleTime;
 import BE.BEUsage;
+import BLL.BLLPDF;
 import BLL.BLLRead;
 import BLL.BLLUpdate;
 import java.awt.Color;
@@ -12,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Date;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 
@@ -23,6 +23,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     private DefaultListModel<BEUsage> usageModel;
     private DefaultListModel<BERoleTime> roleTimeModel;
     private BEIncidentDetails m_incidentDetails;
+    private boolean isUpdate;
 
     /**
      * Creates new form GUIAdmin
@@ -32,9 +33,12 @@ public class GUIAdmin extends javax.swing.JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
         initialSettings();
-
     }
 
+    /**
+     *
+     * @return m_instance of GUIAdmin.
+     */
     public static GUIAdmin getInstance() {
         if (m_instance == null) {
             m_instance = new GUIAdmin();
@@ -42,6 +46,9 @@ public class GUIAdmin extends javax.swing.JFrame {
         return m_instance;
     }
 
+    /**
+     * Sets the initial settings for this class.
+     */
     private void initialSettings() {
         addColors();
         addListeners();
@@ -55,17 +62,13 @@ public class GUIAdmin extends javax.swing.JFrame {
         lstRoleTime.setModel(roleTimeModel);
         btnEdit.setEnabled(false);
         enableTextFields(false);
-        enableLabels(false);
         enableCombobox(false);
         enableBtnDetails(false);
-
     }
 
-    private void notEditable() {
-        lstRoleTime.setEnabled(false);
-        lstUsage.setEnabled(false);
-    }
-
+    /**
+     * Adds colors.
+     */
     private void addColors() {
         this.getContentPane().setBackground(Color.WHITE);
         pnlAdministrate.setBackground(Color.WHITE);
@@ -81,10 +84,11 @@ public class GUIAdmin extends javax.swing.JFrame {
         rdoFalse.setBackground(Color.WHITE);
         rdoIncident.setBackground(Color.WHITE);
         rdoAll.setBackground(Color.WHITE);
-        cbxApproved.setBackground(Color.WHITE);
-
     }
 
+    /**
+     * Adds listeners.
+     */
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mse = new mouseAction();
@@ -100,9 +104,30 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnPDF.addActionListener(btn);
         btnSave.addActionListener(btn);
         btnEdit.addActionListener(btn);
+        btnApprove.addActionListener(btn);
         lstIncidents.addMouseListener(mse);
     }
 
+    /**
+     * These lists are never enabled, only shown.
+     */
+    private void notEditable() {
+        lstRoleTime.setEnabled(false);
+        lstUsage.setEnabled(false);
+    }
+
+    private void fillAlarmCombo() {
+        cmbAlarmType.addItem(MessageDialog.getInstance().alarmType());
+        for (BEAlarm alarm : BLLRead.getInstance().readAllAlarms()) {
+            cmbAlarmType.addItem(alarm);
+        }
+    }
+
+    /**
+     * Enables or disables the textfields.
+     *
+     * @param enabled
+     */
     private void enableTextFields(boolean enabled) {
         txtLeader.setEnabled(enabled);
         txtEvaNumber.setEnabled(enabled);
@@ -114,29 +139,30 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtRemarks.setEnabled(enabled);
     }
 
-    private void enableLabels(boolean enabled) {
-        lblAlarmType.setEnabled(enabled);
-        lblDetectorNumber.setEnabled(enabled);
-        lblEvaNumber.setEnabled(enabled);
-        lblReportNumber.setEnabled(enabled);
-        lblGroupNumber.setEnabled(enabled);
-        lblLeader.setEnabled(enabled);
-        lblAlarmType.setEnabled(enabled);
-        pnlInvolved.setEnabled(enabled);
-        pnlRemarks.setEnabled(enabled);
-    }
-
+    /**
+     * Enables or disables the AlarmType Combobox.
+     *
+     * @param enabled
+     */
     private void enableCombobox(boolean enabled) {
         cmbAlarmType.setEnabled(enabled);
     }
 
+    /**
+     * Enables or disables buttons.
+     *
+     * @param enabled
+     */
     private void enableBtnDetails(boolean enabled) {
         btnPDF.setEnabled(enabled);
         btnSave.setEnabled(enabled);
         btnEdit.setEnabled(enabled);
-        cbxApproved.setEnabled(enabled);
+        btnApprove.setEnabled(enabled);
     }
 
+    /**
+     * Clears all the textfields etc.
+     */
     private void clearDetails() {
         usageModel.clear();
         roleTimeModel.clear();
@@ -149,56 +175,22 @@ public class GUIAdmin extends javax.swing.JFrame {
         cmbAlarmType.setSelectedIndex(0);
         txtGroupNumber.setText(MessageDialog.getInstance().emptyString());
         txtRemarks.setText(MessageDialog.getInstance().emptyString());
-        cbxApproved.setSelected(false);
     }
 
-    private void onClickUpdate() {
-        BLLRead.getInstance().clearDetailsArray();
-        incidentModel.clear();
-        clearDetails();
-        enableLabels(false);
-        enableTextFields(false);
-        enableBtnDetails(false);
-        enableCombobox(false);
-        for (BEIncident recentIncidents : BLLRead.getInstance().readAllRecentIncidents()) {
-            incidentModel.addElement(recentIncidents);
-        }
-    }
-
-    private void onListClick() {
-        enableLabels(false);
-        enableTextFields(false);
-        enableBtnDetails(false);
-        enableCombobox(false);
-        usageModel.clear();
-        roleTimeModel.clear();
-        if (!incidentModel.isEmpty() && lstIncidents.getSelectedIndex() != -1) {
-            getDetails();
-            enableLabels(true);
-            btnEdit.setEnabled(true);
-            getUsage();
-            getRoleTime();
+    private void fillDetails(BEIncidentDetails incidentDetails) {
+        txtLeader.setText(incidentDetails.getM_incidentLeader());
+        txtEvaNumber.setText(incidentDetails.getM_evaNumber());
+        txtFireReportNumber.setText(incidentDetails.getM_fireReport());
+        txtInvolvedName.setText(incidentDetails.getM_involvedName());
+        txtInvolvedAddress.setText(incidentDetails.getM_involvedAddress());
+        txtDetectorNumber.setText(incidentDetails.getM_detectorNumber());
+        if (incidentDetails.getM_alarm() == null) {
+            cmbAlarmType.setSelectedIndex(0);
         } else {
-            clearDetails();
-            btnEdit.setEnabled(false);
-            enableLabels(false);
-            enableTextFields(false);
-            enableCombobox(false);
-            enableBtnDetails(false);
+            cmbAlarmType.setSelectedIndex(incidentDetails.getM_alarm().getM_id());
         }
-    }
-
-    private void onClickEdit() {
-        enableTextFields(true);
-        enableLabels(true);
-        enableCombobox(true);
-        enableBtnDetails(true);
-    }
-
-    private void onClickSave() {
-        updatedDetails();
-        BLLUpdate.getInstance().updateDetails(m_incidentDetails);
-        onClickUpdate();
+        txtGroupNumber.setText(incidentDetails.getM_groupNumber());
+        txtRemarks.setText(incidentDetails.getM_remark());
     }
 
     private void getDetails() {
@@ -227,30 +219,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         }
     }
 
-    private void fillDetails(BEIncidentDetails incidentDetails) {
-        txtLeader.setText(incidentDetails.getM_incidentLeader());
-        txtEvaNumber.setText(incidentDetails.getM_evaNumber());
-        txtFireReportNumber.setText(incidentDetails.getM_fireReport());
-        txtInvolvedName.setText(incidentDetails.getM_involvedName());
-        txtInvolvedAddress.setText(incidentDetails.getM_involvedAddress());
-        txtDetectorNumber.setText(incidentDetails.getM_detectorNumber());
-        if (incidentDetails.getM_alarm() == null) {
-            cmbAlarmType.setSelectedIndex(0);
-        } else {
-            cmbAlarmType.setSelectedIndex(incidentDetails.getM_alarm().getM_id());
-        }
-        txtGroupNumber.setText(incidentDetails.getM_groupNumber());
-        txtRemarks.setText(incidentDetails.getM_remark());
-    }
-
-    private void fillAlarmCombo() {
-        cmbAlarmType.addItem(MessageDialog.getInstance().alarmType());
-        for (BEAlarm alarm : BLLRead.getInstance().readAllAlarms()) {
-            cmbAlarmType.addItem(alarm);
-        }
-    }
-
-    private BEIncidentDetails updatedDetails() {
+    private BEIncidentDetails updatedDetails(boolean isUpdate) {
         m_incidentDetails.setM_incidentLeader(txtLeader.getText());
         m_incidentDetails.setM_evaNumber(txtEvaNumber.getText());
         m_incidentDetails.setM_fireReport(txtFireReportNumber.getText());
@@ -264,25 +233,108 @@ public class GUIAdmin extends javax.swing.JFrame {
             m_incidentDetails.setM_alarm((BEAlarm) cmbAlarmType.getSelectedItem());
         }
         m_incidentDetails.getM_incident().getM_id();
-        m_incidentDetails.getM_incident().setM_isDone(cbxApproved.isSelected());
+        if (isUpdate == true) {
+            m_incidentDetails.getM_incident().setM_isDone(false);
+        } else {
+            m_incidentDetails.getM_incident().setM_isDone(true);
+        }
         return m_incidentDetails;
     }
 
+    /**
+     * Invoke this method when the Incident-list is clicked.
+     */
+    private void onListClick() {
+        enableTextFields(false);
+        enableBtnDetails(false);
+        enableCombobox(false);
+        usageModel.clear();
+        roleTimeModel.clear();
+        if (!incidentModel.isEmpty() && lstIncidents.getSelectedIndex() != -1) {
+            getDetails();
+            btnEdit.setEnabled(true);
+            btnApprove.setEnabled(true);
+            btnPDF.setEnabled(true);
+            getUsage();
+            getRoleTime();
+        } else {
+            clearDetails();
+            enableTextFields(false);
+            enableCombobox(false);
+            enableBtnDetails(false);
+        }
+    }
+
+    /**
+     * Invoke this method when the Update-button is clicked.
+     */
+    private void onClickUpdate() {
+        BLLRead.getInstance().clearDetailsArray();
+        incidentModel.clear();
+        clearDetails();
+        enableTextFields(false);
+        enableBtnDetails(false);
+        enableCombobox(false);
+        for (BEIncident recentIncidents : BLLRead.getInstance().readAllRecentIncidents()) {
+            incidentModel.addElement(recentIncidents);
+        }
+    }
+
+    /**
+     * Invoke this method when the Edit-button is clicked.
+     */
+    private void onClickEdit() {
+        enableTextFields(true);
+        enableCombobox(true);
+        enableBtnDetails(true);
+    }
+
+    /**
+     * Invoke this method when the Save-button is clicked.
+     */
+    private void onClickSave() {
+        isUpdate = true;
+        BLLUpdate.getInstance().updateDetails(updatedDetails(isUpdate));
+        onClickUpdate();
+    }
+
+    private void onClickApprove() {
+        isUpdate = false;
+        BLLUpdate.getInstance().updateDetails(updatedDetails(isUpdate));
+        onClickUpdate();
+    }
+    
+    private void onClickPDF() {
+        BLLPDF.getInstance().printToPDF(m_incidentDetails);
+    }
+
+    /**
+     * Invoke this method when the Firemen-button is clicked.
+     */
     private void onClickFiremen() {
         JFrame firemenAdmin = GUIFiremenAdmin.getInstance();
         firemenAdmin.setVisible(true);
     }
 
+    /**
+     * Invoke this method when the Vehicles-button is clicked.
+     */
     private void onClickVehicles() {
         JFrame vehicleAdmin = GUIVehicleAdmin.getInstance();
         vehicleAdmin.setVisible(true);
     }
 
+    /**
+     * Invoke this method when the Material-button is clicked.
+     */
     private void onClickMaterial() {
         JFrame materialAdmin = GUIMaterialAdmin.getInstance();
         materialAdmin.setVisible(true);
     }
 
+    /**
+     * Listeners for the buttons.
+     */
     private class btnAction implements ActionListener {
 
         @Override
@@ -293,16 +345,23 @@ public class GUIAdmin extends javax.swing.JFrame {
                 onClickEdit();
             } else if (e.getSource().equals(btnSave)) {
                 onClickSave();
+            } else if (e.getSource().equals(btnApprove)) {
+                onClickApprove();
             } else if (e.getSource().equals(btnFiremen)) {
                 onClickFiremen();
             } else if (e.getSource().equals(btnVehicles)) {
                 onClickVehicles();
             } else if (e.getSource().equals(btnMaterial)) {
                 onClickMaterial();
+            } else if (e.getSource().equals(btnPDF)){
+                onClickPDF();
             }
         }
     }
 
+    /**
+     * Listeners for the mouse.
+     */
     private class mouseAction extends MouseAdapter {
 
         @Override
@@ -324,7 +383,6 @@ public class GUIAdmin extends javax.swing.JFrame {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         pnlAllDetails = new javax.swing.JPanel();
-        cbxApproved = new javax.swing.JCheckBox();
         btnSave = new javax.swing.JButton();
         btnPDF = new javax.swing.JButton();
         pnlDetails2 = new javax.swing.JPanel();
@@ -352,6 +410,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtDetectorNumber = new javax.swing.JTextField();
         txtGroupNumber = new javax.swing.JTextField();
         cmbAlarmType = new javax.swing.JComboBox();
+        btnApprove = new javax.swing.JButton();
         pnlAdministrate = new javax.swing.JPanel();
         btnVehicles = new javax.swing.JButton();
         btnFiremen = new javax.swing.JButton();
@@ -375,9 +434,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         pnlAllDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        cbxApproved.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        cbxApproved.setText("Godkendt");
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
@@ -564,6 +620,9 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGap(20, 20, 20))
         );
 
+        btnApprove.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        btnApprove.setText("Godkend");
+
         javax.swing.GroupLayout pnlAllDetailsLayout = new javax.swing.GroupLayout(pnlAllDetails);
         pnlAllDetails.setLayout(pnlAllDetailsLayout);
         pnlAllDetailsLayout.setHorizontalGroup(
@@ -571,24 +630,24 @@ public class GUIAdmin extends javax.swing.JFrame {
             .addGroup(pnlAllDetailsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(pnlDetail1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlDetails2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlInvolved, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(pnlAllDetailsLayout.createSequentialGroup()
-                        .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbxApproved))
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(pnlAllDetailsLayout.createSequentialGroup()
-                                .addComponent(btnPDF, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                    .addComponent(pnlRemarks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pnlRemarks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAllDetailsLayout.createSequentialGroup()
+                        .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnApprove, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlAllDetailsLayout.setVerticalGroup(
@@ -608,12 +667,13 @@ public class GUIAdmin extends javax.swing.JFrame {
                         .addGap(0, 9, Short.MAX_VALUE))
                     .addComponent(jScrollPane7))
                 .addGap(18, 18, 18)
-                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSave, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnApprove, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(cbxApproved)
-                        .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -805,6 +865,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnApprove;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnFiremen;
     private javax.swing.JButton btnMaterial;
@@ -814,7 +875,6 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnVehicles;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JCheckBox cbxApproved;
     private javax.swing.JComboBox cmbAlarmType;
     private com.toedter.calendar.JDateChooser dateChooserFrom;
     private com.toedter.calendar.JDateChooser dateChooserTo;
