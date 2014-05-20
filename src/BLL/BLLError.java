@@ -1,82 +1,111 @@
-
 package BLL;
 
 import Observer.IObserver;
 import Observer.ISubject;
 import java.util.ArrayList;
 
-public class BLLError implements ISubject{
-    
+public class BLLError implements ISubject {
+
     private static BLLError m_instance;
     private final String ERROR_SYMBOL = "¤";
+    private final String ERROR_HAS_HAPPEND = "Der er sket en fejl! - ";
+    private final String ERROR_COULD_NOT = "Kunne ikke ";
     private String error = ERROR_SYMBOL;
     private final ArrayList<IObserver> observers;
-    
-    private BLLError(){
+
+    private BLLError() {
         observers = new ArrayList<>();
     }
-    
-    public static BLLError getInstance(){
-        if(m_instance == null){
+
+    public static BLLError getInstance() {
+        if (m_instance == null) {
             m_instance = new BLLError();
         }
         return m_instance;
     }
-    
-    public void createFiremanError(){
-        error = "Kunne ikke tilføje ny brandmand";
+
+    public void createFiremanError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "tilføje ny brandmand";
         notifyObservers();
     }
-    
-    public void createVehicleError(){
-        error = "Kunne ikke tilføje nyt køretøj";
+
+    public void createVehicleError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "tilføje nyt køretøj";
     }
-    
-    public void createMaterialError(){
-        error = "Kunne ikke tilføje nyt materiel";
+
+    public void createMaterialError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "tilføje nyt materiel";
     }
-    
-    public void deleteFiremanError(){
-        error = "Kunne ikke slette brandmanden";
+
+    public void deleteFiremanError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "slette brandmand";
     }
-    
-    public void deleteVehicleError(){
-        error = "Kunne ikke slette køretøjet";
+
+    public void deleteVehicleError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "slette køretøj";
     }
-    
-    public void deleteMaterialError(){
-        error = "Kunne ikke slette materiellet";
+
+    public void deleteMaterialError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "slette materiel";
     }
-    
-    public void updateFiremanError(){
-        error = "Kunne ikke opdatere brandmanden";
+
+    public void updateFiremanError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "opdatere brandmand";
     }
-    
-    public void updateVehicleError(){
-        error = "Kunne ikke opdatere køretøjet";
+
+    public void updateVehicleError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "opdatere køretøj";
     }
-    
-    public void updateMaterialError(){
-        error = "Kunne ikke opdatere materiel";
+
+    public void updateMaterialError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "opdatere materiel";
     }
-    
-    public void readFiremenError(){
-        error = "Kunne ikke læse alle brandmænd";
+
+    public void readFiremenError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse alle brandmænd";
     }
-    
-    public void readVehiclesError(){
-        error = "Kunne ikke læse alle køretøjer";
+
+    public void readVehiclesError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse alle køretøjer";
     }
-    
-    public void readMaterialError(){
-        error = "Kunne ikke læse alt materiel";
+
+    public void readMaterialError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse alt materiel";
     }
-    
-    public String getError(){
+
+    public void readAlarmError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse alarm typerne";
+    }
+
+    public void readZipcodeError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse postnumre";
+    }
+
+    public void readRecentIncidentError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse nye meldinger";
+    }
+
+    public void readIncidentDetailsError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse oplysninger på meldingerne";
+    }
+
+    public void readUsageError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse forbrug på meldingerne";
+    }
+
+    public void readRoleTimeError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse fremmødte på meldingerne";
+    }
+
+    public void emptyArrayList() {
+        error = "Der er ingen nye meldinger";
+    }
+
+    public String getError() {
         return error;
     }
-    
-    public void resetError(){
+
+    public void resetError() {
         error = ERROR_SYMBOL;
     }
 
@@ -92,9 +121,9 @@ public class BLLError implements ISubject{
 
     @Override
     public void notifyObservers() {
-        for (IObserver observer : observers){
+        for (IObserver observer : observers) {
             observer.update(error);
         }
     }
-    
+
 }

@@ -6,7 +6,7 @@ public class BEMaterial {
     private String m_description;
 
     /**
-     * Read Material
+     * Read/Update/Delete Material
      *
      * @param id
      * @param description

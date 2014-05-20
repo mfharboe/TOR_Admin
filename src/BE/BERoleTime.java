@@ -10,7 +10,7 @@ public class BERoleTime {
     private int m_hours;
 
     /**
-     * Read and Create RoleTime
+     * Read RoleTime
      *
      * @param incident
      * @param fireman

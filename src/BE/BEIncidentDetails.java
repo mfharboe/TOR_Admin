@@ -14,12 +14,11 @@ public class BEIncidentDetails {
     private String m_groupNumber;
 
     /**
-     * Read and Create IncidentDetails
+     * Read/Update IncidentDetails
      *
      * @param incidentLeader
      * @param evaNumber
      * @param fireReport
-     * @param message
      * @param incident
      * @param involvedName
      * @param involvedAddress

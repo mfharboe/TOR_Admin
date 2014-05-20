@@ -16,7 +16,7 @@ public class BEFireman {
     private String m_photoPath;
 
     /**
-     * Read Fireman
+     * Read/Update/Delete Fireman
      *
      * @param id
      * @param recruted

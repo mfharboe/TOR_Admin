@@ -8,7 +8,7 @@ public class BEUsage {
     private BEIncident m_incident;
 
     /**
-     * Read and Create Usage
+     * Read Usage
      *
      * @param id
      * @param material

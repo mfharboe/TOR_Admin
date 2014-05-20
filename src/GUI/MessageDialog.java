@@ -1,6 +1,5 @@
 package GUI;
 
-import BLL.BLLError;
 import Observer.IObserver;
 import javax.swing.JOptionPane;
 
@@ -20,7 +19,7 @@ public class MessageDialog implements IObserver {
     }
 
     public String adminTitle() {
-        return "TOR - Admin";
+        return "TOR - Administrator";
     }
 
     public String firemenAdminTitle() {
@@ -45,10 +44,6 @@ public class MessageDialog implements IObserver {
 
     public String zipType() {
         return "Post Nummer..";
-    }
-
-    public void dialogNoRecentIncidents() {
-        JOptionPane.showMessageDialog(null, "Der er ingen nye meldinger");
     }
 
     @Override
