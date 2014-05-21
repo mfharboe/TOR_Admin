@@ -46,7 +46,7 @@ public class DALCreate {
 
     public void createVehicle(BEVehicle vehicle) throws SQLException {
         String sql = "insert into Vehicle values(?,?,?,?,?)";
-        PreparedStatement ps = m_connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        PreparedStatement ps = m_connection.prepareStatement(sql);
         ps.setInt(1, vehicle.getM_odinNumber());
         ps.setString(2, vehicle.getM_registrationNumber());
         ps.setString(3, vehicle.getM_brand());
@@ -57,24 +57,13 @@ public class DALCreate {
 
     public void createMaterial(BEMaterial material) throws SQLException {
         String sql = "insert into Material values (?)";
-        m_connection.setAutoCommit(false);
-        m_connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         PreparedStatement ps = m_connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, material.getM_description());
         ps.executeUpdate();
-        m_connection.commit();
         ResultSet result = ps.getGeneratedKeys();
         while (result.next()) {
             material.setM_id(result.getInt(1));
         }
-        m_connection.setAutoCommit(true);
     }
 
-    public void rollBack() {
-        try {
-            m_connection.rollback();
-        } catch (SQLException ex) {
-            
-        }
-    }
 }

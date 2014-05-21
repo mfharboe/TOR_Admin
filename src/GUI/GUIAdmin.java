@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 
@@ -23,6 +24,8 @@ public class GUIAdmin extends javax.swing.JFrame {
     private DefaultListModel<BEUsage> usageModel;
     private DefaultListModel<BERoleTime> roleTimeModel;
     private BEIncidentDetails m_incidentDetails;
+    private ArrayList<BERoleTime> m_roleTime;
+    private ArrayList<BEUsage> m_usage;
     private boolean isUpdate;
 
     /**
@@ -33,6 +36,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
         initialSettings();
+        
     }
 
     /**
@@ -64,6 +68,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         enableTextFields(false);
         enableCombobox(false);
         enableBtnDetails(false);
+        m_usage = new ArrayList<>();
+        m_roleTime = new ArrayList<>();
     }
 
     /**
@@ -204,17 +210,21 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     private void getUsage() {
+        m_usage.clear();
         for (BEUsage incidentUsage : BLLRead.getInstance().readIncidentUsage()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentUsage.getM_incident().getM_id()) {
                 usageModel.addElement(incidentUsage);
+                m_usage.add(incidentUsage);
             }
         }
     }
 
     private void getRoleTime() {
+        m_roleTime.clear();
         for (BERoleTime incidentRoleTime : BLLRead.getInstance().readIncidentRoleTime()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentRoleTime.getM_incident().getM_id()) {
                 roleTimeModel.addElement(incidentRoleTime);
+                m_roleTime.add(incidentRoleTime);
             }
         }
     }
@@ -305,7 +315,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
     
     private void onClickPDF() {
-        BLLPDF.getInstance().printToPDF(m_incidentDetails);
+        BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
     }
 
     /**
@@ -531,9 +541,11 @@ public class GUIAdmin extends javax.swing.JFrame {
         );
 
         lstRoleTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        lstRoleTime.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jScrollPane6.setViewportView(lstRoleTime);
 
         lstUsage.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Forbrug", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        lstUsage.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jScrollPane7.setViewportView(lstUsage);
 
         pnlRemarks.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Bemærkninger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N

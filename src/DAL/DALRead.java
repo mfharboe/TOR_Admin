@@ -121,20 +121,18 @@ public class DALRead {
      * @throws SQLException
      */
     public ArrayList<BEMaterial> readMaterial() throws SQLException {
-            ArrayList<BEMaterial> resMaterials = new ArrayList<>();
-            Statement stm = m_connection.createStatement();
-            stm.execute("select * from Material order by materialDescription");
-            ResultSet result = stm.getResultSet();
-            while (result.next()) {
-                int id = result.getInt("id");
-                String description = result.getString("materialDescription");
-                BEMaterial be = new BEMaterial(id, description);
-                resMaterials.add(be);
-            }
-        return resMaterials;
+        ArrayList<BEMaterial> resMaterials = new ArrayList<>();
+        Statement stm = m_connection.createStatement();
+        stm.execute("select * from Material order by materialDescription");
+        ResultSet result = stm.getResultSet();
+        while (result.next()) {
+            int id = result.getInt("id");
+            String description = result.getString("materialDescription");
+            BEMaterial be = new BEMaterial(id, description);
+            resMaterials.add(be);
         }
-
-    
+        return resMaterials;
+    }
 
     /**
      * Creates an ArrayList of Roles
@@ -165,19 +163,19 @@ public class DALRead {
      * @throws SQLException
      */
     public ArrayList<BEVehicle> readVehicles() throws SQLException {
-            ArrayList<BEVehicle> resVehicles = new ArrayList<>();
-            Statement stm = m_connection.createStatement();
-            stm.execute("select * from Vehicle");
-            ResultSet result = stm.getResultSet();
-            while (result.next()) {
-                int odinNumber = result.getInt("odinNumber");
-                String registrationNumber = result.getString("registrationNumber");
-                String brand = result.getString("brand");
-                String model = result.getString("model");
-                String description = result.getString("vehicleDescription");
-                BEVehicle be = new BEVehicle(odinNumber, registrationNumber, brand, model, description);
-                resVehicles.add(be);
-            }
+        ArrayList<BEVehicle> resVehicles = new ArrayList<>();
+        Statement stm = m_connection.createStatement();
+        stm.execute("select * from Vehicle");
+        ResultSet result = stm.getResultSet();
+        while (result.next()) {
+            int odinNumber = result.getInt("odinNumber");
+            String registrationNumber = result.getString("registrationNumber");
+            String brand = result.getString("brand");
+            String model = result.getString("model");
+            String description = result.getString("vehicleDescription");
+            BEVehicle be = new BEVehicle(odinNumber, registrationNumber, brand, model, description);
+            resVehicles.add(be);
+        }
         return resVehicles;
     }
 
@@ -188,30 +186,30 @@ public class DALRead {
      * @throws SQLException
      */
     public ArrayList<BEFireman> readFiremen() throws SQLException {
-            ArrayList<BEFireman> resFiremen = new ArrayList<>();
-            Statement stm = m_connection.createStatement();
-            stm.execute("select * from Fireman order by lastName, firstname");
-            ResultSet result = stm.getResultSet();
-            while (result.next()) {
-                int id = result.getInt("id");
-                Date recruitDate = result.getDate("recruited");
-                String firstName = result.getString("firstName");
-                String lastName = result.getString("lastName");
-                String address = result.getString("address");
-                int zip = result.getInt("zipCode");
-                BEZipcode refZipCode = null;
-                for (BEZipcode bezipcode : readZipcodes()) {
-                    if (bezipcode.getM_zipCode() == zip) {
-                        refZipCode = bezipcode;
-                    }
+        ArrayList<BEFireman> resFiremen = new ArrayList<>();
+        Statement stm = m_connection.createStatement();
+        stm.execute("select * from Fireman order by lastName, firstname");
+        ResultSet result = stm.getResultSet();
+        while (result.next()) {
+            int id = result.getInt("id");
+            Date recruitDate = result.getDate("recruited");
+            String firstName = result.getString("firstName");
+            String lastName = result.getString("lastName");
+            String address = result.getString("address");
+            int zip = result.getInt("zipCode");
+            BEZipcode refZipCode = null;
+            for (BEZipcode bezipcode : readZipcodes()) {
+                if (bezipcode.getM_zipCode() == zip) {
+                    refZipCode = bezipcode;
                 }
-                int phone = result.getInt("phone");
-                int paymentNumber = result.getInt("paymentNumber");
-                boolean isTeamLeader = result.getBoolean("isTeamLeader");
-                String photoPath = result.getString("photoPath");
-                BEFireman be = new BEFireman(id, recruitDate, firstName, lastName, address, refZipCode, phone, paymentNumber, isTeamLeader, photoPath);
-                resFiremen.add(be);
             }
+            int phone = result.getInt("phone");
+            int paymentNumber = result.getInt("paymentNumber");
+            boolean isTeamLeader = result.getBoolean("isTeamLeader");
+            String photoPath = result.getString("photoPath");
+            BEFireman be = new BEFireman(id, recruitDate, firstName, lastName, address, refZipCode, phone, paymentNumber, isTeamLeader, photoPath);
+            resFiremen.add(be);
+        }
         return resFiremen;
     }
 
@@ -350,15 +348,14 @@ public class DALRead {
     public ArrayList<BERoleTime> readRoleTime() throws SQLException {
         ArrayList<BERoleTime> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
-        stm.execute("select [Role/Time].incidentId, "
-                + "[Role/Time].firemanId, "
-                + "[Role/Time].isOnStation, "
-                + "[Role/Time].roleId, "
-                + "[Role/Time].vehicleOdinNumber, "
-                + "[Role/Time].hours \n"
-                + "from [Role/Time] inner join Incident "
-                + "on [Role/Time].incidentId = Incident.id "
-                + "where Incident.isDone = 0");
+        stm.execute("select [Role/Time].incidentId, [Role/Time].firemanId, [Role/Time].isOnStation, [Role/Time].roleId, \n"
+                + "[Role/Time].vehicleOdinNumber, [Role/Time].hours \n"
+                + "from [Role/Time] inner join Incident \n"
+                + "on [Role/Time].incidentId = Incident.id\n"
+                + "inner join Fireman\n"
+                + "on [role/time].firemanId = fireman.id\n"
+                + "where Incident.isDone = 0 \n"
+                + "order by [Role/Time].vehicleOdinNumber, fireman.firstName, Fireman.lastName");
         ResultSet result = stm.getResultSet();
         while (result.next()) {
             int incidentid = result.getInt("incidentId");

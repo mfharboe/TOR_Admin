@@ -111,11 +111,12 @@ public class BERoleTime {
     public void setM_hours(int m_hours) {
         this.m_hours = m_hours;
     }
-    
+
     @Override
     public String toString() {
-        return m_fireman.getM_firstName() + " " + m_fireman.getM_lastName() + " : " + m_role.getM_roleDescription() + " på " + m_vehicle.getM_odinNumber() + " - " + m_hours + " timer";   
-        
+        if(m_isOnStation == true){
+        return m_fireman.getM_firstName() + " " + m_fireman.getM_lastName() + " - Stationsvagt";
+        }
+        return m_fireman.getM_firstName() + " " + m_fireman.getM_lastName() + " - " + m_vehicle.getM_odinNumber();
     }
-
 }
