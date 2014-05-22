@@ -100,6 +100,22 @@ public class BLLError implements ISubject {
     public void emptyArrayList() {
         error = "Der er ingen nye meldinger";
     }
+    
+    public void readLogoError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse logoet";
+    }
+    
+    public void createPDFError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "oprette dokumentet";
+    }
+    
+    public void updateDetailsError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "opdatere detaljerne";
+    }
+    
+    public void finishIncidentError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "afslutte meldingen";
+    }
 
     public String getError() {
         return error;

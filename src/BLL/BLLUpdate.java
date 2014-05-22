@@ -6,8 +6,6 @@ import BE.BEMaterial;
 import BE.BEVehicle;
 import DAL.DALUpdate;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BLLUpdate {
 
@@ -37,12 +35,12 @@ public class BLLUpdate {
         try {
             DALUpdate.getInstance().updateIncidentDetails(updatedDetails);
         } catch (SQLException ex) {
-            Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().updateDetailsError();
         }
         try {
             DALUpdate.getInstance().updateIncidentDone(updatedDetails.getM_incident());
         } catch (SQLException ex) {
-            Logger.getLogger(BLLUpdate.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().finishIncidentError();
         }
     }
 

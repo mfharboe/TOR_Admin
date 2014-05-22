@@ -35,6 +35,10 @@ public class BLLPDF {
 
     }
 
+    /**
+     * 
+     * @return m_instance of BLLPDF. 
+     */
     public static BLLPDF getInstance() {
         if (m_instance == null) {
             m_instance = new BLLPDF();
@@ -42,6 +46,12 @@ public class BLLPDF {
         return m_instance;
     }
 
+    /**
+     * Creates a new .pdf file with the given incidentDetails, the RoleTime and Usage for an Incident.
+     * @param incidentDetails
+     * @param roletime
+     * @param usage 
+     */
     public void printToPDF(BEIncidentDetails incidentDetails, ArrayList<BERoleTime> roletime, ArrayList<BEUsage> usage) {
 
         Document document = new Document();
@@ -68,7 +78,7 @@ public class BLLPDF {
             try {
                 logo = Image.getInstance("ebr.jpg");
             } catch (BadElementException | IOException ex) {
-                Logger.getLogger(BLLPDF.class.getName()).log(Level.SEVERE, null, ex);
+                BLLError.getInstance().readLogoError();
             }
 
             Paragraph myLogoParagraph = new Paragraph();
@@ -169,7 +179,7 @@ public class BLLPDF {
             document.close();
 
         } catch (DocumentException | FileNotFoundException ex) {
-            Logger.getLogger(BLLPDF.class.getName()).log(Level.SEVERE, null, ex);
+            BLLError.getInstance().createPDFError();
         }
 
     }
