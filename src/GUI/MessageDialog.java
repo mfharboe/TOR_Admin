@@ -45,6 +45,14 @@ public class MessageDialog implements IObserver {
     public String zipType() {
         return "Post Nummer..";
     }
+    
+    public void pdfCreated() {
+        JOptionPane.showMessageDialog(null, "Dokumentet blev oprettet");
+    }
+    
+    public void incidentApproved() {
+        JOptionPane.showMessageDialog(null, "Meldingen blev gemt og godkendt");
+    }
 
     @Override
     public void update(String error) {

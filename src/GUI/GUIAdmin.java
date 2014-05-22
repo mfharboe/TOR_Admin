@@ -311,11 +311,13 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void onClickApprove() {
         isUpdate = false;
         BLLUpdate.getInstance().updateDetails(updatedDetails(isUpdate));
+        MessageDialog.getInstance().incidentApproved();
         onClickUpdate();
     }
     
     private void onClickPDF() {
         BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
+        MessageDialog.getInstance().pdfCreated();
     }
 
     /**

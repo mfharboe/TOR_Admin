@@ -8,7 +8,6 @@ import BE.BEVehicle;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import sun.font.TrueTypeFont;
 
 public class DALUpdate {
 
