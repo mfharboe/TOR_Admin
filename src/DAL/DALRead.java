@@ -70,6 +70,32 @@ public class DALRead {
         return res;
     }
 
+    public ArrayList<BEIncident> readIncidentsByDate(int searchType, java.sql.Date from, java.sql.Date to) throws SQLException {
+        ArrayList<BEIncident> res = new ArrayList<>();
+        Statement stm = m_connection.createStatement();
+        stm.execute("select * from Incident "
+                + "where Incident.date between '" + from + "' and '" + to + "' "
+                + "and Incident.incidentTypeId = " + searchType + " and Incident.isDone = 1");
+        ResultSet result = stm.getResultSet();
+        while (result.next()) {
+            int id = result.getInt("id");
+            String incidentName = result.getString("incidentName");
+            Date date = result.getDate("date");
+            Time time = result.getTime("startTime");
+            int incidentTypeId = result.getInt("incidentTypeId");
+            BEIncidentType refIncidentType = null;
+            for (BEIncidentType beincidenttype : readIncidentTypes()) {
+                if (beincidenttype.getM_id() == incidentTypeId) {
+                    refIncidentType = beincidenttype;
+                }
+            }
+            boolean isDone = result.getBoolean("isDone");
+            BEIncident be = new BEIncident(id, incidentName, date, time, refIncidentType, isDone);
+            res.add(be);
+        }
+        return res;
+    }
+
     /**
      * Creates an ArrayList of IncidentTypes
      *
@@ -238,16 +264,17 @@ public class DALRead {
     /**
      * Creates an ArrayList of Usage
      *
+     * @param isDone
      * @return ArrayList of Usage
      * @throws SQLException
      */
-    public ArrayList<BEUsage> readUsage() throws SQLException {
+    public ArrayList<BEUsage> readUsage(int isDone) throws SQLException {
         ArrayList<BEUsage> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
         stm.execute("select * from Usage "
                 + "inner join Incident "
                 + "on Usage.incidentId = Incident.id "
-                + "where Incident.isDone = 0");
+                + "where Incident.isDone = " + isDone);
         ResultSet result = stm.getResultSet();
         while (result.next()) {
             int id = result.getInt("id");
@@ -277,10 +304,11 @@ public class DALRead {
     /**
      * Creates an ArrayList of IncidentDetails
      *
+     * @param isDone
      * @return ArrayList of IncidentDetails
      * @throws SQLException
      */
-    public ArrayList<BEIncidentDetails> readIncidentDetails() throws SQLException {
+    public ArrayList<BEIncidentDetails> readIncidentDetails(int isDone) throws SQLException {
         ArrayList<BEIncidentDetails> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
         stm.execute("Select IncidentDetails.incidentLeader, "
@@ -295,7 +323,7 @@ public class DALRead {
                 + "IncidentDetails.groupNumber "
                 + "from IncidentDetails inner join Incident "
                 + "on IncidentDetails.incidentId = incident.id "
-                + "where incident.isDone = 0");
+                + "where incident.isDone = " + isDone);
         ResultSet result = stm.getResultSet();
         while (result.next()) {
             String incidentLeader = result.getString("incidentLeader");
@@ -342,10 +370,11 @@ public class DALRead {
     /**
      * Creates an ArrayList of RoleTimes
      *
+     * @param isDone
      * @return ArrayList of RoleTimes
      * @throws SQLException
      */
-    public ArrayList<BERoleTime> readRoleTime() throws SQLException {
+    public ArrayList<BERoleTime> readRoleTime(int isDone) throws SQLException {
         ArrayList<BERoleTime> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
         stm.execute("select [Role/Time].incidentId, [Role/Time].firemanId, [Role/Time].isOnStation, [Role/Time].roleId, \n"
@@ -354,7 +383,7 @@ public class DALRead {
                 + "on [Role/Time].incidentId = Incident.id\n"
                 + "inner join Fireman\n"
                 + "on [role/time].firemanId = fireman.id\n"
-                + "where Incident.isDone = 0 \n"
+                + "where Incident.isDone = " + isDone + "\n"
                 + "order by [Role/Time].vehicleOdinNumber, fireman.firstName, Fireman.lastName");
         ResultSet result = stm.getResultSet();
         while (result.next()) {

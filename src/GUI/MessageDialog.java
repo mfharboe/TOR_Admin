@@ -79,6 +79,10 @@ public class MessageDialog implements IObserver {
     public void incidentApproved() {
         JOptionPane.showMessageDialog(null, "Meldingen blev gemt og godkendt");
     }
+    
+    public void fillOutAllDates() {
+        JOptionPane.showMessageDialog(null, "Udfyld begge datofelter");
+    }
 
     public boolean deleteFireman() {
         int reply = JOptionPane.showConfirmDialog(null, "Er du sikker?", "Slet Brandmand", JOptionPane.YES_NO_OPTION);

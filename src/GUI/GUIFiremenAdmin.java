@@ -14,7 +14,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.DefaultListModel;
-import javax.swing.JTextField;
 
 public class GUIFiremenAdmin extends javax.swing.JFrame {
 

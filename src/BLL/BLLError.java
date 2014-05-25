@@ -96,9 +96,13 @@ public class BLLError implements ISubject {
     public void readRoleTimeError() {
         error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse fremmødte på meldingerne";
     }
+    
+    public void readIncidentsByDateError() {
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "læse ønskede meldinger";
+    }
 
     public void emptyArrayList() {
-        error = "Der er ingen nye meldinger";
+        error = "Igen meldinger fundet";
     }
     
     public void readLogoError() {
@@ -110,7 +114,7 @@ public class BLLError implements ISubject {
     }
     
     public void updateDetailsError() {
-        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "opdatere detaljerne";
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "opdatere oplysningerne";
     }
     
     public void finishIncidentError() {

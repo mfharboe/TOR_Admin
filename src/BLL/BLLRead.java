@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 public class BLLRead {
 
+    private static final int ISNOTDONE = 0;
+    private static final int ISDONE = 1;
     private static BLLRead m_instance;
     ArrayList<BEIncident> recentIncidents;
     ArrayList<BEIncident> incidentsByDate;
@@ -54,9 +56,9 @@ public class BLLRead {
             if (recentIncidents.isEmpty()) {
                 BLLError.getInstance().emptyArrayList();
             } else {
-                readIncidentDetails();
-                readIncidentUsage();
-                readIncidentRoleTime();
+                readIncidentDetails(ISNOTDONE);
+                readIncidentUsage(ISNOTDONE);
+                readIncidentRoleTime(ISNOTDONE);
             }
         } catch (SQLException ex) {
             BLLError.getInstance().readRecentIncidentError();
@@ -64,18 +66,33 @@ public class BLLRead {
         return recentIncidents;
     }
 
+    public ArrayList<BEIncident> readAllIncidentsByDate(int searchType, java.sql.Date from, java.sql.Date to) {
+        try {
+            incidentsByDate = DALRead.getInstance().readIncidentsByDate(searchType, from, to);
+            if (incidentsByDate.isEmpty()) {
+                BLLError.getInstance().emptyArrayList();
+            } else {
+                readIncidentDetails(ISDONE);
+                readIncidentUsage(ISDONE);
+                readIncidentRoleTime(ISDONE);
+            }
+        } catch (SQLException ex) {
+            BLLError.getInstance().readIncidentsByDateError();
+        }
+        return incidentsByDate;
+    }
+
     /**
      * Reads all details about an incident and adds it to the array
      *
+     * @param isDone
      * @return array of incident details
      */
-    public ArrayList<BEIncidentDetails> readIncidentDetails() {
-        if (incidentDetails == null) {
-            try {
-                incidentDetails = DALRead.getInstance().readIncidentDetails();
-            } catch (SQLException ex) {
-                BLLError.getInstance().readIncidentDetailsError();
-            }
+    public ArrayList<BEIncidentDetails> readIncidentDetails(int isDone) {
+        try {
+            incidentDetails = DALRead.getInstance().readIncidentDetails(isDone);
+        } catch (SQLException ex) {
+            BLLError.getInstance().readIncidentDetailsError();
         }
         return incidentDetails;
     }
@@ -83,15 +100,14 @@ public class BLLRead {
     /**
      * Reads all usage for an incidents and adds it to the array
      *
+     * @param isDone
      * @return array of usage
      */
-    public ArrayList<BEUsage> readIncidentUsage() {
-        if (incidentUsage == null) {
-            try {
-                incidentUsage = DALRead.getInstance().readUsage();
-            } catch (SQLException ex) {
-                BLLError.getInstance().readUsageError();
-            }
+    public ArrayList<BEUsage> readIncidentUsage(int isDone) {
+        try {
+            incidentUsage = DALRead.getInstance().readUsage(isDone);
+        } catch (SQLException ex) {
+            BLLError.getInstance().readUsageError();
         }
         return incidentUsage;
     }
@@ -99,18 +115,16 @@ public class BLLRead {
     /**
      * Reads all role/time for an incident and adds it to the array
      *
+     * @param isDone
      * @return array of role/time
      */
-    public ArrayList<BERoleTime> readIncidentRoleTime() {
-        if (incidentRoleTime == null) {
-            try {
-                incidentRoleTime = DALRead.getInstance().readRoleTime();
-            } catch (SQLException ex) {
-                BLLError.getInstance().readRoleTimeError();
-            }
+    public ArrayList<BERoleTime> readIncidentRoleTime(int isDone) {
+        try {
+            incidentRoleTime = DALRead.getInstance().readRoleTime(isDone);
+        } catch (SQLException ex) {
+            BLLError.getInstance().readRoleTimeError();
         }
         return incidentRoleTime;
-
     }
 
     /**
@@ -191,6 +205,18 @@ public class BLLRead {
             }
         }
         return allMaterials;
+    }
+
+    public ArrayList<BEIncidentDetails> returnIncidentDetails() {
+        return incidentDetails;
+    }
+
+    public ArrayList<BEUsage> returnIncidentUsage() {
+        return incidentUsage;
+    }
+
+    public ArrayList<BERoleTime> returnIncidentRoleTime() {
+        return incidentRoleTime;
     }
 
     /**

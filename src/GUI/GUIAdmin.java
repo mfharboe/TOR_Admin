@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 
 public class GUIAdmin extends javax.swing.JFrame {
 
@@ -27,6 +28,8 @@ public class GUIAdmin extends javax.swing.JFrame {
     private ArrayList<BERoleTime> m_roleTime;
     private ArrayList<BEUsage> m_usage;
     private boolean isUpdate;
+    private static final int SEARCH_INCIDENT = 1;
+    private static final int SEARCH_EXERCISE = 6;
 
     /**
      * Creates new form GUIAdmin
@@ -36,7 +39,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         initComponents();
         initialSettings();
-        
+
     }
 
     /**
@@ -85,11 +88,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlRemarks.setBackground(Color.WHITE);
         pnlDetail1.setBackground(Color.WHITE);
         pnlDetails2.setBackground(Color.WHITE);
-        rdoBlind.setBackground(Color.WHITE);
         rdoExercise.setBackground(Color.WHITE);
-        rdoFalse.setBackground(Color.WHITE);
         rdoIncident.setBackground(Color.WHITE);
-        rdoAll.setBackground(Color.WHITE);
     }
 
     /**
@@ -98,9 +98,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mse = new mouseAction();
-        buttonGroup1.add(rdoBlind);
         buttonGroup1.add(rdoExercise);
-        buttonGroup1.add(rdoFalse);
         buttonGroup1.add(rdoIncident);
         btnSearch.addActionListener(btn);
         btnFiremen.addActionListener(btn);
@@ -200,7 +198,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     private void getDetails() {
-        for (BEIncidentDetails incidentDetails : BLLRead.getInstance().readIncidentDetails()) {
+        for (BEIncidentDetails incidentDetails : BLLRead.getInstance().returnIncidentDetails()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentDetails.getM_incident().getM_id()) {
                 m_incidentDetails = incidentDetails;
                 fillDetails(m_incidentDetails);
@@ -211,7 +209,7 @@ public class GUIAdmin extends javax.swing.JFrame {
 
     private void getUsage() {
         m_usage.clear();
-        for (BEUsage incidentUsage : BLLRead.getInstance().readIncidentUsage()) {
+        for (BEUsage incidentUsage : BLLRead.getInstance().returnIncidentUsage()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentUsage.getM_incident().getM_id()) {
                 usageModel.addElement(incidentUsage);
                 m_usage.add(incidentUsage);
@@ -221,7 +219,7 @@ public class GUIAdmin extends javax.swing.JFrame {
 
     private void getRoleTime() {
         m_roleTime.clear();
-        for (BERoleTime incidentRoleTime : BLLRead.getInstance().readIncidentRoleTime()) {
+        for (BERoleTime incidentRoleTime : BLLRead.getInstance().returnIncidentRoleTime()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentRoleTime.getM_incident().getM_id()) {
                 roleTimeModel.addElement(incidentRoleTime);
                 m_roleTime.add(incidentRoleTime);
@@ -249,6 +247,31 @@ public class GUIAdmin extends javax.swing.JFrame {
             m_incidentDetails.getM_incident().setM_isDone(true);
         }
         return m_incidentDetails;
+    }
+
+    private java.sql.Date getFromDate() {
+        java.util.Date utilDate = dateChooserFrom.getDate();
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        return sqlDate;
+    }
+
+    private java.sql.Date getToDate() {
+        java.util.Date utilDate = dateChooserTo.getDate();
+        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        return sqlDate;
+    }
+
+    private int getSearchType() {
+        if (rdoExercise.isSelected()) {
+            return SEARCH_EXERCISE;
+        } else if (rdoIncident.isSelected()) {
+            return SEARCH_INCIDENT;
+        }
+        return 0;
+    }
+
+    private boolean areDatesFilled() {
+        return !((JTextField) dateChooserFrom.getDateEditor().getUiComponent()).getText().isEmpty() && !((JTextField) dateChooserTo.getDateEditor().getUiComponent()).getText().isEmpty();
     }
 
     /**
@@ -291,6 +314,22 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     /**
+     * Invoke this method when the Search-button is clicked.
+     */
+    private void onClickSearch() {
+        BLLRead.getInstance().clearDetailsArray();
+        incidentModel.clear();
+        clearDetails();
+        if (areDatesFilled()) {
+            for (BEIncident incidentsByDate : BLLRead.getInstance().readAllIncidentsByDate(getSearchType(), getFromDate(), getToDate())) {
+                incidentModel.addElement(incidentsByDate);
+            }
+        } else {
+            MessageDialog.getInstance().fillOutAllDates();
+        }
+    }
+
+    /**
      * Invoke this method when the Edit-button is clicked.
      */
     private void onClickEdit() {
@@ -314,7 +353,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         MessageDialog.getInstance().incidentApproved();
         onClickUpdate();
     }
-    
+
     private void onClickPDF() {
         BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
         MessageDialog.getInstance().pdfCreated();
@@ -342,6 +381,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void onClickMaterial() {
         JFrame materialAdmin = GUIMaterialAdmin.getInstance();
         materialAdmin.setVisible(true);
+
     }
 
     /**
@@ -365,8 +405,10 @@ public class GUIAdmin extends javax.swing.JFrame {
                 onClickVehicles();
             } else if (e.getSource().equals(btnMaterial)) {
                 onClickMaterial();
-            } else if (e.getSource().equals(btnPDF)){
+            } else if (e.getSource().equals(btnPDF)) {
                 onClickPDF();
+            } else if (e.getSource().equals(btnSearch)) {
+                onClickSearch();
             }
         }
     }
@@ -431,11 +473,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnMaterial = new javax.swing.JButton();
         pnlSearch = new javax.swing.JPanel();
         pnlSearchFor = new javax.swing.JPanel();
-        rdoFalse = new javax.swing.JRadioButton();
-        rdoBlind = new javax.swing.JRadioButton();
         rdoExercise = new javax.swing.JRadioButton();
         rdoIncident = new javax.swing.JRadioButton();
-        rdoAll = new javax.swing.JRadioButton();
         lblFrom = new javax.swing.JLabel();
         dateChooserFrom = new com.toedter.calendar.JDateChooser();
         lblTo = new javax.swing.JLabel();
@@ -558,7 +597,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblInvolvedAddress))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         lstRoleTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
@@ -750,20 +789,11 @@ public class GUIAdmin extends javax.swing.JFrame {
 
         pnlSearchFor.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
-        rdoFalse.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        rdoFalse.setText("Falske alarmer");
-
-        rdoBlind.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        rdoBlind.setText("Blinde alarmer");
-
         rdoExercise.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         rdoExercise.setText("Øvelser");
 
         rdoIncident.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         rdoIncident.setText("Indsater");
-
-        rdoAll.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        rdoAll.setText("Alle");
 
         lblFrom.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblFrom.setText("Fra");
@@ -781,17 +811,10 @@ public class GUIAdmin extends javax.swing.JFrame {
             pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSearchForLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rdoIncident)
-                    .addComponent(rdoExercise))
+                .addComponent(rdoIncident)
                 .addGap(18, 18, 18)
-                .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(rdoBlind)
-                    .addGroup(pnlSearchForLayout.createSequentialGroup()
-                        .addComponent(rdoFalse)
-                        .addGap(18, 18, 18)
-                        .addComponent(rdoAll)))
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addComponent(rdoExercise)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
                 .addComponent(lblFrom)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(dateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -806,15 +829,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlSearchForLayout.setVerticalGroup(
             pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSearchForLayout.createSequentialGroup()
-                .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rdoIncident)
-                    .addComponent(rdoFalse)
-                    .addComponent(rdoAll))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rdoExercise)
-                    .addComponent(rdoBlind)))
-            .addGroup(pnlSearchForLayout.createSequentialGroup()
                 .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlSearchForLayout.createSequentialGroup()
                         .addContainerGap()
@@ -823,8 +837,11 @@ public class GUIAdmin extends javax.swing.JFrame {
                             .addComponent(dateChooserFrom, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
                             .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(pnlSearchForLayout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(lblFrom)))
+                        .addGap(18, 18, 18)
+                        .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblFrom)
+                            .addComponent(rdoExercise)
+                            .addComponent(rdoIncident))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSearchForLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
@@ -935,10 +952,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JPanel pnlRemarks;
     private javax.swing.JPanel pnlSearch;
     private javax.swing.JPanel pnlSearchFor;
-    private javax.swing.JRadioButton rdoAll;
-    private javax.swing.JRadioButton rdoBlind;
     private javax.swing.JRadioButton rdoExercise;
-    private javax.swing.JRadioButton rdoFalse;
     private javax.swing.JRadioButton rdoIncident;
     private javax.swing.JTextField txtDetectorNumber;
     private javax.swing.JTextField txtEvaNumber;
