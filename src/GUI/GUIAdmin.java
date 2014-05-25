@@ -407,6 +407,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlInvolved = new javax.swing.JPanel();
         txtInvolvedName = new javax.swing.JTextField();
         txtInvolvedAddress = new javax.swing.JTextField();
+        lblInvolved = new javax.swing.JLabel();
+        lblInvolvedAddress = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
         lstRoleTime = new javax.swing.JList();
         jScrollPane7 = new javax.swing.JScrollPane();
@@ -514,7 +516,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGap(20, 20, 20))
         );
 
-        pnlInvolved.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Skadeslidte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        pnlInvolved.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
 
         txtInvolvedName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtInvolvedName.setPreferredSize(new java.awt.Dimension(250, 38));
@@ -522,24 +524,41 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtInvolvedAddress.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtInvolvedAddress.setPreferredSize(new java.awt.Dimension(250, 38));
 
+        lblInvolved.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        lblInvolved.setText("Skadeslidte:");
+
+        lblInvolvedAddress.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        lblInvolvedAddress.setText("Adresse:");
+
         javax.swing.GroupLayout pnlInvolvedLayout = new javax.swing.GroupLayout(pnlInvolved);
         pnlInvolved.setLayout(pnlInvolvedLayout);
         pnlInvolvedLayout.setHorizontalGroup(
             pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlInvolvedLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtInvolvedName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addGroup(pnlInvolvedLayout.createSequentialGroup()
+                        .addComponent(lblInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(pnlInvolvedLayout.createSequentialGroup()
+                        .addComponent(lblInvolved, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtInvolvedName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         pnlInvolvedLayout.setVerticalGroup(
             pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlInvolvedLayout.createSequentialGroup()
-                .addComponent(txtInvolvedName, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtInvolvedName, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblInvolved))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblInvolvedAddress))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
 
         lstRoleTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
@@ -568,8 +587,8 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlRemarksLayout.setVerticalGroup(
             pnlRemarksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlRemarksLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
@@ -677,8 +696,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                     .addGroup(pnlAllDetailsLayout.createSequentialGroup()
                         .addComponent(pnlDetails2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlInvolved, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 9, Short.MAX_VALUE))
+                        .addComponent(pnlInvolved, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jScrollPane7))
                 .addGap(18, 18, 18)
                 .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -840,7 +858,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGap(9, 9, 9))
         );
 
-        lstIncidents.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Resultat", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        lstIncidents.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Meldinger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
         lstIncidents.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jScrollPane1.setViewportView(lstIncidents);
 
@@ -901,6 +919,8 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel lblEvaNumber;
     private javax.swing.JLabel lblFrom;
     private javax.swing.JLabel lblGroupNumber;
+    private javax.swing.JLabel lblInvolved;
+    private javax.swing.JLabel lblInvolvedAddress;
     private javax.swing.JLabel lblLeader;
     private javax.swing.JLabel lblReportNumber;
     private javax.swing.JLabel lblTo;

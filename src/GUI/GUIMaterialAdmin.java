@@ -8,6 +8,8 @@ import BLL.BLLUpdate;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.DefaultListModel;
@@ -58,11 +60,13 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mouse = new mouseAction();
+        txtAction txt = new txtAction();
         btnDelete.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnSave.addActionListener(btn);
         btnNew.addActionListener(btn);
         lstMaterial.addMouseListener(mouse);
+        txtMaterial.addKeyListener(txt);
     }
 
     /**
@@ -222,8 +226,16 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         enableTxtFields(true);
         btnDelete.setEnabled(false);
         btnEdit.setEnabled(false);
-        btnSave.setEnabled(true);
+        btnSave.setEnabled(false);
         isUpdate = false;
+    }
+
+    private void onKeyPress() {
+        if(txtMaterial.getText().isEmpty()){
+            btnSave.setEnabled(false);
+        }else{
+            btnSave.setEnabled(true);
+        }
     }
 
     /**
@@ -256,6 +268,15 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
             if (e.getClickCount() == 1) {
                 onListClick();
             }
+        }
+
+    }
+
+    private class txtAction extends KeyAdapter {
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            onKeyPress();
         }
 
     }

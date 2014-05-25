@@ -8,6 +8,8 @@ import BLL.BLLUpdate;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.DefaultListModel;
@@ -59,11 +61,17 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mouse = new mouseAction();
+        txtAction txt = new txtAction();
         btnDelete.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnSave.addActionListener(btn);
         btnNew.addActionListener(btn);
         lstVehicles.addMouseListener(mouse);
+        txtOdinNr.addKeyListener(txt);
+        txtRegNr.addKeyListener(txt);
+        txtBrand.addKeyListener(txt);
+        txtModel.addKeyListener(txt);
+        txtDescription.addKeyListener(txt);
     }
 
     /**
@@ -184,8 +192,8 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * 
-     * @return new BEVehicle. 
+     *
+     * @return new BEVehicle.
      */
     private BEVehicle getNewDetails() {
         int odinNumber = Integer.parseInt(txtOdinNr.getText());
@@ -196,7 +204,11 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         BEVehicle newVehicle = new BEVehicle(odinNumber, regNr, brand, model, description);
         return newVehicle;
     }
-    
+
+    private boolean checkForIntegers(String input) {
+        return input.matches(MessageDialog.getInstance().txtIntChecker());
+    }
+
     /**
      * Invoke this method when the deletebutton is clicked.
      */
@@ -243,9 +255,21 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         enableTxtFields(true);
         btnDelete.setEnabled(false);
         btnEdit.setEnabled(false);
-        btnSave.setEnabled(true);
+        btnSave.setEnabled(false);
         txtOdinNr.setEnabled(true);
         isUpdate = false;
+    }
+
+    private void onKeyPress() {
+        if (txtOdinNr.getText().isEmpty() || txtRegNr.getText().isEmpty() || txtBrand.getText().isEmpty() || txtModel.getText().isEmpty() || txtDescription.getText().isEmpty()) {
+            btnSave.setEnabled(false);
+        } else {
+            btnSave.setEnabled(true);
+        }
+        if (!checkForIntegers(txtOdinNr.getText())) {
+            txtOdinNr.setText(MessageDialog.getInstance().emptyString());
+            MessageDialog.getInstance().noTextHere();
+        }
     }
 
     /**
@@ -280,6 +304,14 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
             }
         }
 
+    }
+
+    private class txtAction extends KeyAdapter {
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            onKeyPress();
+        }
     }
 
     /**

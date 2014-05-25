@@ -9,9 +9,12 @@ import BLL.BLLUpdate;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.DefaultListModel;
+import javax.swing.JTextField;
 
 public class GUIFiremenAdmin extends javax.swing.JFrame {
 
@@ -60,12 +63,18 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mouse = new mouseAction();
+        txtAction txt = new txtAction();
         btnBrowse.addActionListener(btn);
         btnDelete.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnSave.addActionListener(btn);
         btnNew.addActionListener(btn);
         lstFiremen.addMouseListener(mouse);
+        txtPhone.addKeyListener(txt);
+        txtPaymentNo.addKeyListener(txt);
+        txtFirstName.addKeyListener(txt);
+        txtLastName.addKeyListener(txt);
+        txtAddress.addKeyListener(txt);
     }
 
     /**
@@ -221,8 +230,8 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * 
-     * @return new BEFireman 
+     *
+     * @return new BEFireman
      */
     private BEFireman getNewDetails() {
         java.util.Date utilDate = dateChooser.getDate();
@@ -239,14 +248,25 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         return newFireman;
     }
 
+    private boolean checkForIntegers(String input) {
+        return input.matches(MessageDialog.getInstance().txtIntChecker());
+    }
+    
+    private boolean checkForString(String input) {
+        return input.matches(MessageDialog.getInstance().txtStringChecker());
+    }
+
     /**
      * Invoke this method when the deletebutton os clicked.
      */
     private void onClickDelete() {
-        BLLDelete.getInstance().deleteFireman(m_fireman);
-        firemenModel.clear();
-        fillFiremenList();
-        clearSelection();
+        boolean reply = MessageDialog.getInstance().deleteFireman();
+        if (reply == true) {
+            BLLDelete.getInstance().deleteFireman(m_fireman);
+            firemenModel.clear();
+            fillFiremenList();
+            clearSelection();
+        }
     }
 
     /**
@@ -292,8 +312,35 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         enableTxtFields(true);
         btnDelete.setEnabled(false);
         btnEdit.setEnabled(false);
-        btnSave.setEnabled(true);
+        btnSave.setEnabled(false);
         isUpdate = false;
+    }
+
+    private void onKeyPress() {
+        if (txtFirstName.getText().isEmpty() || txtLastName.getText().isEmpty() || txtAddress.getText().isEmpty()
+                || txtPhone.getText().isEmpty() || txtPaymentNo.getText().isEmpty()) {
+            btnSave.setEnabled(false);
+        } else {
+            btnSave.setEnabled(true);
+        }
+        if (!(txtPhone.getText().isEmpty())) {
+            if (!checkForIntegers(txtPhone.getText())) {
+                txtPhone.setText(MessageDialog.getInstance().emptyString());
+                MessageDialog.getInstance().noTextHere();
+            }
+        }
+        if (!(txtPaymentNo.getText().isEmpty())) {
+            if (!checkForIntegers(txtPaymentNo.getText())) {
+                txtPaymentNo.setText(MessageDialog.getInstance().emptyString());
+                MessageDialog.getInstance().noTextHere();
+            }
+        }
+        if(!(txtFirstName.getText().isEmpty())){
+            if(!checkForString(txtFirstName.getText())){
+                txtFirstName.setText(MessageDialog.getInstance().emptyString());
+                MessageDialog.getInstance().noIntHere();
+            }
+        }
     }
 
     /**
@@ -326,11 +373,23 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 1) {
+            if (e.getSource().equals(lstFiremen) && e.getClickCount() == 1) {
                 onListClick();
             }
         }
 
+    }
+
+    /**
+     * Listeners for the txtfields.
+     */
+    private class txtAction extends KeyAdapter {
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            onKeyPress();
+
+        }
     }
 
     /**
@@ -376,6 +435,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         jScrollPane1.setViewportView(lstFiremen);
 
         txtFirstName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        txtFirstName.setText("Fornavn..");
         txtFirstName.setPreferredSize(new java.awt.Dimension(250, 38));
 
         txtLastName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
@@ -412,10 +472,10 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         lblLastName.setText("Efternavn:");
 
         lblAddress.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblAddress.setText("Addresse:");
+        lblAddress.setText("Adresse:");
 
         lblZipcode.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblZipcode.setText("Post nr.");
+        lblZipcode.setText("By:");
 
         lblPhone.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblPhone.setText("Telefon nr.");
@@ -480,9 +540,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
                                     .addComponent(cmbZipcode, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(cbxIsTeamLeader)
                                 .addComponent(txtPhotoPath, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFiremenLayout.createSequentialGroup()
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(btnBrowse, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlFiremenLayout.setVerticalGroup(
