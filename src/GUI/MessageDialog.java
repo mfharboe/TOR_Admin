@@ -1,8 +1,6 @@
 package GUI;
 
-import BE.BEFireman;
 import Observer.IObserver;
-import javax.security.auth.callback.ConfirmationCallback;
 import javax.swing.JOptionPane;
 
 public class MessageDialog implements IObserver {
@@ -67,13 +65,9 @@ public class MessageDialog implements IObserver {
     public void noTextHere() {
         JOptionPane.showMessageDialog(null, "Skriv kun tal i dette felt");
     }
-    
-    public void noIntHere() {
-        JOptionPane.showMessageDialog(null, "Skriv kun bogstaver i dette felt");
-    }
 
     public void pdfCreated() {
-        JOptionPane.showMessageDialog(null, "Dokumentet blev oprettet");
+        JOptionPane.showMessageDialog(null, "Rapport oprettet");
     }
 
     public void incidentApproved() {

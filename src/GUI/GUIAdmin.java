@@ -11,10 +11,13 @@ import BLL.BLLUpdate;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 public class GUIAdmin extends javax.swing.JFrame {
@@ -27,6 +30,9 @@ public class GUIAdmin extends javax.swing.JFrame {
     private ArrayList<BERoleTime> m_roleTime;
     private ArrayList<BEUsage> m_usage;
     private boolean isUpdate;
+
+    ImageIcon image;
+    ImageIcon imageLogo;
 
     /**
      * Creates new form GUIAdmin
@@ -84,6 +90,10 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlRemarks.setBackground(Color.WHITE);
         pnlDetail1.setBackground(Color.WHITE);
         pnlDetails2.setBackground(Color.WHITE);
+        pnlPeople.setBackground(Color.WHITE);
+        pnlUsage.setBackground(Color.WHITE);
+        imageLogo = new ImageIcon("ebr.jpg");
+        lblLogo.setIcon(imageLogo);
     }
 
     /**
@@ -92,15 +102,16 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mse = new mouseAction();
+        txtAction txt = new txtAction();
         btnFiremen.addActionListener(btn);
         btnVehicles.addActionListener(btn);
         btnMaterial.addActionListener(btn);
         btnUpdate.addActionListener(btn);
-        btnPDF.addActionListener(btn);
         btnSave.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnApprove.addActionListener(btn);
         lstIncidents.addMouseListener(mse);
+        lstIncidents.addKeyListener(txt);
     }
 
     /**
@@ -149,7 +160,6 @@ public class GUIAdmin extends javax.swing.JFrame {
      * @param enabled
      */
     private void enableBtnDetails(boolean enabled) {
-        btnPDF.setEnabled(enabled);
         btnSave.setEnabled(enabled);
         btnEdit.setEnabled(enabled);
         btnApprove.setEnabled(enabled);
@@ -241,6 +251,14 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     /**
+     * Prints a pdf with the details of the incident.
+     */
+    private void printReport() {
+        BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
+        MessageDialog.getInstance().pdfCreated();
+    }
+
+    /**
      * Invoke this method when the Incident-list is clicked.
      */
     private void onListClick() {
@@ -253,7 +271,6 @@ public class GUIAdmin extends javax.swing.JFrame {
             getDetails();
             btnEdit.setEnabled(true);
             btnApprove.setEnabled(true);
-            btnPDF.setEnabled(true);
             getUsage();
             getRoleTime();
         } else {
@@ -298,22 +315,19 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     private void onClickApprove() {
+        onClickSave();
+        printReport();
         isUpdate = false;
         BLLUpdate.getInstance().updateDetails(updatedDetails(isUpdate));
         onClickUpdate();
         MessageDialog.getInstance().incidentApproved();
     }
 
-    private void onClickPDF() {
-        BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
-        MessageDialog.getInstance().pdfCreated();
-    }
-
     /**
      * Invoke this method when the Firemen-button is clicked.
      */
     private void onClickFiremen() {
-        JFrame firemenAdmin = GUIFiremenAdmin.getInstance();
+        JFrame firemenAdmin = new GUIFiremenAdmin();
         firemenAdmin.setVisible(true);
     }
 
@@ -321,7 +335,7 @@ public class GUIAdmin extends javax.swing.JFrame {
      * Invoke this method when the Vehicles-button is clicked.
      */
     private void onClickVehicles() {
-        JFrame vehicleAdmin = GUIVehicleAdmin.getInstance();
+        JFrame vehicleAdmin = new GUIVehicleAdmin();
         vehicleAdmin.setVisible(true);
     }
 
@@ -329,7 +343,7 @@ public class GUIAdmin extends javax.swing.JFrame {
      * Invoke this method when the Material-button is clicked.
      */
     private void onClickMaterial() {
-        JFrame materialAdmin = GUIMaterialAdmin.getInstance();
+        JFrame materialAdmin = new GUIMaterialAdmin();
         materialAdmin.setVisible(true);
 
     }
@@ -355,10 +369,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                 onClickVehicles();
             } else if (e.getSource().equals(btnMaterial)) {
                 onClickMaterial();
-            } else if (e.getSource().equals(btnPDF)) {
-                onClickPDF();
-            } 
-
+            }
         }
     }
 
@@ -370,6 +381,16 @@ public class GUIAdmin extends javax.swing.JFrame {
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 1) {
+                onListClick();
+            }
+        }
+    }
+
+    private class txtAction extends KeyAdapter {
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (e.getSource().equals(lstIncidents)) {
                 onListClick();
             }
         }
@@ -387,7 +408,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         pnlAllDetails = new javax.swing.JPanel();
         btnSave = new javax.swing.JButton();
-        btnPDF = new javax.swing.JButton();
         pnlDetails2 = new javax.swing.JPanel();
         txtFireReportNumber = new javax.swing.JTextField();
         txtEvaNumber = new javax.swing.JTextField();
@@ -400,10 +420,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtInvolvedAddress = new javax.swing.JTextField();
         lblInvolved = new javax.swing.JLabel();
         lblInvolvedAddress = new javax.swing.JLabel();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        lstRoleTime = new javax.swing.JList();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        lstUsage = new javax.swing.JList();
         pnlRemarks = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtRemarks = new javax.swing.JTextArea();
@@ -416,6 +432,12 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtGroupNumber = new javax.swing.JTextField();
         cmbAlarmType = new javax.swing.JComboBox();
         btnApprove = new javax.swing.JButton();
+        pnlPeople = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        lstRoleTime = new javax.swing.JList();
+        pnlUsage = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        lstUsage = new javax.swing.JList();
         pnlAdministrate = new javax.swing.JPanel();
         btnVehicles = new javax.swing.JButton();
         btnFiremen = new javax.swing.JButton();
@@ -424,7 +446,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnUpdate = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstIncidents = new javax.swing.JList();
-        jLabel1 = new javax.swing.JLabel();
+        lblLogo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -433,10 +455,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
         btnSave.setPreferredSize(new java.awt.Dimension(105, 38));
-
-        btnPDF.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        btnPDF.setText("Print til PDF");
-        btnPDF.setPreferredSize(new java.awt.Dimension(105, 38));
 
         pnlDetails2.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
@@ -464,20 +482,16 @@ public class GUIAdmin extends javax.swing.JFrame {
             pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlDetails2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(lblEvaNumber, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblReportNumber, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblLeader, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlDetails2Layout.createSequentialGroup()
-                        .addComponent(lblLeader, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtLeader, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlDetails2Layout.createSequentialGroup()
-                        .addComponent(lblReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtFireReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlDetails2Layout.createSequentialGroup()
-                        .addComponent(lblEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                    .addComponent(txtFireReportNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtLeader, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtEvaNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         pnlDetails2Layout.setVerticalGroup(
             pnlDetails2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -517,16 +531,14 @@ public class GUIAdmin extends javax.swing.JFrame {
             pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlInvolvedLayout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblInvolvedAddress, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblInvolved, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlInvolvedLayout.createSequentialGroup()
-                        .addComponent(lblInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlInvolvedLayout.createSequentialGroup()
-                        .addComponent(lblInvolved, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtInvolvedName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                    .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtInvolvedName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         pnlInvolvedLayout.setVerticalGroup(
             pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -539,16 +551,8 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblInvolvedAddress))
-                .addContainerGap(70, Short.MAX_VALUE))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
-
-        lstRoleTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
-        lstRoleTime.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        jScrollPane6.setViewportView(lstRoleTime);
-
-        lstUsage.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Forbrug", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
-        lstUsage.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        jScrollPane7.setViewportView(lstUsage);
 
         pnlRemarks.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Bemærkninger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
 
@@ -602,15 +606,15 @@ public class GUIAdmin extends javax.swing.JFrame {
             .addGroup(pnlDetail1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblAlarmType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lblGroupNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblDetectorNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(lblDetectorNumber, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
+                    .addComponent(lblAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
                 .addGroup(pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtGroupNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(txtDetectorNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cmbAlarmType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cmbAlarmType, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         pnlDetail1Layout.setVerticalGroup(
             pnlDetail1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -635,7 +639,50 @@ public class GUIAdmin extends javax.swing.JFrame {
         );
 
         btnApprove.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        btnApprove.setText("Godkend");
+        btnApprove.setText("Godkend & Print Rapport");
+
+        pnlPeople.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+
+        lstRoleTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+        lstRoleTime.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        jScrollPane6.setViewportView(lstRoleTime);
+
+        javax.swing.GroupLayout pnlPeopleLayout = new javax.swing.GroupLayout(pnlPeople);
+        pnlPeople.setLayout(pnlPeopleLayout);
+        pnlPeopleLayout.setHorizontalGroup(
+            pnlPeopleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlPeopleLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlPeopleLayout.setVerticalGroup(
+            pnlPeopleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlPeopleLayout.createSequentialGroup()
+                .addComponent(jScrollPane6)
+                .addContainerGap())
+        );
+
+        pnlUsage.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Forbrug", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
+
+        lstUsage.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        jScrollPane7.setViewportView(lstUsage);
+
+        javax.swing.GroupLayout pnlUsageLayout = new javax.swing.GroupLayout(pnlUsage);
+        pnlUsage.setLayout(pnlUsageLayout);
+        pnlUsageLayout.setHorizontalGroup(
+            pnlUsageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlUsageLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        pnlUsageLayout.setVerticalGroup(
+            pnlUsageLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlUsageLayout.createSequentialGroup()
+                .addComponent(jScrollPane7)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout pnlAllDetailsLayout = new javax.swing.GroupLayout(pnlAllDetails);
         pnlAllDetails.setLayout(pnlAllDetailsLayout);
@@ -653,15 +700,13 @@ public class GUIAdmin extends javax.swing.JFrame {
                     .addComponent(pnlInvolved, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(pnlAllDetailsLayout.createSequentialGroup()
-                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(pnlRemarks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAllDetailsLayout.createSequentialGroup()
-                        .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnApprove, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(pnlAllDetailsLayout.createSequentialGroup()
+                        .addComponent(pnlPeople, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnApprove, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlUsage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlAllDetailsLayout.setVerticalGroup(
@@ -673,20 +718,18 @@ public class GUIAdmin extends javax.swing.JFrame {
                     .addComponent(pnlRemarks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6)
                     .addGroup(pnlAllDetailsLayout.createSequentialGroup()
                         .addComponent(pnlDetails2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlInvolved, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane7))
-                .addGap(18, 18, 18)
-                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnPDF, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnApprove, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(pnlInvolved, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(pnlPeople, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlUsage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlAllDetailsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnApprove, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -758,7 +801,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jLabel1.setText("LOGO");
+        lblLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -769,30 +812,26 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pnlAdministrate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
-                        .addGap(512, 512, 512))))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(87, 87, 87)
-                        .addComponent(pnlAllDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(pnlSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(pnlAdministrate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -803,13 +842,11 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnFiremen;
     private javax.swing.JButton btnMaterial;
-    private javax.swing.JButton btnPDF;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnVehicles;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox cmbAlarmType;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane6;
@@ -821,6 +858,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel lblInvolved;
     private javax.swing.JLabel lblInvolvedAddress;
     private javax.swing.JLabel lblLeader;
+    private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblReportNumber;
     private javax.swing.JList lstIncidents;
     private javax.swing.JList lstRoleTime;
@@ -830,8 +868,10 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JPanel pnlDetail1;
     private javax.swing.JPanel pnlDetails2;
     private javax.swing.JPanel pnlInvolved;
+    private javax.swing.JPanel pnlPeople;
     private javax.swing.JPanel pnlRemarks;
     private javax.swing.JPanel pnlSearch;
+    private javax.swing.JPanel pnlUsage;
     private javax.swing.JTextField txtDetectorNumber;
     private javax.swing.JTextField txtEvaNumber;
     private javax.swing.JTextField txtFireReportNumber;

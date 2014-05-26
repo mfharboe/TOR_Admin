@@ -16,7 +16,6 @@ import javax.swing.DefaultListModel;
 
 public class GUIMaterialAdmin extends javax.swing.JFrame {
 
-    private static GUIMaterialAdmin m_instance;
     private DefaultListModel<BEMaterial> materialModel;
     private BEMaterial m_material;
     private boolean isUpdate;
@@ -24,22 +23,11 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     /**
      * Creates new form GUIMaterialAdmin.
      */
-    private GUIMaterialAdmin() {
+    public GUIMaterialAdmin() {
         initComponents();
         this.setTitle(MessageDialog.getInstance().materialAdminTitle());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initialSettings();
-    }
-
-    /**
-     *
-     * @return m_instance of GUIMaterialAdmin.
-     */
-    public static GUIMaterialAdmin getInstance() {
-        if (m_instance == null) {
-            m_instance = new GUIMaterialAdmin();
-        }
-        return m_instance;
     }
 
     /**
@@ -66,6 +54,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         btnSave.addActionListener(btn);
         btnNew.addActionListener(btn);
         lstMaterial.addMouseListener(mouse);
+        lstMaterial.addKeyListener(txt);
         txtMaterial.addKeyListener(txt);
     }
 
@@ -231,9 +220,9 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     }
 
     private void onKeyPress() {
-        if(txtMaterial.getText().isEmpty()){
+        if (txtMaterial.getText().isEmpty()) {
             btnSave.setEnabled(false);
-        }else{
+        } else {
             btnSave.setEnabled(true);
         }
     }
@@ -276,9 +265,12 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            onKeyPress();
+            if (e.getSource().equals(lstMaterial)) {
+                onListClick();
+            } else {
+                onKeyPress();
+            }
         }
-
     }
 
     /**
@@ -304,90 +296,61 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(679, 577));
 
         pnlMaterial.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Materiel", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 24))); // NOI18N
+        pnlMaterial.setLayout(null);
 
         lstMaterial.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jScrollPane1.setViewportView(lstMaterial);
 
+        pnlMaterial.add(jScrollPane1);
+        jScrollPane1.setBounds(18, 32, 258, 572);
+
         txtMaterial.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtMaterial.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlMaterial.add(txtMaterial);
+        txtMaterial.setBounds(386, 32, 250, 38);
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
         btnSave.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlMaterial.add(btnSave);
+        btnSave.setBounds(677, 566, 81, 38);
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnDelete.setText("Slet");
         btnDelete.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlMaterial.add(btnDelete);
+        btnDelete.setBounds(382, 566, 81, 38);
 
         lblMaterial.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblMaterial.setText("Materiel:");
+        lblMaterial.setText("*Materiel:");
+        pnlMaterial.add(lblMaterial);
+        lblMaterial.setBounds(294, 41, 80, 19);
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");
         btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlMaterial.add(btnEdit);
+        btnEdit.setBounds(470, 566, 81, 38);
 
         btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnNew.setText("Ny..");
         btnNew.setPreferredSize(new java.awt.Dimension(81, 38));
-
-        javax.swing.GroupLayout pnlMaterialLayout = new javax.swing.GroupLayout(pnlMaterial);
-        pnlMaterial.setLayout(pnlMaterialLayout);
-        pnlMaterialLayout.setHorizontalGroup(
-            pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMaterialLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlMaterialLayout.createSequentialGroup()
-                        .addComponent(lblMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlMaterialLayout.createSequentialGroup()
-                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        pnlMaterialLayout.setVerticalGroup(
-            pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlMaterialLayout.createSequentialGroup()
-                .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnlMaterialLayout.createSequentialGroup()
-                        .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnlMaterialLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(lblMaterial))
-                            .addComponent(txtMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(428, 428, 428)
-                        .addGroup(pnlMaterialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        pnlMaterial.add(btnNew);
+        btnNew.setBounds(294, 566, 81, 38);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
+                .addComponent(pnlMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 776, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(13, 13, 13)
+                .addComponent(pnlMaterial, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();

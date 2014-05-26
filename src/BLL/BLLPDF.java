@@ -25,7 +25,7 @@ public class BLLPDF {
 
     private static BLLPDF m_instance;
     private Image logo;
-    
+
     private final String FILE_PATH = "";
     private final String FILE_TYPE = ".pdf";
 
@@ -34,8 +34,8 @@ public class BLLPDF {
     }
 
     /**
-     * 
-     * @return m_instance of BLLPDF. 
+     *
+     * @return m_instance of BLLPDF.
      */
     public static BLLPDF getInstance() {
         if (m_instance == null) {
@@ -45,10 +45,12 @@ public class BLLPDF {
     }
 
     /**
-     * Creates a new .pdf file with the given incidentDetails, the RoleTime and Usage for an Incident.
+     * Creates a new .pdf file with the given incidentDetails, the RoleTime and
+     * Usage for an Incident.
+     *
      * @param incidentDetails
      * @param roletime
-     * @param usage 
+     * @param usage
      */
     public void printToPDF(BEIncidentDetails incidentDetails, ArrayList<BERoleTime> roletime, ArrayList<BEUsage> usage) {
 
@@ -86,7 +88,10 @@ public class BLLPDF {
             Paragraph myEvaNr = new Paragraph("Eva nr: " + incidentDetails.getM_evaNumber());
             Paragraph myFireReportNr = new Paragraph("Rapport nr: " + incidentDetails.getM_fireReport());
             Paragraph myIncident = new Paragraph(incidentDetails.getM_incident().getM_incidentName());
-            Paragraph myAlarmType = new Paragraph(incidentDetails.getM_alarm().getM_description());
+            Paragraph myAlarmType = new Paragraph(" ");
+            if (incidentDetails.getM_alarm() != null) {
+                myAlarmType = new Paragraph(incidentDetails.getM_alarm().getM_description());
+            }
             Paragraph myLeader = new Paragraph("Indsatsleder: " + incidentDetails.getM_incidentLeader());
             Paragraph myInvolved = new Paragraph("Skadeslidte:");
             Paragraph myInvolvedName = new Paragraph(incidentDetails.getM_involvedName());

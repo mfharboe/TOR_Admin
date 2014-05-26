@@ -17,7 +17,6 @@ import javax.swing.DefaultListModel;
 
 public class GUIFiremenAdmin extends javax.swing.JFrame {
 
-    private static GUIFiremenAdmin m_instance;
     private DefaultListModel<BEFireman> firemenModel;
     private BEFireman m_fireman;
     private boolean isUpdate;
@@ -25,22 +24,11 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     /**
      * Creates new form GUIFiremenAdmin.
      */
-    private GUIFiremenAdmin() {
+    public GUIFiremenAdmin() {
         initComponents();
         this.setTitle(MessageDialog.getInstance().firemenAdminTitle());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initialSettings();
-    }
-
-    /**
-     *
-     * @return m_instance of GUIFiremenAdmin.
-     */
-    public static GUIFiremenAdmin getInstance() {
-        if (m_instance == null) {
-            m_instance = new GUIFiremenAdmin();
-        }
-        return m_instance;
     }
 
     /**
@@ -69,6 +57,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         btnSave.addActionListener(btn);
         btnNew.addActionListener(btn);
         lstFiremen.addMouseListener(mouse);
+        lstFiremen.addKeyListener(txt);
         txtPhone.addKeyListener(txt);
         txtPaymentNo.addKeyListener(txt);
         txtFirstName.addKeyListener(txt);
@@ -250,7 +239,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     private boolean checkForIntegers(String input) {
         return input.matches(MessageDialog.getInstance().txtIntChecker());
     }
-    
+
     private boolean checkForString(String input) {
         return input.matches(MessageDialog.getInstance().txtStringChecker());
     }
@@ -334,12 +323,6 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
                 MessageDialog.getInstance().noTextHere();
             }
         }
-        if(!(txtFirstName.getText().isEmpty())){
-            if(!checkForString(txtFirstName.getText())){
-                txtFirstName.setText(MessageDialog.getInstance().emptyString());
-                MessageDialog.getInstance().noIntHere();
-            }
-        }
     }
 
     /**
@@ -386,8 +369,11 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
 
         @Override
         public void keyReleased(KeyEvent e) {
+            if (e.getSource().equals(lstFiremen)) {
+                onListClick();
+            } else{
             onKeyPress();
-
+            }
         }
     }
 
@@ -429,187 +415,136 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         pnlFiremen.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mandskab", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 24))); // NOI18N
+        pnlFiremen.setLayout(null);
 
         lstFiremen.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jScrollPane1.setViewportView(lstFiremen);
 
+        pnlFiremen.add(jScrollPane1);
+        jScrollPane1.setBounds(18, 32, 258, 572);
+
         txtFirstName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        txtFirstName.setText("Fornavn..");
         txtFirstName.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlFiremen.add(txtFirstName);
+        txtFirstName.setBounds(392, 72, 250, 38);
 
         txtLastName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtLastName.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlFiremen.add(txtLastName);
+        txtLastName.setBounds(392, 112, 250, 38);
 
         txtAddress.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtAddress.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlFiremen.add(txtAddress);
+        txtAddress.setBounds(392, 152, 250, 38);
+        pnlFiremen.add(dateChooser);
+        dateChooser.setBounds(392, 32, 250, 38);
 
         txtPhone.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtPhone.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlFiremen.add(txtPhone);
+        txtPhone.setBounds(392, 232, 250, 38);
 
         cmbZipcode.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        pnlFiremen.add(cmbZipcode);
+        cmbZipcode.setBounds(392, 192, 250, 38);
 
         txtPaymentNo.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtPaymentNo.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlFiremen.add(txtPaymentNo);
+        txtPaymentNo.setBounds(392, 272, 250, 38);
 
         txtPhotoPath.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        pnlFiremen.add(txtPhotoPath);
+        txtPhotoPath.setBounds(392, 342, 250, 38);
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
         btnSave.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlFiremen.add(btnSave);
+        btnSave.setBounds(677, 566, 81, 38);
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnDelete.setText("Slet");
         btnDelete.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlFiremen.add(btnDelete);
+        btnDelete.setBounds(382, 566, 81, 38);
 
         lblDate.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblDate.setText("Ansat d.");
+        lblDate.setText("*Ansat d.");
+        pnlFiremen.add(lblDate);
+        lblDate.setBounds(294, 42, 63, 19);
 
         lblFirstName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblFirstName.setText("Fornavn:");
+        lblFirstName.setText("*Fornavn:");
+        pnlFiremen.add(lblFirstName);
+        lblFirstName.setBounds(294, 82, 66, 19);
 
         lblLastName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblLastName.setText("Efternavn:");
+        lblLastName.setText("*Efternavn:");
+        pnlFiremen.add(lblLastName);
+        lblLastName.setBounds(294, 122, 76, 19);
 
         lblAddress.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblAddress.setText("Adresse:");
+        lblAddress.setText("*Adresse:");
+        pnlFiremen.add(lblAddress);
+        lblAddress.setBounds(294, 162, 65, 19);
 
         lblZipcode.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblZipcode.setText("By:");
+        lblZipcode.setText("*By:");
+        pnlFiremen.add(lblZipcode);
+        lblZipcode.setBounds(294, 202, 30, 19);
 
         lblPhone.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblPhone.setText("Telefon nr.");
+        lblPhone.setText("*Telefon nr.");
+        pnlFiremen.add(lblPhone);
+        lblPhone.setBounds(294, 242, 80, 19);
 
         lblPayment.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblPayment.setText("Betalings nr.");
+        lblPayment.setText("*Betalings nr.");
+        pnlFiremen.add(lblPayment);
+        lblPayment.setBounds(294, 282, 88, 19);
 
         lblPicture.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblPicture.setText("Billede:");
+        lblPicture.setText("(billede):");
+        pnlFiremen.add(lblPicture);
+        lblPicture.setBounds(294, 352, 55, 19);
 
         cbxIsTeamLeader.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         cbxIsTeamLeader.setText("Holdleder uddannet");
+        pnlFiremen.add(cbxIsTeamLeader);
+        cbxIsTeamLeader.setBounds(392, 312, 153, 27);
 
         btnBrowse.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnBrowse.setText("Browse..");
         btnBrowse.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlFiremen.add(btnBrowse);
+        btnBrowse.setBounds(553, 398, 89, 38);
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");
         btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlFiremen.add(btnEdit);
+        btnEdit.setBounds(470, 566, 81, 38);
 
         btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnNew.setText("Ny..");
-
-        javax.swing.GroupLayout pnlFiremenLayout = new javax.swing.GroupLayout(pnlFiremen);
-        pnlFiremen.setLayout(pnlFiremenLayout);
-        pnlFiremenLayout.setHorizontalGroup(
-            pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFiremenLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlFiremenLayout.createSequentialGroup()
-                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(pnlFiremenLayout.createSequentialGroup()
-                            .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lblLastName)
-                                .addComponent(lblFirstName)
-                                .addComponent(lblAddress)
-                                .addComponent(lblZipcode)
-                                .addComponent(lblPhone)
-                                .addComponent(lblPayment)
-                                .addComponent(lblPicture)
-                                .addComponent(lblDate))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtFirstName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtLastName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtAddress, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtPhone, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtPaymentNo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(dateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(cmbZipcode, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(cbxIsTeamLeader)
-                                .addComponent(txtPhotoPath, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addComponent(btnBrowse, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        pnlFiremenLayout.setVerticalGroup(
-            pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFiremenLayout.createSequentialGroup()
-                .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnlFiremenLayout.createSequentialGroup()
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(dateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(pnlFiremenLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(lblDate)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtFirstName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblFirstName))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblLastName))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblAddress))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cmbZipcode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblZipcode))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblPhone))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtPaymentNo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblPayment))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cbxIsTeamLeader)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtPhotoPath, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblPicture))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBrowse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                        .addGroup(pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlFiremenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnNew, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1))
-                .addContainerGap())
-        );
+        pnlFiremen.add(btnNew);
+        btnNew.setBounds(294, 566, 81, 38);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlFiremen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(12, 12, 12)
+                .addComponent(pnlFiremen, javax.swing.GroupLayout.PREFERRED_SIZE, 776, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlFiremen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(13, 13, 13)
+                .addComponent(pnlFiremen, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();

@@ -16,7 +16,6 @@ import javax.swing.DefaultListModel;
 
 public class GUIVehicleAdmin extends javax.swing.JFrame {
 
-    private static GUIVehicleAdmin m_instance;
     private DefaultListModel<BEVehicle> vehicleModel;
     private BEVehicle m_vehicle;
     private boolean isUpdate;
@@ -24,22 +23,11 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     /**
      * Creates new form GUIVehicleAdmin.
      */
-    private GUIVehicleAdmin() {
+    public GUIVehicleAdmin() {
         initComponents();
         this.setTitle(MessageDialog.getInstance().vehicleAdminTitle());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         initialSettings();
-    }
-
-    /**
-     *
-     * @return m_instance of GUIVehicleAdmin.
-     */
-    public static GUIVehicleAdmin getInstance() {
-        if (m_instance == null) {
-            m_instance = new GUIVehicleAdmin();
-        }
-        return m_instance;
     }
 
     /**
@@ -67,6 +55,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         btnSave.addActionListener(btn);
         btnNew.addActionListener(btn);
         lstVehicles.addMouseListener(mouse);
+        lstVehicles.addKeyListener(txt);
         txtOdinNr.addKeyListener(txt);
         txtRegNr.addKeyListener(txt);
         txtBrand.addKeyListener(txt);
@@ -140,6 +129,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
     private void onListClick() {
         enableBtn(false);
         enableTxtFields(false);
+        txtOdinNr.setEnabled(false);
         if (!vehicleModel.isEmpty() && lstVehicles.getSelectedIndex() != -1) {
             setDetails();
             btnEdit.setEnabled(true);
@@ -310,7 +300,11 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            onKeyPress();
+            if (e.getSource().equals(lstVehicles)) {
+                onListClick();
+            } else {
+                onKeyPress();
+            }
         }
     }
 
@@ -345,140 +339,101 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(679, 577));
 
         pnlVehicles.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Køretøjer", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 24))); // NOI18N
+        pnlVehicles.setLayout(null);
 
         lstVehicles.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jScrollPane1.setViewportView(lstVehicles);
 
+        pnlVehicles.add(jScrollPane1);
+        jScrollPane1.setBounds(18, 32, 258, 572);
+
         txtOdinNr.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtOdinNr.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlVehicles.add(txtOdinNr);
+        txtOdinNr.setBounds(384, 32, 250, 38);
 
         txtRegNr.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtRegNr.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlVehicles.add(txtRegNr);
+        txtRegNr.setBounds(384, 72, 250, 38);
 
         txtBrand.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtBrand.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlVehicles.add(txtBrand);
+        txtBrand.setBounds(384, 112, 250, 38);
 
         txtModel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtModel.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlVehicles.add(txtModel);
+        txtModel.setBounds(384, 152, 250, 38);
 
         txtDescription.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtDescription.setPreferredSize(new java.awt.Dimension(250, 38));
+        pnlVehicles.add(txtDescription);
+        txtDescription.setBounds(384, 192, 250, 38);
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
         btnSave.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlVehicles.add(btnSave);
+        btnSave.setBounds(677, 566, 81, 38);
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnDelete.setText("Slet");
         btnDelete.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlVehicles.add(btnDelete);
+        btnDelete.setBounds(382, 566, 81, 38);
 
         lblOdinNr.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblOdinNr.setText("Odin nr.");
+        lblOdinNr.setText("*Odin nr.");
+        pnlVehicles.add(lblOdinNr);
+        lblOdinNr.setBounds(294, 42, 69, 19);
 
         lblRegNr.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblRegNr.setText("Reg. nr.");
+        lblRegNr.setText("*Reg. nr.");
+        pnlVehicles.add(lblRegNr);
+        lblRegNr.setBounds(294, 82, 69, 19);
 
         lblBrand.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblBrand.setText("Mærke:");
+        lblBrand.setText("*Mærke:");
+        pnlVehicles.add(lblBrand);
+        lblBrand.setBounds(294, 122, 69, 19);
 
         lblModel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblModel.setText("Model:");
+        lblModel.setText("*Model:");
+        pnlVehicles.add(lblModel);
+        lblModel.setBounds(294, 162, 69, 19);
 
         lblDescription.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblDescription.setText("Type:");
+        lblDescription.setText("*Type:");
+        pnlVehicles.add(lblDescription);
+        lblDescription.setBounds(294, 202, 69, 19);
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");
         btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
+        pnlVehicles.add(btnEdit);
+        btnEdit.setBounds(470, 566, 81, 38);
 
         btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnNew.setText("Ny..");
         btnNew.setPreferredSize(new java.awt.Dimension(81, 38));
-
-        javax.swing.GroupLayout pnlVehiclesLayout = new javax.swing.GroupLayout(pnlVehicles);
-        pnlVehicles.setLayout(pnlVehiclesLayout);
-        pnlVehiclesLayout.setHorizontalGroup(
-            pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                        .addComponent(btnNew, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblOdinNr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblRegNr, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-                            .addComponent(lblBrand, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblModel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtOdinNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtRegNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtBrand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtModel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        pnlVehiclesLayout.setVerticalGroup(
-            pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnlVehiclesLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(lblOdinNr))
-                            .addComponent(txtOdinNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtRegNr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblRegNr))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtBrand, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblBrand))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtModel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblModel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblDescription))
-                        .addGap(252, 252, 252)
-                        .addGroup(pnlVehiclesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnNew, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        pnlVehicles.add(btnNew);
+        btnNew.setBounds(294, 566, 81, 38);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlVehicles, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(12, 12, 12)
+                .addComponent(pnlVehicles, javax.swing.GroupLayout.PREFERRED_SIZE, 776, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlVehicles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(13, 13, 13)
+                .addComponent(pnlVehicles, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
