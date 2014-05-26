@@ -16,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JTextField;
 
 public class GUIAdmin extends javax.swing.JFrame {
 
@@ -28,8 +27,6 @@ public class GUIAdmin extends javax.swing.JFrame {
     private ArrayList<BERoleTime> m_roleTime;
     private ArrayList<BEUsage> m_usage;
     private boolean isUpdate;
-    private static final int SEARCH_INCIDENT = 1;
-    private static final int SEARCH_EXERCISE = 6;
 
     /**
      * Creates new form GUIAdmin
@@ -83,13 +80,10 @@ public class GUIAdmin extends javax.swing.JFrame {
         pnlAdministrate.setBackground(Color.WHITE);
         pnlAllDetails.setBackground(Color.WHITE);
         pnlSearch.setBackground(Color.WHITE);
-        pnlSearchFor.setBackground(Color.WHITE);
         pnlInvolved.setBackground(Color.WHITE);
         pnlRemarks.setBackground(Color.WHITE);
         pnlDetail1.setBackground(Color.WHITE);
         pnlDetails2.setBackground(Color.WHITE);
-        rdoExercise.setBackground(Color.WHITE);
-        rdoIncident.setBackground(Color.WHITE);
     }
 
     /**
@@ -98,9 +92,6 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void addListeners() {
         btnAction btn = new btnAction();
         mouseAction mse = new mouseAction();
-        buttonGroup1.add(rdoExercise);
-        buttonGroup1.add(rdoIncident);
-        btnSearch.addActionListener(btn);
         btnFiremen.addActionListener(btn);
         btnVehicles.addActionListener(btn);
         btnMaterial.addActionListener(btn);
@@ -249,31 +240,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         return m_incidentDetails;
     }
 
-    private java.sql.Date getFromDate() {
-        java.util.Date utilDate = dateChooserFrom.getDate();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        return sqlDate;
-    }
-
-    private java.sql.Date getToDate() {
-        java.util.Date utilDate = dateChooserTo.getDate();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        return sqlDate;
-    }
-
-    private int getSearchType() {
-        if (rdoExercise.isSelected()) {
-            return SEARCH_EXERCISE;
-        } else if (rdoIncident.isSelected()) {
-            return SEARCH_INCIDENT;
-        }
-        return 0;
-    }
-
-    private boolean areDatesFilled() {
-        return !((JTextField) dateChooserFrom.getDateEditor().getUiComponent()).getText().isEmpty() && !((JTextField) dateChooserTo.getDateEditor().getUiComponent()).getText().isEmpty();
-    }
-
     /**
      * Invoke this method when the Incident-list is clicked.
      */
@@ -314,22 +280,6 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Invoke this method when the Search-button is clicked.
-     */
-    private void onClickSearch() {
-        BLLRead.getInstance().clearDetailsArray();
-        incidentModel.clear();
-        clearDetails();
-        if (areDatesFilled()) {
-            for (BEIncident incidentsByDate : BLLRead.getInstance().readAllIncidentsByDate(getSearchType(), getFromDate(), getToDate())) {
-                incidentModel.addElement(incidentsByDate);
-            }
-        } else {
-            MessageDialog.getInstance().fillOutAllDates();
-        }
-    }
-
-    /**
      * Invoke this method when the Edit-button is clicked.
      */
     private void onClickEdit() {
@@ -350,8 +300,8 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void onClickApprove() {
         isUpdate = false;
         BLLUpdate.getInstance().updateDetails(updatedDetails(isUpdate));
-        MessageDialog.getInstance().incidentApproved();
         onClickUpdate();
+        MessageDialog.getInstance().incidentApproved();
     }
 
     private void onClickPDF() {
@@ -407,9 +357,8 @@ public class GUIAdmin extends javax.swing.JFrame {
                 onClickMaterial();
             } else if (e.getSource().equals(btnPDF)) {
                 onClickPDF();
-            } else if (e.getSource().equals(btnSearch)) {
-                onClickSearch();
-            }
+            } 
+
         }
     }
 
@@ -472,21 +421,14 @@ public class GUIAdmin extends javax.swing.JFrame {
         btnFiremen = new javax.swing.JButton();
         btnMaterial = new javax.swing.JButton();
         pnlSearch = new javax.swing.JPanel();
-        pnlSearchFor = new javax.swing.JPanel();
-        rdoExercise = new javax.swing.JRadioButton();
-        rdoIncident = new javax.swing.JRadioButton();
-        lblFrom = new javax.swing.JLabel();
-        dateChooserFrom = new com.toedter.calendar.JDateChooser();
-        lblTo = new javax.swing.JLabel();
-        dateChooserTo = new com.toedter.calendar.JDateChooser();
-        btnSearch = new javax.swing.JButton();
         btnUpdate = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstIncidents = new javax.swing.JList();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        pnlAllDetails.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        pnlAllDetails.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
@@ -597,7 +539,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addGroup(pnlInvolvedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtInvolvedAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblInvolvedAddress))
-                .addContainerGap(49, Short.MAX_VALUE))
+                .addContainerGap(70, Short.MAX_VALUE))
         );
 
         lstRoleTime.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Fremmødte", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
@@ -785,73 +727,14 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        pnlSearch.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Find", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 24))); // NOI18N
-
-        pnlSearchFor.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-
-        rdoExercise.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        rdoExercise.setText("Øvelser");
-
-        rdoIncident.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        rdoIncident.setText("Indsater");
-
-        lblFrom.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblFrom.setText("Fra");
-
-        lblTo.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        lblTo.setText("Til");
-
-        btnSearch.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        btnSearch.setText("Find");
-        btnSearch.setPreferredSize(new java.awt.Dimension(105, 38));
-
-        javax.swing.GroupLayout pnlSearchForLayout = new javax.swing.GroupLayout(pnlSearchFor);
-        pnlSearchFor.setLayout(pnlSearchForLayout);
-        pnlSearchForLayout.setHorizontalGroup(
-            pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlSearchForLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(rdoIncident)
-                .addGap(18, 18, 18)
-                .addComponent(rdoExercise)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
-                .addComponent(lblFrom)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(dateChooserFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(lblTo)
-                .addGap(12, 12, 12)
-                .addComponent(dateChooserTo, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
-                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24))
-        );
-        pnlSearchForLayout.setVerticalGroup(
-            pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlSearchForLayout.createSequentialGroup()
-                .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlSearchForLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(dateChooserTo, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                            .addComponent(dateChooserFrom, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
-                            .addComponent(btnSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(pnlSearchForLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(pnlSearchForLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblFrom)
-                            .addComponent(rdoExercise)
-                            .addComponent(rdoIncident))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSearchForLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(lblTo)
-                .addGap(21, 21, 21))
-        );
+        pnlSearch.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Find meldinger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 24))); // NOI18N
 
         btnUpdate.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        btnUpdate.setText("Nyeste meldinger");
+        btnUpdate.setText("Opdater");
         btnUpdate.setPreferredSize(new java.awt.Dimension(38, 250));
+
+        lstIncidents.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        jScrollPane1.setViewportView(lstIncidents);
 
         javax.swing.GroupLayout pnlSearchLayout = new javax.swing.GroupLayout(pnlSearch);
         pnlSearch.setLayout(pnlSearchLayout);
@@ -859,25 +742,23 @@ public class GUIAdmin extends javax.swing.JFrame {
             pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSearchLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(pnlSearchFor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(pnlSearchLayout.createSequentialGroup()
+                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         pnlSearchLayout.setVerticalGroup(
             pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSearchLayout.createSequentialGroup()
-                .addGroup(pnlSearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlSearchFor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(pnlSearchLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(9, 9, 9))
+                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
-        lstIncidents.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Meldinger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 18))); // NOI18N
-        lstIncidents.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        jScrollPane1.setViewportView(lstIncidents);
+        jLabel1.setText("LOGO");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -885,28 +766,32 @@ public class GUIAdmin extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pnlAdministrate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlSearch, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(pnlAdministrate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(512, 512, 512))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnlSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addGap(18, 18, 18)
-                        .addComponent(pnlAdministrate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(pnlAllDetails, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel1)
+                        .addGap(87, 87, 87)
+                        .addComponent(pnlAllDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(pnlSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnlAdministrate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -920,13 +805,11 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JButton btnMaterial;
     private javax.swing.JButton btnPDF;
     private javax.swing.JButton btnSave;
-    private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnVehicles;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox cmbAlarmType;
-    private com.toedter.calendar.JDateChooser dateChooserFrom;
-    private com.toedter.calendar.JDateChooser dateChooserTo;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane6;
@@ -934,13 +817,11 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JLabel lblAlarmType;
     private javax.swing.JLabel lblDetectorNumber;
     private javax.swing.JLabel lblEvaNumber;
-    private javax.swing.JLabel lblFrom;
     private javax.swing.JLabel lblGroupNumber;
     private javax.swing.JLabel lblInvolved;
     private javax.swing.JLabel lblInvolvedAddress;
     private javax.swing.JLabel lblLeader;
     private javax.swing.JLabel lblReportNumber;
-    private javax.swing.JLabel lblTo;
     private javax.swing.JList lstIncidents;
     private javax.swing.JList lstRoleTime;
     private javax.swing.JList lstUsage;
@@ -951,9 +832,6 @@ public class GUIAdmin extends javax.swing.JFrame {
     private javax.swing.JPanel pnlInvolved;
     private javax.swing.JPanel pnlRemarks;
     private javax.swing.JPanel pnlSearch;
-    private javax.swing.JPanel pnlSearchFor;
-    private javax.swing.JRadioButton rdoExercise;
-    private javax.swing.JRadioButton rdoIncident;
     private javax.swing.JTextField txtDetectorNumber;
     private javax.swing.JTextField txtEvaNumber;
     private javax.swing.JTextField txtFireReportNumber;
