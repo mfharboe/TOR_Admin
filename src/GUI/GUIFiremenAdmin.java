@@ -13,12 +13,15 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 
 public class GUIFiremenAdmin extends javax.swing.JFrame {
 
     private DefaultListModel<BEFireman> firemenModel;
+    private JFileChooser fc;
     private BEFireman m_fireman;
     private boolean isUpdate;
 
@@ -38,6 +41,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     private void initialSettings() {
         firemenModel = new DefaultListModel<>();
         lstFiremen.setModel(firemenModel);
+        fc = new JFileChooser();
         addListeners();
         addColors();
         fillFiremenList();
@@ -276,10 +280,14 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Invoke this method when the browsebutton is clicked.
+     * Invoke this method when the browse-button is clicked.
      */
     private void onClickBrowse() {
-
+        int status = fc.showOpenDialog(this);
+        if (status == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fc.getSelectedFile();
+            txtPhotoPath.setText(selectedFile.getAbsolutePath());
+        }
     }
 
     /**
@@ -308,6 +316,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         btnDelete.setEnabled(false);
         btnEdit.setEnabled(false);
         btnSave.setEnabled(false);
+        btnBrowse.setEnabled(true);
         isUpdate = false;
     }
 
@@ -526,13 +535,13 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         btnBrowse.setText("Browse..");
         btnBrowse.setPreferredSize(new java.awt.Dimension(81, 38));
         pnlFiremen.add(btnBrowse);
-        btnBrowse.setBounds(640, 390, 89, 38);
+        btnBrowse.setBounds(629, 390, 100, 38);
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");
         btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
         pnlFiremen.add(btnEdit);
-        btnEdit.setBounds(470, 566, 81, 38);
+        btnEdit.setBounds(470, 566, 90, 38);
 
         btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnNew.setText("Ny..");

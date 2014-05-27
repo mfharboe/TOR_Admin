@@ -679,7 +679,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="Find meldinger">
+            <TitledBorder title="Indsatser">
               <Font PropertyName="font" name="Calibri" size="24" style="0"/>
             </TitledBorder>
           </Border>

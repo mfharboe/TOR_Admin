@@ -141,19 +141,21 @@ public class BLLError implements ISubject {
     }
 
     public void finishIncidentError() {
-        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "afslutte meldingen";
+        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "afslutte indsatsen";
         notifyObservers();
     }
 
     public void fillOutDate() {
-        error = ERROR_HAS_HAPPEND + "Datofeltet blev ikke udfyldt";
+        error = ERROR_HAS_HAPPEND + "Datofeltet blev ikke udfyldt - prøv igen";
         notifyObservers();
     }
 
     public void fillOutZip() {
-        error = ERROR_HAS_HAPPEND + "Postnummer blev ikke udfyldt";
+        error = ERROR_HAS_HAPPEND + "Postnummer blev ikke udfyldt - prøv igen";
         notifyObservers();
     }
+    
+    
 
     public String getError() {
         return error;

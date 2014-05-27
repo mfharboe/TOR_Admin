@@ -417,7 +417,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         btnEdit.setText("Rediger");
         btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
         pnlVehicles.add(btnEdit);
-        btnEdit.setBounds(470, 566, 81, 38);
+        btnEdit.setBounds(470, 566, 90, 38);
 
         btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnNew.setText("Ny..");

@@ -64,6 +64,9 @@ public class GUIAdmin extends javax.swing.JFrame {
         return m_instance;
     }
 
+    /**
+     * Startup the BLL classes with a given DAL class.
+     */
     private void setUpBLL() {
         BLLError.getInstance().register(MessageDialog.getInstance());
         BLLRead.getInstance().setDAL(DALRead.getInstance());
@@ -78,7 +81,6 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void initialSettings() {
         addColors();
         addListeners();
-        notEditable();
         fillAlarmCombo();
         incidentModel = new DefaultListModel<>();
         usageModel = new DefaultListModel<>();
@@ -86,7 +88,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         lstIncidents.setModel(incidentModel);
         lstUsage.setModel(usageModel);
         lstRoleTime.setModel(roleTimeModel);
-        btnEdit.setEnabled(false);
         enableTextFields(false);
         enableCombobox(false);
         enableBtnDetails(false);
@@ -130,13 +131,8 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * These lists are never enabled, only shown.
+     * Fills the AlarmType Combobox.
      */
-    private void notEditable() {
-        lstRoleTime.setEnabled(false);
-        lstUsage.setEnabled(false);
-    }
-
     private void fillAlarmCombo() {
         cmbAlarmType.addItem(MessageDialog.getInstance().alarmType());
         for (BEAlarm alarm : BLLRead.getInstance().readAllAlarms()) {
@@ -181,7 +177,7 @@ public class GUIAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Clears all the textfields etc.
+     * Clears the textfields etc.
      */
     private void clearDetails() {
         usageModel.clear();
@@ -197,6 +193,10 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtRemark.setText(MessageDialog.getInstance().emptyString());
     }
 
+    /**
+     * Fills the textfields etc with the given IncidentDetails.
+     * @param incidentDetails 
+     */
     private void fillDetails(BEIncidentDetails incidentDetails) {
         txtLeader.setText(incidentDetails.getM_incidentLeader());
         txtEvaNumber.setText(incidentDetails.getM_evaNumber());
@@ -213,6 +213,9 @@ public class GUIAdmin extends javax.swing.JFrame {
         txtRemark.setText(incidentDetails.getM_remark());
     }
 
+    /**
+     * Finds and sets the IncidentDetails of an Incident marked in the list.
+     */
     private void getDetails() {
         for (BEIncidentDetails incidentDetails : BLLRead.getInstance().returnIncidentDetails()) {
             if (((BEIncident) lstIncidents.getSelectedValue()).getM_id() == incidentDetails.getM_incident().getM_id()) {
@@ -223,6 +226,9 @@ public class GUIAdmin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Finds and sets the Usage of an Incident marked in the list.
+     */
     private void getUsage() {
         m_usage.clear();
         for (BEUsage incidentUsage : BLLRead.getInstance().returnIncidentUsage()) {
@@ -233,6 +239,9 @@ public class GUIAdmin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Finds and sets the RoleTime of an Incident marked in the list.
+     */
     private void getRoleTime() {
         m_roleTime.clear();
         for (BERoleTime incidentRoleTime : BLLRead.getInstance().returnIncidentRoleTime()) {
@@ -243,6 +252,11 @@ public class GUIAdmin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Updates the IncidentDetails of the Incident marked in the list. 
+     * @param isDone if the Incident is to be finished or not
+     * @return m_incidentDetails
+     */
     private BEIncidentDetails updatedDetails(boolean isDone) {
         m_incidentDetails.setM_incidentLeader(txtLeader.getText());
         m_incidentDetails.setM_evaNumber(txtEvaNumber.getText());
@@ -251,7 +265,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         m_incidentDetails.setM_involvedAddress(txtInvolvedAddress.getText());
         m_incidentDetails.setM_detectorNumber(txtDetectorNumber.getText());
         m_incidentDetails.setM_groupNumber(txtGroupNumber.getText());
-        //m_incidentDetails.setM_remark(txtRemarks.getText());
         m_incidentDetails.setM_remark(txtRemark.getText());
         m_incidentDetails.setM_alarm(null);
         if (cmbAlarmType.getSelectedIndex() != 0) {
@@ -267,7 +280,6 @@ public class GUIAdmin extends javax.swing.JFrame {
      */
     private void printReport() {
         BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
-        MessageDialog.getInstance().pdfCreated();
     }
 
     /**
@@ -277,8 +289,7 @@ public class GUIAdmin extends javax.swing.JFrame {
         enableTextFields(false);
         enableBtnDetails(false);
         enableCombobox(false);
-        usageModel.clear();
-        roleTimeModel.clear();
+        clearDetails();
         if (!incidentModel.isEmpty() && lstIncidents.getSelectedIndex() != -1) {
             getDetails();
             btnEdit.setEnabled(true);
@@ -314,7 +325,9 @@ public class GUIAdmin extends javax.swing.JFrame {
     private void onClickEdit() {
         enableTextFields(true);
         enableCombobox(true);
-        enableBtnDetails(true);
+        btnApprove.setEnabled(false);
+        btnSave.setEnabled(true);
+        btnEdit.setEnabled(false);
     }
 
     /**
@@ -326,13 +339,14 @@ public class GUIAdmin extends javax.swing.JFrame {
         onClickUpdate();
     }
 
+    /**
+     * Invoke this method when the Approve-button is clicked.
+     */
     private void onClickApprove() {
-        onClickSave();
         printReport();
         isDone = true;
         BLLUpdate.getInstance().updateDetails(updatedDetails(isDone));
         onClickUpdate();
-        MessageDialog.getInstance().incidentApproved();
     }
 
     /**
@@ -398,6 +412,9 @@ public class GUIAdmin extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Listener for the keyboard.
+     */
     private class txtAction extends KeyAdapter {
 
         @Override
@@ -765,7 +782,7 @@ public class GUIAdmin extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        pnlSearch.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Find meldinger", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 24))); // NOI18N
+        pnlSearch.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Indsatser", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Calibri", 0, 24))); // NOI18N
 
         btnUpdate.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnUpdate.setText("Opdater");

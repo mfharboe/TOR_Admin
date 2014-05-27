@@ -39,7 +39,7 @@ public class MessageDialog implements IObserver {
     }
 
     public String alarmType() {
-        return "Ingen valgt";
+        return "Vælg Type";
     }
 
     public String zipType() {
@@ -52,14 +52,6 @@ public class MessageDialog implements IObserver {
 
     public void noTextHere() {
         JOptionPane.showMessageDialog(null, "Skriv kun tal i dette felt");
-    }
-
-    public void pdfCreated() {
-        JOptionPane.showMessageDialog(null, "Rapport oprettet");
-    }
-
-    public void incidentApproved() {
-        JOptionPane.showMessageDialog(null, "Meldingen blev gemt og godkendt");
     }
 
     public boolean deleteFireman() {
