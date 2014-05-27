@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.DefaultListModel;
+import javax.swing.JTextField;
 
 public class GUIFiremenAdmin extends javax.swing.JFrame {
 
@@ -200,8 +201,11 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
      * @return m_fireman
      */
     private BEFireman getDetails() {
-        java.util.Date utilDate = dateChooser.getDate();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        java.sql.Date sqlDate = null;
+        if (!((JTextField) dateChooser.getDateEditor().getUiComponent()).getText().isEmpty()) {
+            java.util.Date utilDate = dateChooser.getDate();
+            sqlDate = new java.sql.Date(utilDate.getTime());
+        }
         m_fireman.setM_recruited(sqlDate);
         m_fireman.setM_firstName(txtFirstName.getText());
         m_fireman.setM_lastName(txtLastName.getText());
@@ -222,12 +226,18 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
      * @return new BEFireman
      */
     private BEFireman getNewDetails() {
-        java.util.Date utilDate = dateChooser.getDate();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+        java.sql.Date sqlDate = null;
+        if (!((JTextField) dateChooser.getDateEditor().getUiComponent()).getText().isEmpty()) {
+            java.util.Date utilDate = dateChooser.getDate();
+            sqlDate = new java.sql.Date(utilDate.getTime());
+        }
         String firstName = txtFirstName.getText();
         String lastName = txtLastName.getText();
         String address = txtAddress.getText();
-        BEZipcode zip = ((BEZipcode) cmbZipcode.getSelectedItem());
+        BEZipcode zip = null;
+        if (cmbZipcode.getSelectedIndex() != 0) {
+            zip = ((BEZipcode) cmbZipcode.getSelectedItem());
+        }
         int phone = Integer.parseInt(txtPhone.getText());
         int payment = Integer.parseInt(txtPaymentNo.getText());
         boolean isteamleader = cbxIsTeamLeader.isSelected();
@@ -238,10 +248,6 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
 
     private boolean checkForIntegers(String input) {
         return input.matches(MessageDialog.getInstance().txtIntChecker());
-    }
-
-    private boolean checkForString(String input) {
-        return input.matches(MessageDialog.getInstance().txtStringChecker());
     }
 
     /**
@@ -262,6 +268,7 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
      */
     private void onClickEdit() {
         enableTxtFields(true);
+        btnEdit.setEnabled(false);
         btnSave.setEnabled(true);
         btnDelete.setEnabled(false);
         btnBrowse.setEnabled(true);
@@ -371,8 +378,8 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         public void keyReleased(KeyEvent e) {
             if (e.getSource().equals(lstFiremen)) {
                 onListClick();
-            } else{
-            onKeyPress();
+            } else {
+                onKeyPress();
             }
         }
     }
@@ -426,37 +433,37 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         txtFirstName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtFirstName.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlFiremen.add(txtFirstName);
-        txtFirstName.setBounds(392, 72, 250, 38);
+        txtFirstName.setBounds(392, 72, 340, 38);
 
         txtLastName.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtLastName.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlFiremen.add(txtLastName);
-        txtLastName.setBounds(392, 112, 250, 38);
+        txtLastName.setBounds(392, 112, 340, 38);
 
         txtAddress.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtAddress.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlFiremen.add(txtAddress);
-        txtAddress.setBounds(392, 152, 250, 38);
+        txtAddress.setBounds(392, 152, 340, 38);
         pnlFiremen.add(dateChooser);
-        dateChooser.setBounds(392, 32, 250, 38);
+        dateChooser.setBounds(392, 32, 180, 38);
 
         txtPhone.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtPhone.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlFiremen.add(txtPhone);
-        txtPhone.setBounds(392, 232, 250, 38);
+        txtPhone.setBounds(392, 232, 340, 38);
 
         cmbZipcode.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         pnlFiremen.add(cmbZipcode);
-        cmbZipcode.setBounds(392, 192, 250, 38);
+        cmbZipcode.setBounds(392, 192, 340, 38);
 
         txtPaymentNo.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtPaymentNo.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlFiremen.add(txtPaymentNo);
-        txtPaymentNo.setBounds(392, 272, 250, 38);
+        txtPaymentNo.setBounds(392, 272, 340, 38);
 
         txtPhotoPath.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         pnlFiremen.add(txtPhotoPath);
-        txtPhotoPath.setBounds(392, 342, 250, 38);
+        txtPhotoPath.setBounds(392, 342, 340, 38);
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
@@ -513,13 +520,13 @@ public class GUIFiremenAdmin extends javax.swing.JFrame {
         cbxIsTeamLeader.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         cbxIsTeamLeader.setText("Holdleder uddannet");
         pnlFiremen.add(cbxIsTeamLeader);
-        cbxIsTeamLeader.setBounds(392, 312, 153, 27);
+        cbxIsTeamLeader.setBounds(392, 312, 190, 27);
 
         btnBrowse.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnBrowse.setText("Browse..");
         btnBrowse.setPreferredSize(new java.awt.Dimension(81, 38));
         pnlFiremen.add(btnBrowse);
-        btnBrowse.setBounds(553, 398, 89, 38);
+        btnBrowse.setBounds(640, 390, 89, 38);
 
         btnEdit.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnEdit.setText("Rediger");

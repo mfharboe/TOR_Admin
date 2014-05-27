@@ -3,12 +3,13 @@ package BLL;
 import BE.BEFireman;
 import BE.BEMaterial;
 import BE.BEVehicle;
-import DAL.DALDelete;
+import DAL.Interfaces.IDALDelete;
 import java.sql.SQLException;
 
 public class BLLDelete {
 
     private static BLLDelete m_instance;
+    IDALDelete dalDelete;
 
     private BLLDelete() {
 
@@ -25,14 +26,22 @@ public class BLLDelete {
         return m_instance;
     }
 
+    public void setDAL(IDALDelete d) {
+        dalDelete = d;
+    }
+
     /**
-     * Deletes a given fireman, and removes him from the array.
+     * Deletes a given fireman from DB and array.
      *
      * @param fireman
      */
     public void deleteFireman(BEFireman fireman) {
+        if (fireman == null) {
+            BLLError.getInstance().deleteFiremanError();
+            return;
+        }
         try {
-            DALDelete.getInstance().deleteFireman(fireman);
+            dalDelete.deleteFireman(fireman);
         } catch (SQLException ex) {
             BLLError.getInstance().deleteFiremanError();
             return;
@@ -41,13 +50,17 @@ public class BLLDelete {
     }
 
     /**
-     * Deletes a given vehicle, and removes it from the array.
+     * Deletes a given vehicle from DB and array.
      *
      * @param vehicle
      */
     public void deleteVehicle(BEVehicle vehicle) {
+        if (vehicle == null) {
+            BLLError.getInstance().deleteVehicleError();
+            return;
+        }
         try {
-            DALDelete.getInstance().deleteVehicle(vehicle);
+            dalDelete.deleteVehicle(vehicle);
         } catch (SQLException ex) {
             BLLError.getInstance().deleteVehicleError();
             return;
@@ -56,13 +69,17 @@ public class BLLDelete {
     }
 
     /**
-     * Deletes a given material, and removes it from the array.
+     * Deletes a given material from DB and array.
      *
      * @param material
      */
     public void deleteMaterial(BEMaterial material) {
+        if (material == null) {
+            BLLError.getInstance().createMaterialError();
+            return;
+        }
         try {
-            DALDelete.getInstance().deleteMaterial(material);
+            dalDelete.deleteMaterial(material);
         } catch (SQLException ex) {
             BLLError.getInstance().deleteMaterialError();
             return;

@@ -1,5 +1,6 @@
 package DAL;
 
+import DAL.Interfaces.IDALCreate;
 import BE.BEFireman;
 import BE.BEMaterial;
 import BE.BEVehicle;
@@ -9,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DALCreate {
+public class DALCreate implements IDALCreate {
 
     private static DALCreate m_instance;
     Connection m_connection;
@@ -18,6 +19,10 @@ public class DALCreate {
         m_connection = DB_Connection.getInstance().getConnection();
     }
 
+    /**
+     * 
+     * @return m_instance of DALCreate. 
+     */
     public static DALCreate getInstance() {
         if (m_instance == null) {
             m_instance = new DALCreate();
@@ -25,6 +30,12 @@ public class DALCreate {
         return m_instance;
     }
 
+    /**
+     * Create a new given fireman in the DB.
+     * @param fireman
+     * @throws SQLException 
+     */
+    @Override
     public void createFireman(BEFireman fireman) throws SQLException {
         String sql = "insert into Fireman values(?,?,?,?,?,?,?,?,?)";
         PreparedStatement ps = m_connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -44,6 +55,12 @@ public class DALCreate {
         }
     }
 
+    /**
+     * Create a new given vehicle in the DB.
+     * @param vehicle
+     * @throws SQLException 
+     */
+    @Override
     public void createVehicle(BEVehicle vehicle) throws SQLException {
         String sql = "insert into Vehicle values(?,?,?,?,?)";
         PreparedStatement ps = m_connection.prepareStatement(sql);
@@ -55,6 +72,12 @@ public class DALCreate {
         ps.executeUpdate();
     }
 
+    /**
+     * Create a new given material in the DB.
+     * @param material
+     * @throws SQLException 
+     */
+    @Override
     public void createMaterial(BEMaterial material) throws SQLException {
         String sql = "insert into Material values (?)";
         PreparedStatement ps = m_connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

@@ -4,12 +4,13 @@ import BE.BEFireman;
 import BE.BEIncidentDetails;
 import BE.BEMaterial;
 import BE.BEVehicle;
-import DAL.DALUpdate;
+import DAL.Interfaces.IDALUpdate;
 import java.sql.SQLException;
 
 public class BLLUpdate {
 
     private static BLLUpdate m_instance;
+    IDALUpdate dalUpdate;
 
     private BLLUpdate() {
 
@@ -26,93 +27,97 @@ public class BLLUpdate {
         return m_instance;
     }
 
+    public void setDAL(IDALUpdate d) {
+        dalUpdate = d;
+    }
+
     /**
      * Updates values for a given incidentDetails
      *
      * @param updatedDetails
      */
     public void updateDetails(BEIncidentDetails updatedDetails) {
-        try {
-            DALUpdate.getInstance().updateIncidentDetails(updatedDetails);
-        } catch (SQLException ex) {
+        if (updatedDetails == null) {
             BLLError.getInstance().updateDetailsError();
+            return;
+        }
+        if (updatedDetails.getM_incident().isM_isDone() == true) {
+            try {
+                dalUpdate.updateIncidentDone(updatedDetails.getM_incident());
+            } catch (SQLException ex) {
+                BLLError.getInstance().finishIncidentError();
+                return;
+            }
         }
         try {
-            DALUpdate.getInstance().updateIncidentDone(updatedDetails.getM_incident());
+            dalUpdate.updateIncidentDetails(updatedDetails);
         } catch (SQLException ex) {
-            BLLError.getInstance().finishIncidentError();
+            BLLError.getInstance().updateDetailsError();
         }
     }
 
     /**
-     * Updates DB and array with a given fireman.
+     * Updates a given fireman in DB and array.
      *
      * @param fireman
      */
     public void updateFireman(BEFireman fireman) {
+        if (fireman == null) {
+            BLLError.getInstance().updateFiremanError();
+            return;
+        }
+        if (fireman.getM_zipCode() == null) {
+            BLLError.getInstance().fillOutZip();
+            return;
+        }
+        if (fireman.getM_recruited() == null) {
+            BLLError.getInstance().fillOutDate();
+            return;
+        }
         try {
-            DALUpdate.getInstance().updateFireman(fireman);
+            dalUpdate.updateFireman(fireman);
         } catch (SQLException ex) {
             BLLError.getInstance().updateFiremanError();
             return;
         }
-        for (BEFireman allFiremen : BLLRead.getInstance().readAllFiremen()) {
-            if (allFiremen.getM_id() == fireman.getM_id()) {
-                allFiremen.setM_recruited(fireman.getM_recruited());
-                allFiremen.setM_firstName(fireman.getM_firstName());
-                allFiremen.setM_lastName(fireman.getM_lastName());
-                allFiremen.setM_address(fireman.getM_address());
-                allFiremen.setM_zipCode(fireman.getM_zipCode());
-                allFiremen.setM_phone(fireman.getM_phone());
-                allFiremen.setM_paymentNumber(fireman.getM_paymentNumber());
-                allFiremen.setM_isTeamLeader(fireman.isM_isTeamLeader());
-                allFiremen.setM_photoPath(fireman.getM_photoPath());
-                break;
-            }
-        }
-
+        BLLRead.getInstance().updateFiremanArray(fireman);
     }
 
     /**
-     * Updates DB and array with a given vehicle.
+     * Updates a given vehicle in DB and array.
      *
      * @param vehicle
      */
     public void updateVehicle(BEVehicle vehicle) {
+        if (vehicle == null) {
+            BLLError.getInstance().updateVehicleError();
+            return;
+        }
         try {
-            DALUpdate.getInstance().updateVehicle(vehicle);
+            dalUpdate.updateVehicle(vehicle);
         } catch (SQLException ex) {
             BLLError.getInstance().updateVehicleError();
             return;
         }
-        for (BEVehicle allVehicles : BLLRead.getInstance().readAllVehicles()) {
-            if (allVehicles.getM_odinNumber() == vehicle.getM_odinNumber()) {
-                allVehicles.setM_registrationNumber(vehicle.getM_registrationNumber());
-                allVehicles.setM_brand(vehicle.getM_brand());
-                allVehicles.setM_model(vehicle.getM_model());
-                allVehicles.setM_description(vehicle.getM_description());
-                break;
-            }
-        }
+        BLLRead.getInstance().updateVehicleArray(vehicle);
     }
 
     /**
-     * Updates DB and array with a given material.
+     * Updates a given material in DB and array.
      *
      * @param material
      */
     public void updateMaterial(BEMaterial material) {
+        if (material == null) {
+            BLLError.getInstance().updateMaterialError();
+            return;
+        }
         try {
-            DALUpdate.getInstance().updateMaterial(material);
+            dalUpdate.updateMaterial(material);
         } catch (SQLException ex) {
             BLLError.getInstance().updateMaterialError();
             return;
         }
-        for (BEMaterial allMaterials : BLLRead.getInstance().readAllMaterials()) {
-            if (allMaterials.getM_id() == material.getM_id()) {
-                allMaterials.setM_description(material.getM_description());
-                break;
-            }
-        }
+        BLLRead.getInstance().updateMaterialArray(material);
     }
 }

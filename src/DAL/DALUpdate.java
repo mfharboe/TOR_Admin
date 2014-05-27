@@ -1,5 +1,6 @@
 package DAL;
 
+import DAL.Interfaces.IDALUpdate;
 import BE.BEFireman;
 import BE.BEIncident;
 import BE.BEIncidentDetails;
@@ -9,7 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class DALUpdate {
+public class DALUpdate implements IDALUpdate {
 
     private static DALUpdate m_instance;
     Connection m_connection;
@@ -18,6 +19,10 @@ public class DALUpdate {
         m_connection = DB_Connection.getInstance().getConnection();
     }
 
+    /**
+     * 
+     * @return m_instance of DALUpdate. 
+     */
     public static DALUpdate getInstance() {
         if (m_instance == null) {
             m_instance = new DALUpdate();
@@ -25,6 +30,12 @@ public class DALUpdate {
         return m_instance;
     }
 
+    /**
+     * Updates given incidentDetails in the DB.
+     * @param incidentDetails
+     * @throws SQLException 
+     */
+    @Override
     public void updateIncidentDetails(BEIncidentDetails incidentDetails) throws SQLException {
         String sql = "Update IncidentDetails set incidentLeader = ?, "
                 + "evaNumber = ?, "
@@ -54,6 +65,12 @@ public class DALUpdate {
         ps.executeUpdate();
     }
 
+    /**
+     * Updates a given Incident in the DB.
+     * @param incident
+     * @throws SQLException 
+     */
+    @Override
     public void updateIncidentDone(BEIncident incident) throws SQLException {
         String sql = "Update Incident set isDone = ? "
                 + "where id = ?";
@@ -63,6 +80,12 @@ public class DALUpdate {
         ps.executeUpdate();
     }
     
+    /**
+     * Updates a given fireman in the DB.
+     * @param fireman
+     * @throws SQLException 
+     */
+    @Override
     public void updateFireman(BEFireman fireman) throws SQLException{
         String sql = "Update Fireman set recruited = ?, "
                 + "firstName = ?, "
@@ -88,6 +111,12 @@ public class DALUpdate {
         ps.executeUpdate();
     }
     
+    /**
+     * Updates a given vehicle in the DB.
+     * @param vehicle
+     * @throws SQLException 
+     */
+    @Override
     public void updateVehicle(BEVehicle vehicle) throws SQLException{
         String sql = "Update Vehicle set registrationNumber = ?, "
                 + "brand = ?, "
@@ -103,6 +132,12 @@ public class DALUpdate {
         ps.executeUpdate();
     }
     
+    /**
+     * Updates a given material in the DB.
+     * @param material
+     * @throws SQLException 
+     */
+    @Override
     public void updateMaterial(BEMaterial material) throws SQLException{
         String sql = "Update Material set materialDescription = ? "
                 + "where id = ?";

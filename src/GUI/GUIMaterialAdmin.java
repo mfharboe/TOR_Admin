@@ -174,10 +174,13 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
      * Invoke this method when the deletebutton is clicked.
      */
     private void onClickDelete() {
-        BLLDelete.getInstance().deleteMaterial(m_material);
-        materialModel.clear();
-        fillMaterialList();
-        clearSelection();
+        boolean reply = MessageDialog.getInstance().deleteMaterial();
+        if (reply == true) {
+            BLLDelete.getInstance().deleteMaterial(m_material);
+            materialModel.clear();
+            fillMaterialList();
+            clearSelection();
+        }
     }
 
     /**
@@ -185,6 +188,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
      */
     private void onClickEdit() {
         enableTxtFields(true);
+        btnEdit.setEnabled(false);
         btnSave.setEnabled(true);
         btnDelete.setEnabled(false);
         isUpdate = true;
@@ -307,7 +311,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         txtMaterial.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtMaterial.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlMaterial.add(txtMaterial);
-        txtMaterial.setBounds(386, 32, 250, 38);
+        txtMaterial.setBounds(386, 32, 340, 38);
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");

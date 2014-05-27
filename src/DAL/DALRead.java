@@ -1,5 +1,6 @@
 package DAL;
 
+import DAL.Interfaces.IDALRead;
 import BE.BEAlarm;
 import BE.BEFireman;
 import BE.BEIncident;
@@ -19,7 +20,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.util.ArrayList;
 
-public class DALRead {
+public class DALRead implements IDALRead {
 
     private static DALRead m_instance;
     Connection m_connection;
@@ -33,6 +34,10 @@ public class DALRead {
         m_connection = DB_Connection.getInstance().getConnection();
     }
 
+    /**
+     *
+     * @return m_instance of DALRead.
+     */
     public static DALRead getInstance() {
         if (m_instance == null) {
             m_instance = new DALRead();
@@ -41,11 +46,13 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Incidents where isDone = false
+     * Reads all incidents from DB that is not finished, and adds them to an
+     * array.
      *
      * @return ArrayList of Incidents
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEIncident> readRecentIncidents() throws SQLException {
         ArrayList<BEIncident> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
@@ -71,11 +78,12 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of IncidentTypes
+     * Reads incidentsTypes and adds them to an array.
      *
-     * @return ArrayList of Incident Types
+     * @return ArrayList of IncidentTypes
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEIncidentType> readIncidentTypes() throws SQLException {
         if (resIncidentTypes == null) {
             resIncidentTypes = new ArrayList<>();
@@ -93,11 +101,12 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Alarms
+     * Reads all alarmTypes and adds them to an array.
      *
      * @return ArrayList of Alarms
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEAlarm> readAlarms() throws SQLException {
         if (resAlarms == null) {
             resAlarms = new ArrayList<>();
@@ -115,11 +124,12 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Material
+     * Reads all materials and adds them to an array.
      *
-     * @return ArrayList of Material
+     * @return Ordered ArrayList of Material
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEMaterial> readMaterial() throws SQLException {
         ArrayList<BEMaterial> resMaterials = new ArrayList<>();
         Statement stm = m_connection.createStatement();
@@ -135,11 +145,12 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Roles
+     * Reads all roleTypes and adds them to an array.
      *
      * @return ArrayList of Roles
      * @throws SQLException
      */
+    @Override
     public ArrayList<BERole> readRoles() throws SQLException {
         if (resRoles == null) {
             resRoles = new ArrayList<>();
@@ -157,11 +168,12 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Vehicles
+     * Reads all vehicles and adds them to an array.
      *
      * @return an ArrayList of Vehicles
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEVehicle> readVehicles() throws SQLException {
         ArrayList<BEVehicle> resVehicles = new ArrayList<>();
         Statement stm = m_connection.createStatement();
@@ -180,11 +192,12 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Firemen
+     * Reads all firemen and adds them to an array.
      *
      * @return ArrayList of Firemen
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEFireman> readFiremen() throws SQLException {
         ArrayList<BEFireman> resFiremen = new ArrayList<>();
         Statement stm = m_connection.createStatement();
@@ -214,11 +227,12 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Zipcodes
+     * Reads all zipCodes and adds them to an array.
      *
      * @return ArrayList of Zipcodes
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEZipcode> readZipcodes() throws SQLException {
         if (resZipcodes == null) {
             resZipcodes = new ArrayList<>();
@@ -236,12 +250,13 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of Usage
+     * Reads all usage from incidents that is not finished and adds it to an
+     * array.
      *
-     * @param isDone
      * @return ArrayList of Usage
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEUsage> readUsage() throws SQLException {
         ArrayList<BEUsage> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
@@ -276,26 +291,18 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of IncidentDetails
+     * Reads all IncidentDetails of incidents that is not finsihed, and adds
+     * them to an array.
      *
-     * @param isDone
      * @return ArrayList of IncidentDetails
      * @throws SQLException
      */
+    @Override
     public ArrayList<BEIncidentDetails> readIncidentDetails() throws SQLException {
         ArrayList<BEIncidentDetails> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
-        stm.execute("Select IncidentDetails.incidentLeader, "
-                + "IncidentDetails.evaNumber, "
-                + "IncidentDetails.fireReport, "
-                + "IncidentDetails.incidentid, "
-                + "IncidentDetails.involvedName, "
-                + "IncidentDetails.involvedAddress, "
-                + "IncidentDetails.remark, "
-                + "IncidentDetails.alarmId,"
-                + "IncidentDetails.detectorNumber,"
-                + "IncidentDetails.groupNumber "
-                + "from IncidentDetails inner join Incident "
+        stm.execute("select * from IncidentDetails "
+                + "inner join Incident "
                 + "on IncidentDetails.incidentId = incident.id "
                 + "where incident.isDone = 0");
         ResultSet result = stm.getResultSet();
@@ -342,22 +349,21 @@ public class DALRead {
     }
 
     /**
-     * Creates an ArrayList of RoleTimes
+     * Reads all RoleTime of Incidents that is not finished.
      *
-     * @param isDone
-     * @return ArrayList of RoleTimes
+     * @return Ordered ArrayList of RoleTimes
      * @throws SQLException
      */
+    @Override
     public ArrayList<BERoleTime> readRoleTime() throws SQLException {
         ArrayList<BERoleTime> res = new ArrayList<>();
         Statement stm = m_connection.createStatement();
-        stm.execute("select [Role/Time].incidentId, [Role/Time].firemanId, [Role/Time].isOnStation, [Role/Time].roleId, \n"
-                + "[Role/Time].vehicleOdinNumber, [Role/Time].hours \n"
-                + "from [Role/Time] inner join Incident \n"
-                + "on [Role/Time].incidentId = Incident.id\n"
-                + "inner join Fireman\n"
-                + "on [role/time].firemanId = fireman.id\n"
-                + "where Incident.isDone = 0\n"
+        stm.execute("select * from [Role/Time] "
+                + "inner join Incident "
+                + "on [Role/Time].incidentId = Incident.id "
+                + "inner join Fireman "
+                + "on [role/time].firemanId = fireman.id "
+                + "where Incident.isDone = 0 "
                 + "order by [Role/Time].vehicleOdinNumber, fireman.firstName, Fireman.lastName");
         ResultSet result = stm.getResultSet();
         while (result.next()) {

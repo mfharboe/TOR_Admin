@@ -45,7 +45,7 @@ public class DB_Connection {
 
     /**
      *
-     * @return m_instance
+     * @return m_instance of DB_Connection.
      */
     public static DB_Connection getInstance() {
         if (m_instance == null) {

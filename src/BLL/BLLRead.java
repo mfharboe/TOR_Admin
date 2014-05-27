@@ -10,12 +10,14 @@ import BE.BEUsage;
 import BE.BEVehicle;
 import BE.BEZipcode;
 import DAL.DALRead;
+import DAL.Interfaces.IDALRead;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class BLLRead {
 
     private static BLLRead m_instance;
+    IDALRead dalRead;
     ArrayList<BEIncident> recentIncidents;
     ArrayList<BEIncident> incidentsByDate;
     ArrayList<BEIncident> allIncidents;
@@ -43,6 +45,10 @@ public class BLLRead {
         return m_instance;
     }
 
+    public void setDAL(IDALRead d) {
+        dalRead = d;
+    }
+
     /**
      * Reads all recent incidents and adds them to the array
      *
@@ -50,7 +56,7 @@ public class BLLRead {
      */
     public ArrayList<BEIncident> readAllRecentIncidents() {
         try {
-            recentIncidents = DALRead.getInstance().readRecentIncidents();
+            recentIncidents = dalRead.readRecentIncidents();
             if (recentIncidents.isEmpty()) {
                 BLLError.getInstance().emptyArrayList();
             } else {
@@ -70,7 +76,7 @@ public class BLLRead {
      */
     public void readIncidentDetails() {
         try {
-            incidentDetails = DALRead.getInstance().readIncidentDetails();
+            incidentDetails = dalRead.readIncidentDetails();
         } catch (SQLException ex) {
             BLLError.getInstance().readIncidentDetailsError();
         }
@@ -82,7 +88,7 @@ public class BLLRead {
      */
     public void readIncidentUsage() {
         try {
-            incidentUsage = DALRead.getInstance().readUsage();
+            incidentUsage = dalRead.readUsage();
         } catch (SQLException ex) {
             BLLError.getInstance().readUsageError();
         }
@@ -94,7 +100,7 @@ public class BLLRead {
      */
     public void readIncidentRoleTime() {
         try {
-            incidentRoleTime = DALRead.getInstance().readRoleTime();
+            incidentRoleTime = dalRead.readRoleTime();
         } catch (SQLException ex) {
             BLLError.getInstance().readRoleTimeError();
         }
@@ -108,8 +114,9 @@ public class BLLRead {
     public ArrayList<BEAlarm> readAllAlarms() {
         if (allAlarms == null) {
             try {
-                allAlarms = DALRead.getInstance().readAlarms();
+                allAlarms = dalRead.readAlarms();
             } catch (SQLException ex) {
+                System.out.println(ex);
                 BLLError.getInstance().readAlarmError();
             }
         }
@@ -124,7 +131,7 @@ public class BLLRead {
     public ArrayList<BEZipcode> readAllZipcodes() {
         if (allZipcodes == null) {
             try {
-                allZipcodes = DALRead.getInstance().readZipcodes();
+                allZipcodes = dalRead.readZipcodes();
             } catch (SQLException ex) {
                 BLLError.getInstance().readZipcodeError();
             }
@@ -140,7 +147,7 @@ public class BLLRead {
     public ArrayList<BEFireman> readAllFiremen() {
         if (allFiremen == null) {
             try {
-                allFiremen = DALRead.getInstance().readFiremen();
+                allFiremen = dalRead.readFiremen();
             } catch (SQLException ex) {
                 BLLError.getInstance().readFiremenError();
             }
@@ -156,7 +163,7 @@ public class BLLRead {
     public ArrayList<BEVehicle> readAllVehicles() {
         if (allVehicles == null) {
             try {
-                allVehicles = DALRead.getInstance().readVehicles();
+                allVehicles = dalRead.readVehicles();
             } catch (SQLException ex) {
                 BLLError.getInstance().readVehiclesError();
             }
@@ -172,7 +179,7 @@ public class BLLRead {
     public ArrayList<BEMaterial> readAllMaterials() {
         if (allMaterials == null) {
             try {
-                allMaterials = DALRead.getInstance().readMaterial();
+                allMaterials = dalRead.readMaterial();
             } catch (SQLException ex) {
                 BLLError.getInstance().readMaterialError();
             }
@@ -188,16 +195,28 @@ public class BLLRead {
         incidentUsage = null;
         incidentRoleTime = null;
     }
-    
-    public ArrayList<BEIncidentDetails> returnIncidentDetails(){
+
+    /**
+     *
+     * @return current array of incidentDetails.
+     */
+    public ArrayList<BEIncidentDetails> returnIncidentDetails() {
         return incidentDetails;
     }
-    
-    public ArrayList<BEUsage> returnIncidentUsage(){
+
+    /**
+     *
+     * @return current array of incidentUsage.
+     */
+    public ArrayList<BEUsage> returnIncidentUsage() {
         return incidentUsage;
     }
-    
-    public ArrayList<BERoleTime> returnIncidentRoleTime(){
+
+    /**
+     *
+     * @return current array of incidentRoleTime.
+     */
+    public ArrayList<BERoleTime> returnIncidentRoleTime() {
         return incidentRoleTime;
     }
 
@@ -253,6 +272,59 @@ public class BLLRead {
      */
     public void removeMaterialFromArray(BEMaterial material) {
         allMaterials.remove(material);
+    }
+
+    /**
+     * Updates values for a fireman in the fireman array.
+     *
+     * @param fireman
+     */
+    public void updateFiremanArray(BEFireman fireman) {
+        for (BEFireman firemanArray : readAllFiremen()) {
+            if (firemanArray.getM_id() == fireman.getM_id()) {
+                firemanArray.setM_recruited(fireman.getM_recruited());
+                firemanArray.setM_firstName(fireman.getM_firstName());
+                firemanArray.setM_lastName(fireman.getM_lastName());
+                firemanArray.setM_address(fireman.getM_address());
+                firemanArray.setM_zipCode(fireman.getM_zipCode());
+                firemanArray.setM_phone(fireman.getM_phone());
+                firemanArray.setM_paymentNumber(fireman.getM_paymentNumber());
+                firemanArray.setM_isTeamLeader(fireman.isM_isTeamLeader());
+                firemanArray.setM_photoPath(fireman.getM_photoPath());
+                break;
+            }
+        }
+    }
+
+    /**
+     * Updates values for a vehicle in the vehicle array.
+     *
+     * @param vehicle
+     */
+    public void updateVehicleArray(BEVehicle vehicle) {
+        for (BEVehicle vehicleArray : readAllVehicles()) {
+            if (vehicleArray.getM_odinNumber() == vehicle.getM_odinNumber()) {
+                vehicleArray.setM_registrationNumber(vehicle.getM_registrationNumber());
+                vehicleArray.setM_brand(vehicle.getM_brand());
+                vehicleArray.setM_model(vehicle.getM_model());
+                vehicleArray.setM_description(vehicle.getM_description());
+                break;
+            }
+        }
+    }
+
+    /**
+     * Updates values for a material in the material array.
+     *
+     * @param material
+     */
+    public void updateMaterialArray(BEMaterial material) {
+        for (BEMaterial materialArray : readAllMaterials()) {
+            if (materialArray.getM_id() == material.getM_id()) {
+                materialArray.setM_description(material.getM_description());
+                break;
+            }
+        }
     }
 
 }

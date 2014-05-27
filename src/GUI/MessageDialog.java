@@ -45,21 +45,9 @@ public class MessageDialog implements IObserver {
     public String zipType() {
         return "Post Nummer..";
     }
-
-    public String dateType() {
-        return "YYYY-MM-DD";
-    }
     
     public String txtIntChecker() {
         return "[0-9]+";
-    }
-    
-    public String txtStringChecker() {
-        return "[A-Å]+";
-    }
-
-    public void filloutAllFields() {
-        JOptionPane.showMessageDialog(null, "Udfyld alle felterne");
     }
 
     public void noTextHere() {
@@ -72,10 +60,6 @@ public class MessageDialog implements IObserver {
 
     public void incidentApproved() {
         JOptionPane.showMessageDialog(null, "Meldingen blev gemt og godkendt");
-    }
-    
-    public void fillOutAllDates() {
-        JOptionPane.showMessageDialog(null, "Udfyld begge datofelter");
     }
 
     public boolean deleteFireman() {

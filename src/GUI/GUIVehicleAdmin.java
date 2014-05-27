@@ -203,10 +203,13 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
      * Invoke this method when the deletebutton is clicked.
      */
     private void onClickDelete() {
-        BLLDelete.getInstance().deleteVehicle(m_vehicle);
-        vehicleModel.clear();
-        fillVehicleList();
-        clearSelection();
+        boolean reply = MessageDialog.getInstance().deleteVehicle();
+        if (reply == true) {
+            BLLDelete.getInstance().deleteVehicle(m_vehicle);
+            vehicleModel.clear();
+            fillVehicleList();
+            clearSelection();
+        }
     }
 
     /**
@@ -214,6 +217,7 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
      */
     private void onClickEdit() {
         enableTxtFields(true);
+        btnEdit.setEnabled(false);
         btnSave.setEnabled(true);
         btnDelete.setEnabled(false);
         isUpdate = true;
@@ -350,27 +354,27 @@ public class GUIVehicleAdmin extends javax.swing.JFrame {
         txtOdinNr.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtOdinNr.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlVehicles.add(txtOdinNr);
-        txtOdinNr.setBounds(384, 32, 250, 38);
+        txtOdinNr.setBounds(384, 32, 340, 38);
 
         txtRegNr.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtRegNr.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlVehicles.add(txtRegNr);
-        txtRegNr.setBounds(384, 72, 250, 38);
+        txtRegNr.setBounds(384, 72, 340, 38);
 
         txtBrand.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtBrand.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlVehicles.add(txtBrand);
-        txtBrand.setBounds(384, 112, 250, 38);
+        txtBrand.setBounds(384, 112, 340, 38);
 
         txtModel.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtModel.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlVehicles.add(txtModel);
-        txtModel.setBounds(384, 152, 250, 38);
+        txtModel.setBounds(384, 152, 340, 38);
 
         txtDescription.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         txtDescription.setPreferredSize(new java.awt.Dimension(250, 38));
         pnlVehicles.add(txtDescription);
-        txtDescription.setBounds(384, 192, 250, 38);
+        txtDescription.setBounds(384, 192, 340, 38);
 
         btnSave.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnSave.setText("Gem");
