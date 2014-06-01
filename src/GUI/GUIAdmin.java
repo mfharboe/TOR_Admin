@@ -275,8 +275,9 @@ public class GUIAdmin extends javax.swing.JFrame {
     /**
      * Prints a pdf with the details of the incident.
      */
-    private void printReport() {
-        BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
+    private boolean printReport() {
+        return BLLPDF.getInstance().printToPDF(m_incidentDetails, m_roleTime, m_usage);
+        
     }
 
     /**
@@ -340,8 +341,7 @@ public class GUIAdmin extends javax.swing.JFrame {
      * Invoke this method when the Approve-button is clicked.
      */
     private void onClickApprove() {
-        printReport();
-        isDone = true;
+        isDone = printReport();
         BLLUpdate.getInstance().updateDetails(updatedDetails(isDone));
         onClickUpdate();
     }

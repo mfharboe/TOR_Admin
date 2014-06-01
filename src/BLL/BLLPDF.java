@@ -51,8 +51,9 @@ public class BLLPDF {
      * @param incidentDetails
      * @param roletime
      * @param usage
+     * @return true if succes
      */
-    public void printToPDF(BEIncidentDetails incidentDetails, ArrayList<BERoleTime> roletime, ArrayList<BEUsage> usage) {
+    public boolean printToPDF(BEIncidentDetails incidentDetails, ArrayList<BERoleTime> roletime, ArrayList<BEUsage> usage) {
 
         Document document = new Document();
         String name = incidentDetails.getM_incident().getM_date() + " - " + incidentDetails.getM_incident().getM_incidentName();
@@ -183,8 +184,9 @@ public class BLLPDF {
 
         } catch (DocumentException | FileNotFoundException ex) {
             BLLError.getInstance().createPDFError();
+            return false;
         }
-
+        return true;
     }
 
 }
