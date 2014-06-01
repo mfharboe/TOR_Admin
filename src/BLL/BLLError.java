@@ -3,7 +3,6 @@ package BLL;
 import Observer.IObserver;
 import Observer.ISubject;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
 
 public class BLLError implements ISubject {
 
@@ -37,21 +36,6 @@ public class BLLError implements ISubject {
 
     public void createMaterialError() {
         error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "tilføje nyt materiel";
-        notifyObservers();
-    }
-
-    public void deleteFiremanError() {
-        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "slette brandmand";
-        notifyObservers();
-    }
-
-    public void deleteVehicleError() {
-        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "slette køretøj";
-        notifyObservers();
-    }
-
-    public void deleteMaterialError() {
-        error = ERROR_HAS_HAPPEND + ERROR_COULD_NOT + "slette materiel";
         notifyObservers();
     }
 

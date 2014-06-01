@@ -6,13 +6,11 @@ import BE.BEIncidentDetails;
 import BE.BERoleTime;
 import BE.BEUsage;
 import BLL.BLLCreate;
-import BLL.BLLDelete;
 import BLL.BLLError;
 import BLL.BLLPDF;
 import BLL.BLLRead;
 import BLL.BLLUpdate;
 import DAL.DALCreate;
-import DAL.DALDelete;
 import DAL.DALRead;
 import DAL.DALUpdate;
 import java.awt.Color;
@@ -72,7 +70,6 @@ public class GUIAdmin extends javax.swing.JFrame {
         BLLRead.getInstance().setDAL(DALRead.getInstance());
         BLLCreate.getInstance().setDAL(DALCreate.getInstance());
         BLLUpdate.getInstance().setDAL(DALUpdate.getInstance());
-        BLLDelete.getInstance().setDAL(DALDelete.getInstance());
     }
 
     /**

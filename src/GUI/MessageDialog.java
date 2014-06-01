@@ -54,21 +54,6 @@ public class MessageDialog implements IObserver {
         JOptionPane.showMessageDialog(null, "Skriv kun tal i dette felt");
     }
 
-    public boolean deleteFireman() {
-        int reply = JOptionPane.showConfirmDialog(null, "Er du sikker?", "Slet Brandmand", JOptionPane.YES_NO_OPTION);
-        return reply == JOptionPane.YES_OPTION;
-    }
-
-    public boolean deleteVehicle() {
-        int reply = JOptionPane.showConfirmDialog(null, "Er du sikker?", "Slet Køretøj", JOptionPane.YES_NO_OPTION);
-        return reply == JOptionPane.YES_OPTION;
-    }
-
-    public boolean deleteMaterial() {
-        int reply = JOptionPane.showConfirmDialog(null, "Er du sikker?", "Slet Materiel", JOptionPane.YES_NO_OPTION);
-        return reply == JOptionPane.YES_OPTION;
-    }
-
     @Override
     public void update(String error) {
         JOptionPane.showMessageDialog(null, error);

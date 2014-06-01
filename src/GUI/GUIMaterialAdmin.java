@@ -2,7 +2,6 @@ package GUI;
 
 import BE.BEMaterial;
 import BLL.BLLCreate;
-import BLL.BLLDelete;
 import BLL.BLLRead;
 import BLL.BLLUpdate;
 import java.awt.Color;
@@ -49,7 +48,6 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         btnAction btn = new btnAction();
         mouseAction mouse = new mouseAction();
         txtAction txt = new txtAction();
-        btnDelete.addActionListener(btn);
         btnEdit.addActionListener(btn);
         btnSave.addActionListener(btn);
         btnNew.addActionListener(btn);
@@ -97,7 +95,6 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
      * @param enable
      */
     private void enableBtn(boolean enable) {
-        btnDelete.setEnabled(enable);
         btnEdit.setEnabled(enable);
         btnSave.setEnabled(enable);
     }
@@ -120,7 +117,6 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         if (!materialModel.isEmpty() && lstMaterial.getSelectedIndex() != -1) {
             setDetails();
             btnEdit.setEnabled(true);
-            btnDelete.setEnabled(true);
         } else {
             enableBtn(false);
             clearDetails();
@@ -171,26 +167,12 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     }
 
     /**
-     * Invoke this method when the deletebutton is clicked.
-     */
-    private void onClickDelete() {
-        boolean reply = MessageDialog.getInstance().deleteMaterial();
-        if (reply == true) {
-            BLLDelete.getInstance().deleteMaterial(m_material);
-            materialModel.clear();
-            fillMaterialList();
-            clearSelection();
-        }
-    }
-
-    /**
      * Invoke this method when the editbutton is clicked.
      */
     private void onClickEdit() {
         enableTxtFields(true);
         btnEdit.setEnabled(false);
         btnSave.setEnabled(true);
-        btnDelete.setEnabled(false);
         isUpdate = true;
     }
 
@@ -217,7 +199,6 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     private void onClickNew() {
         clearDetails();
         enableTxtFields(true);
-        btnDelete.setEnabled(false);
         btnEdit.setEnabled(false);
         btnSave.setEnabled(false);
         isUpdate = false;
@@ -238,9 +219,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource().equals(btnDelete)) {
-                onClickDelete();
-            } else if (e.getSource().equals(btnEdit)) {
+            if (e.getSource().equals(btnEdit)) {
                 onClickEdit();
             } else if (e.getSource().equals(btnSave)) {
                 onClickSave();
@@ -291,7 +270,6 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         lstMaterial = new javax.swing.JList();
         txtMaterial = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
-        btnDelete = new javax.swing.JButton();
         lblMaterial = new javax.swing.JLabel();
         btnEdit = new javax.swing.JButton();
         btnNew = new javax.swing.JButton();
@@ -317,13 +295,7 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         btnSave.setText("Gem");
         btnSave.setPreferredSize(new java.awt.Dimension(81, 38));
         pnlMaterial.add(btnSave);
-        btnSave.setBounds(677, 566, 81, 38);
-
-        btnDelete.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
-        btnDelete.setText("Slet");
-        btnDelete.setPreferredSize(new java.awt.Dimension(81, 38));
-        pnlMaterial.add(btnDelete);
-        btnDelete.setBounds(382, 566, 81, 38);
+        btnSave.setBounds(670, 560, 81, 40);
 
         lblMaterial.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         lblMaterial.setText("*Materiel:");
@@ -334,13 +306,13 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
         btnEdit.setText("Rediger");
         btnEdit.setPreferredSize(new java.awt.Dimension(81, 38));
         pnlMaterial.add(btnEdit);
-        btnEdit.setBounds(470, 566, 90, 38);
+        btnEdit.setBounds(540, 560, 100, 40);
 
         btnNew.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         btnNew.setText("Ny..");
         btnNew.setPreferredSize(new java.awt.Dimension(81, 38));
         pnlMaterial.add(btnNew);
-        btnNew.setBounds(294, 566, 81, 38);
+        btnNew.setBounds(430, 560, 81, 40);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -361,7 +333,6 @@ public class GUIMaterialAdmin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnSave;

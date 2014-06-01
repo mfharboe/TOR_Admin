@@ -9,7 +9,6 @@ import BE.BERoleTime;
 import BE.BEUsage;
 import BE.BEVehicle;
 import BE.BEZipcode;
-import DAL.DALRead;
 import DAL.Interfaces.IDALRead;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -245,33 +244,6 @@ public class BLLRead {
      */
     public void addMaterialToArray(BEMaterial newMaterial) {
         allMaterials.add(newMaterial);
-    }
-
-    /**
-     * Removes a given fireman from the array.
-     *
-     * @param fireman
-     */
-    public void removeFiremenFromArray(BEFireman fireman) {
-        allFiremen.remove(fireman);
-    }
-
-    /**
-     * Removes a given vehicle from the array.
-     *
-     * @param vehicle
-     */
-    public void removeVehicleFromArray(BEVehicle vehicle) {
-        allVehicles.remove(vehicle);
-    }
-
-    /**
-     * Removes some given material from the array.
-     *
-     * @param material
-     */
-    public void removeMaterialFromArray(BEMaterial material) {
-        allMaterials.remove(material);
     }
 
     /**
